@@ -1,5 +1,6 @@
 package assets;
 
+import assets.model.Animal;
 import assets.model.Vector2d;
 
 public class World {

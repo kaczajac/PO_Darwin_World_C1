@@ -1,6 +1,8 @@
 package assets.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class WorldMap {
@@ -9,10 +11,11 @@ public class WorldMap {
     private final int height;
     private Tile[][] tiles;
 
-    private Map<Vector2d, Animal> animals = new HashMap<>();
-    private Map<Vector2d, Grass> grasses = new HashMap<>();
+    private final Map<Vector2d, Animal> animals = new HashMap<>();
+    private final Map<Vector2d, Grass> grasses = new HashMap<>();
+    private final List<Vector2d> flowTiles = new ArrayList<>();
 
-    public WorldMap(int height, int width) {
+    public WorldMap(int height, int width, int numOfGrass, int numOfAnimals) {
         this.width = width;
         this.height = height;
         this.tiles = new Tile[height][width];
@@ -25,8 +28,9 @@ public class WorldMap {
         }
 
         fillEquator();
-        placeGrass();
-
+        placeGrass(numOfGrass);
+        placeAnimals(numOfAnimals);
+        findFlowTiles();
     }
 
 //// Helper functions for initializing a map ('cellular automata rule 45' algorithm for procedural generation)
@@ -81,42 +85,67 @@ public class WorldMap {
         return num;
     }
 
-    private boolean inBounds(int x, int y) {
-        return (x >= 0 && x < height && y >= 0 && y < width);
-    }
+    private void placeAnimals(int numOfAnimals) {
 
-    private void placeAnimals() {
-        // to do
-    }
-
-    private void placeGrass() {
-
-        for (int r = 0; r < height; r++) {
-            for (int c = 0; c < width; c++) {
-
-                Vector2d position = new Vector2d(r, c);
-
-                if (!grasses.containsKey(position)) {
-                    Grass newGrass = new Grass(position);
-                    try {
-                        switch(tiles[r][c].getType()) {
-                            case PLAINS -> {
-                                if (Math.random() <= 0.2) grasses.put(position, newGrass);
-                            }
-                            case FOREST -> {
-                                if (Math.random() <= 0.8) grasses.put(position, newGrass);
-                            }
-                            case WATER -> {}
-                            default -> throw new IllegalStateException("Unexpected value: " + tiles[r][c].getType());
-                        }
-                    } catch (IllegalStateException e) {
-                        System.out.println(e.getMessage());
-                    }
-                }
-
+        while (animals.size() < numOfAnimals) {
+            int r = (int) (Math.random() * height);
+            int c = (int) (Math.random() * width);
+            Vector2d position = new Vector2d(r, c);
+            if (!isOccupied(position) && tiles[r][c].getType() != TileType.WATER) {
+                int energy = (int) (Math.random() * (20 - 10) + 10);
+                Animal animal = new Animal(position, energy, 8);
+                animals.put(position, animal);
             }
         }
 
+    }
+
+    private void placeGrass(int numOfGrass) {
+
+        while (grasses.size() < numOfGrass) {
+            int r = (int) (Math.random() * height);
+            int c = (int) (Math.random() * width);
+            Vector2d position = new Vector2d(r, c);
+            if (!grasses.containsKey(position)) {
+                try {
+                    switch(tiles[r][c].getType()) {
+                        case PLAINS -> {
+                            if (Math.random() <= 0.2) grasses.put(position, new Grass(position));
+                        }
+                        case FOREST -> {
+                            if (Math.random() <= 0.8) grasses.put(position, new Grass(position));
+                        }
+                        case WATER -> {}
+                        default -> throw new IllegalStateException("Unexpected value: " + tiles[r][c].getType());
+                    }
+                } catch (IllegalStateException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+
+    }
+
+    private void findFlowTiles() {
+
+        int[][] neighbors = { {1, 0}, {-1, 0}, {0, -1}, {0, 1} };
+
+        for (int r = 0; r < height; r++) {
+            for (int c = 0; c < width; c++) {
+                if (tiles[r][c].getType() != TileType.WATER) {
+                    for (int[] n : neighbors) {
+                        if (inBounds(r + n[0], c + n[1]) && tiles[r + n[0]][c + n[1]].getType() == TileType.WATER) {
+                            flowTiles.add(new Vector2d(r, c));
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean inBounds(int x, int y) {
+        return (x >= 0 && x < height && y >= 0 && y < width);
     }
 
 //// Other methods

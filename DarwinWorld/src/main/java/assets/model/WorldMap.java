@@ -1,9 +1,6 @@
 package assets.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WorldMap {
 
@@ -15,7 +12,7 @@ public class WorldMap {
     private final Map<Vector2d, Grass> grasses = new HashMap<>();
     private final List<Vector2d> flowTiles = new ArrayList<>();
 
-    public WorldMap(int height, int width, int numOfGrass, int numOfAnimals) {
+    public WorldMap(int height, int width) {
         this.width = width;
         this.height = height;
         this.tiles = new Tile[height][width];
@@ -28,8 +25,6 @@ public class WorldMap {
         }
 
         fillEquator();
-        placeGrass(numOfGrass);
-        placeAnimals(numOfAnimals);
         findFlowTiles();
     }
 
@@ -37,13 +32,13 @@ public class WorldMap {
 
     private void fillEquator() {
         int numOfLines = (int) Math.ceil(height * 0.2);
-        int row = (int) Math.ceil((height - numOfLines) / 2.0);
+        int r = (int) Math.ceil((height - numOfLines) / 2.0);
 
         while (numOfLines > 0) {
-            for (int col = 0; col < width; col++) {
-                tiles[row][col].setType(TileType.FOREST);
+            for (int c = 0; c < width; c++) {
+                if (tiles[r][c].getState() != TileState.WATER) tiles[r][c].setState(TileState.FOREST);
             }
-            row++; numOfLines--;
+            r++; numOfLines--;
         }
     }
 
@@ -51,8 +46,8 @@ public class WorldMap {
 
         for (int r = 0; r < height; r++) {
             for (int c = 0; c < width; c++) {
-                if (Math.random() < 0.4) tiles[r][c] = new Tile(TileType.WATER);
-                else tiles[r][c] = new Tile(TileType.PLAINS);
+                if (Math.random() < 0.4) tiles[r][c] = new Tile(TileState.WATER);
+                else tiles[r][c] = new Tile(TileState.PLAINS);
             }
         }
 
@@ -63,8 +58,8 @@ public class WorldMap {
 
         for (int r = 0; r < height; r++) {
             for (int c = 0; c < width; c++) {
-                if (numWallsAround(r, c) >= 5) newTiles[r][c] = new Tile(TileType.PLAINS);
-                else newTiles[r][c] = new Tile(TileType.WATER);
+                if (numWallsAround(r, c) >= 5) newTiles[r][c] = new Tile(TileState.PLAINS);
+                else newTiles[r][c] = new Tile(TileState.WATER);
             }
         }
 
@@ -76,7 +71,7 @@ public class WorldMap {
         for (int r = -1; r <= 1; r++) {
             for (int c = -1; c <= 1; c++) {
                 if (inBounds(x + r, y + c)) {
-                    if (tiles[x + r][y + c].getType() != TileType.WATER){
+                    if (tiles[x + r][y + c].getState() != TileState.WATER){
                         num++;
                     }
                 }
@@ -85,56 +80,15 @@ public class WorldMap {
         return num;
     }
 
-    private void placeAnimals(int numOfAnimals) {
-
-        while (animals.size() < numOfAnimals) {
-            int r = (int) (Math.random() * height);
-            int c = (int) (Math.random() * width);
-            Vector2d position = new Vector2d(r, c);
-            if (!isOccupied(position) && tiles[r][c].getType() != TileType.WATER) {
-                int energy = (int) (Math.random() * (20 - 10) + 10);
-                Animal animal = new Animal(position, energy, 8);
-                animals.put(position, animal);
-            }
-        }
-
-    }
-
-    private void placeGrass(int numOfGrass) {
-
-        while (grasses.size() < numOfGrass) {
-            int r = (int) (Math.random() * height);
-            int c = (int) (Math.random() * width);
-            Vector2d position = new Vector2d(r, c);
-            if (!grasses.containsKey(position)) {
-                try {
-                    switch(tiles[r][c].getType()) {
-                        case PLAINS -> {
-                            if (Math.random() <= 0.2) grasses.put(position, new Grass(position));
-                        }
-                        case FOREST -> {
-                            if (Math.random() <= 0.8) grasses.put(position, new Grass(position));
-                        }
-                        case WATER -> {}
-                        default -> throw new IllegalStateException("Unexpected value: " + tiles[r][c].getType());
-                    }
-                } catch (IllegalStateException e) {
-                    System.out.println(e.getMessage());
-                }
-            }
-        }
-
-    }
-
     private void findFlowTiles() {
 
         int[][] neighbors = { {1, 0}, {-1, 0}, {0, -1}, {0, 1} };
 
         for (int r = 0; r < height; r++) {
             for (int c = 0; c < width; c++) {
-                if (tiles[r][c].getType() != TileType.WATER) {
+                if (tiles[r][c].getState() != TileState.WATER) {
                     for (int[] n : neighbors) {
-                        if (inBounds(r + n[0], c + n[1]) && tiles[r + n[0]][c + n[1]].getType() == TileType.WATER) {
+                        if (inBounds(r + n[0], c + n[1]) && tiles[r + n[0]][c + n[1]].getState() == TileState.WATER) {
                             flowTiles.add(new Vector2d(r, c));
                             break;
                         }
@@ -148,7 +102,49 @@ public class WorldMap {
         return (x >= 0 && x < height && y >= 0 && y < width);
     }
 
-//// Other methods
+//// Functions for placing elements on the map
+
+    public void placeAnimals(int numOfAnimals) {
+
+        RandomPositionGenerator generator = new RandomPositionGenerator(this, height, width, numOfAnimals);
+        for (Vector2d position : generator) {
+            int energy = (int) (Math.random() * (20 - 10) + 10); // initial energy is in the range of [10, 20]
+            Animal animal = new Animal(position, energy, 8); // geneLength = 8 is temporary
+            animals.put(position, animal);
+        }
+
+    }
+
+    public void placeGrass(int numOfGrass) {
+
+        RandomPositionGenerator generator = new RandomPositionGenerator(this, height, width, numOfGrass);
+        for (Vector2d position : generator) {
+            TileState state = this.getTileAt(position).getState();
+            try {
+                switch(state) {
+                    case PLAINS -> {
+                        if (Math.random() <= 0.2) grasses.put(position, new Grass(position));
+                    }
+                    case FOREST -> {
+                        if (Math.random() <= 0.8) grasses.put(position, new Grass(position));
+                    }
+                    case WATER -> {}
+                    default -> throw new IllegalStateException("Unexpected value: " + state);
+                }
+            } catch (IllegalStateException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+    }
+
+//// Getters and setters
+
+    public Tile getTileAt(Vector2d position) {
+        return tiles[position.getX()][position.getY()];
+    }
+
+//// Other functions
 
     public boolean isOccupied(Vector2d position) {
         return animals.containsKey(position);
@@ -158,9 +154,30 @@ public class WorldMap {
         return grasses.containsKey(position);
     }
 
-    public Tile getTile(Vector2d position) {
-        return tiles[position.getX()][position.getY()];
+    // temporary draw function
+    public void drawMap() {
+        for (int r = 0; r < height; r++) {
+            for (int c = 0; c < width; c++) {
+                Vector2d position = new Vector2d(r, c);
+                if (isOccupied(position)) {
+                    System.out.print("A "); // znak animala
+                }
+                else if (grassAt(position)) {
+                    System.out.print("* "); // znak krzaka
+                }
+                else {
+                    switch (getTileAt(position).getState()) {
+                        case PLAINS -> System.out.print(". "); // znak normalnej ziemi
+                        case FOREST -> System.out.print("; "); // znak zalesionego równika
+                        case WATER -> System.out.print("  "); // znak wody
+                    }
+                }
+            }
+            System.out.println();
+        }
     }
+
+
 
 
 }

@@ -104,41 +104,33 @@ public class WorldMap {
 
 //// Functions for placing elements on the map
 
-    public void placeAnimals(int numOfAnimals) {
-
-        RandomPositionGenerator generator = new RandomPositionGenerator(this, height, width, numOfAnimals);
-        for (Vector2d position : generator) {
-            int energy = (int) (Math.random() * (20 - 10) + 10); // initial energy is in the range of [10, 20]
-            Animal animal = new Animal(position, energy, 8); // geneLength = 8 is temporary
+    public void place(Animal animal) {
+        Vector2d position = animal.getPosition();
+        if (!isOccupied(position)) {
             animals.put(position, animal);
         }
-
     }
 
-    public void placeGrass(int numOfGrass) {
-
-        RandomPositionGenerator generator = new RandomPositionGenerator(this, height, width, numOfGrass);
-        for (Vector2d position : generator) {
-            TileState state = this.getTileAt(position).getState();
-            try {
-                switch(state) {
-                    case PLAINS -> {
-                        if (Math.random() <= 0.2) grasses.put(position, new Grass(position));
-                    }
-                    case FOREST -> {
-                        if (Math.random() <= 0.8) grasses.put(position, new Grass(position));
-                    }
-                    case WATER -> {}
-                    default -> throw new IllegalStateException("Unexpected value: " + state);
-                }
-            } catch (IllegalStateException e) {
-                System.out.println(e.getMessage());
-            }
+    public void place(Grass grass) {
+        Vector2d position = grass.getPosition();
+        if (!grassAt(position)) {
+            grasses.put(position, grass);
         }
-
     }
 
 //// Getters and setters
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public List<Vector2d> getFlowTiles() {
+        return flowTiles;
+    }
 
     public Tile getTileAt(Vector2d position) {
         return tiles[position.getX()][position.getY()];

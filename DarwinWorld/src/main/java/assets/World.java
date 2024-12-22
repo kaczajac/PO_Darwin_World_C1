@@ -8,8 +8,8 @@ public class World {
     public static void main(String[] args) {
         System.out.println("Program started");
 
-        int height = 80;
-        int width = 80;
+        int height = 50;
+        int width = 50;
         int numOfGrass = 60;
         int numOfAnimals = 20;
         WorldMap map = new WorldMap(height, width);

@@ -28,14 +28,57 @@ Daną symulację opisuje szereg parametrów:
     14. wariant zachowania zwierzaków (wyjaśnione w sekcji poniżej).
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Simulation implements Runnable{
     private final WorldMap map;
+    private final List<Animal> animals = new ArrayList<>();
 
     public Simulation(WorldMap map, int numOfAnimals, int numOfGrass) {
         this.map = map;
-        map.placeGrass(numOfGrass);
-        map.placeAnimals(numOfAnimals);
+        placeGrass(numOfGrass);
+        placeAnimals(numOfAnimals);
     }
+
+//// Initializing simulation
+
+    private void placeAnimals(int numOfAnimals) {
+
+        RandomPositionGenerator generator = new RandomPositionGenerator(map, numOfAnimals);
+        for (Vector2d position : generator) {
+            int energy = (int) (Math.random() * (20 - 10) + 10); // initial energy is in the range of [10, 20] (temporary)
+            Animal animal = new Animal(position, energy, 8); // geneLength = 8 is temporary
+            map.place(animal);
+            animals.add(animal);
+        }
+
+    }
+
+    private void placeGrass(int numOfGrass) {
+
+        RandomPositionGenerator generator = new RandomPositionGenerator(map, numOfGrass);
+        for (Vector2d position : generator) {
+            TileState state = map.getTileAt(position).getState();
+            try {
+                switch(state) {
+                    case PLAINS -> {
+                        if (Math.random() <= 0.2) map.place(new Grass(position));
+                    }
+                    case FOREST -> {
+                        if (Math.random() <= 0.8) map.place(new Grass(position));
+                    }
+                    case WATER -> {}
+                    default -> throw new IllegalStateException("Unexpected value: " + state);
+                }
+            } catch (IllegalStateException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+    }
+
+////     
 
     @Override
     public void run() {

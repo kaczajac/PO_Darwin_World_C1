@@ -9,10 +9,12 @@ public class RandomPositionGenerator implements Iterable<Vector2d>, Iterator<Vec
     private int index = 0;
     private final int numOfElements;
 
-    public RandomPositionGenerator(WorldMap map, int maxHeight, int maxWidth, int numOfElements) {
+    public RandomPositionGenerator(WorldMap map, int numOfElements) {
         this.numOfElements = numOfElements;
-        for (int r = 0; r < maxHeight; r++) {
-            for (int c = 0; c < maxWidth; c++) {
+        int height = map.getHeight();
+        int width = map.getWidth();
+        for (int r = 0; r < height; r++) {
+            for (int c = 0; c < width; c++) {
                 Vector2d position = new Vector2d(r, c);
                 if (map.getTileAt(position).getState() != TileState.WATER) {
                     this.allPossiblePositions.add(new Vector2d(r, c));
@@ -37,7 +39,7 @@ public class RandomPositionGenerator implements Iterable<Vector2d>, Iterator<Vec
     }
 
     private Vector2d getNextElement() {
-        int i = (int) (Math.random() * (allPossiblePositions.size() + 1));
+        int i = (int) (Math.random() * (allPossiblePositions.size()));
         Vector2d randomPosition = allPossiblePositions.get(i);
         allPossiblePositions.remove(i);
         index++;

@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 public class WorldMap {
 
+    private final UUID id;
     private final int width;
     private final int height;
     private Tile[][] tiles;
@@ -14,6 +15,7 @@ public class WorldMap {
     private final List<Vector2d> flowTiles = new ArrayList<>();
 
     public WorldMap(int height, int width) {
+        this.id = UUID.randomUUID();
         this.width = width;
         this.height = height;
         this.tiles = new Tile[height][width];
@@ -131,6 +133,10 @@ public class WorldMap {
 
 //// Getters and setters
 
+    public UUID getId() {
+        return id;
+    }
+
     public int getHeight() {
         return height;
     }
@@ -157,22 +163,35 @@ public class WorldMap {
         return grasses.containsKey(position);
     }
 
+    public void move(Animal animal, int moveDirection) {
+        if (animals.containsValue(animal)) {
+
+            Vector2d initPosition = animal.getPosition();
+            animals.remove(initPosition);
+
+            animal.move(moveDirection);
+
+            Vector2d newPosition = animal.getPosition();
+            animals.put(newPosition, animal);
+        }
+    }
+
     // temporary draw function
     public void drawMap() {
         for (int r = 0; r < height; r++) {
             for (int c = 0; c < width; c++) {
                 Vector2d position = new Vector2d(r, c);
                 if (isOccupied(position)) {
-                    System.out.print("A "); // znak animala
+                    System.out.print("A "); // animal signature
                 }
                 else if (grassAt(position)) {
-                    System.out.print("* "); // znak krzaka
+                    System.out.print("* "); // grass signature
                 }
                 else {
                     switch (getTileAt(position).getState()) {
-                        case PLAINS -> System.out.print(". "); // znak normalnej ziemi
-                        case FOREST -> System.out.print("; "); // znak zalesionego równika
-                        case WATER -> System.out.print("  "); // znak wody
+                        case PLAINS -> System.out.print(". "); // tile of state PLAINS signature
+                        case FOREST -> System.out.print("; "); // tile of state FOREST signature
+                        case WATER -> System.out.print("  "); // tile of state WATER signature
                     }
                 }
             }

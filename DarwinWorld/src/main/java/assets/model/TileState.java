@@ -1,6 +1,6 @@
 package assets.model;
 
-public enum TileType {
+public enum TileState {
     PLAINS,
     WATER,
     FOREST

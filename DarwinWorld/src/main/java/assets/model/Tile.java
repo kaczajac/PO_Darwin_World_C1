@@ -1,18 +1,18 @@
 package assets.model;
 
 public class Tile {
-    private TileType type;
+    private TileState state;
 
-    public Tile(TileType type) {
-        this.type = type;
+    public Tile(TileState state) {
+        this.state = state;
     }
 
-    public TileType getType() {
-        return this.type;
+    public TileState getState() {
+        return this.state;
     }
 
-    public void setType(TileType type) {
-        this.type = type;
+    public void setState(TileState state) {
+        this.state = state;
     }
 
 }

@@ -1,6 +1,7 @@
 package assets.model;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class WorldMap {
 
@@ -8,7 +9,7 @@ public class WorldMap {
     private final int height;
     private Tile[][] tiles;
 
-    private final Map<Vector2d, Animal> animals = new HashMap<>();
+    private Map<Vector2d, Animal> animals = new HashMap<>();
     private final Map<Vector2d, Grass> grasses = new HashMap<>();
     private final List<Vector2d> flowTiles = new ArrayList<>();
 
@@ -102,20 +103,30 @@ public class WorldMap {
         return (x >= 0 && x < height && y >= 0 && y < width);
     }
 
-//// Functions for placing elements on the map
+//// Functions for placing/removing elements from the map
 
     public void place(Animal animal) {
         Vector2d position = animal.getPosition();
-        if (!isOccupied(position)) {
+        if (getTileAt(position).getState() != TileState.WATER) {
             animals.put(position, animal);
         }
     }
 
     public void place(Grass grass) {
         Vector2d position = grass.getPosition();
-        if (!grassAt(position)) {
+        if (!grassAt(position) && getTileAt(position).getState() != TileState.WATER) {
             grasses.put(position, grass);
         }
+    }
+
+    public void deleteGrassAt(Vector2d position) {
+        grasses.remove(position);
+    }
+
+    public void deleteDeadAnimals() {
+        animals = animals.entrySet().stream()
+                .filter(entry -> entry.getValue().getEnergy() > 0)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
 //// Getters and setters

@@ -33,12 +33,17 @@ import java.util.List;
 
 public class Simulation implements Runnable{
     private final WorldMap map;
-    private final List<Animal> animals = new ArrayList<>();
+    private List<Animal> animals = new ArrayList<>();
 
-    public Simulation(WorldMap map, int numOfAnimals, int numOfGrass) {
+    private final int dailyGrass;
+    private int day = 0;
+
+    public Simulation(WorldMap map, int startAnimals, int dailyGrass) {
         this.map = map;
-        placeGrass(numOfGrass);
-        placeAnimals(numOfAnimals);
+        this.dailyGrass = dailyGrass;
+
+        placeGrass(dailyGrass);
+        placeAnimals(startAnimals);
     }
 
 //// Initializing simulation
@@ -83,5 +88,17 @@ public class Simulation implements Runnable{
     @Override
     public void run() {
         map.drawMap();
+
+        // 1. Usunięcie martwych zwierzaków z mapy.
+        animals = animals.stream()
+                .filter(a -> a.getEnergy() > 0)
+                .toList();
+        map.deleteDeadAnimals();
+
+        // 2. Skręt i przemieszczenie każdego zwierzaka.
+
+
+        // 5. Wzrastanie nowych roślin na wybranych polach mapy.
+        placeGrass(dailyGrass);
     }
 }

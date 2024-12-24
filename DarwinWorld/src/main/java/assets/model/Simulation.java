@@ -28,22 +28,18 @@ Daną symulację opisuje szereg parametrów:
     14. wariant zachowania zwierzaków (wyjaśnione w sekcji poniżej).
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Simulation implements Runnable{
     private final WorldMap map;
-    private List<Animal> animals = new ArrayList<>();
+    private final MapConfig config;
 
-    private final int dailyGrass;
     private int day = 0;
 
-    public Simulation(WorldMap map, int startAnimals, int dailyGrass) {
+    public Simulation(WorldMap map, MapConfig config) {
         this.map = map;
-        this.dailyGrass = dailyGrass;
+        this.config = config;
 
-        placeGrass(dailyGrass);
-        placeAnimals(startAnimals);
+        placeGrass(config.grassDaily());
+        placeAnimals(config.animalsStart());
     }
 
 //// Initializing simulation
@@ -52,10 +48,8 @@ public class Simulation implements Runnable{
 
         RandomPositionGenerator generator = new RandomPositionGenerator(map, numOfAnimals);
         for (Vector2d position : generator) {
-            int energy = (int) (Math.random() * (20 - 10) + 10); // initial energy is in the range of [10, 20] (temporary)
-            Animal animal = new Animal(position, energy, 8); // geneLength = 8 is temporary
+            Animal animal = new Animal(position, config.animalStartEnergy(), config.animalGenomeLength());
             map.place(animal);
-            animals.add(animal);
         }
 
     }
@@ -88,17 +82,14 @@ public class Simulation implements Runnable{
     @Override
     public void run() {
         map.drawMap();
-
+        day++;
         // 1. Usunięcie martwych zwierzaków z mapy.
-        animals = animals.stream()
-                .filter(a -> a.getEnergy() > 0)
-                .toList();
         map.deleteDeadAnimals();
 
         // 2. Skręt i przemieszczenie każdego zwierzaka.
 
 
         // 5. Wzrastanie nowych roślin na wybranych polach mapy.
-        placeGrass(dailyGrass);
+        placeGrass(config.grassDaily());
     }
 }

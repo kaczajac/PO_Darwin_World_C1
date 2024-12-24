@@ -105,6 +105,10 @@ public class WorldMap {
         return (x >= 0 && x < height && y >= 0 && y < width);
     }
 
+    public boolean inBounds(Vector2d position) {
+        return inBounds(position.getX(), position.getY());
+    }
+
 //// Functions for placing/removing elements from the map
 
     public void place(Animal animal) {
@@ -127,7 +131,8 @@ public class WorldMap {
 
     public void deleteDeadAnimals() {
         animals = animals.entrySet().stream()
-                .filter(entry -> entry.getValue().getEnergy() > 0)
+                .filter(entry -> entry.getValue().getEnergy() > 0
+                        || getTileAt(entry.getValue().getPosition()).getState() == TileState.WATER)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 

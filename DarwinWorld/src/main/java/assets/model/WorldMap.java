@@ -1,7 +1,6 @@
 package assets.model;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class WorldMap {
 
@@ -10,7 +9,7 @@ public class WorldMap {
     private final int height;
     private Tile[][] tiles;
 
-    private Map<Vector2d, Animal> animals = new HashMap<>();
+    private Map<Vector2d, List<Animal>> animals = new HashMap<>();
     private final Map<Vector2d, Grass> grasses = new HashMap<>();
     private final List<Vector2d> flowTiles = new ArrayList<>();
 
@@ -114,7 +113,14 @@ public class WorldMap {
     public void place(Animal animal) {
         Vector2d position = animal.getPosition();
         if (getTileAt(position).getState() != TileState.WATER) {
-            animals.put(position, animal);
+            List<Animal> animalList = animals.get(position);
+
+            if (animalList == null) {
+                animalList = new ArrayList<>();
+            }
+
+            animalList.add(animal);
+            animals.put(position, animalList);
         }
     }
 
@@ -130,10 +136,21 @@ public class WorldMap {
     }
 
     public void deleteDeadAnimals() {
-        animals = animals.entrySet().stream()
-                .filter(entry -> entry.getValue().getEnergy() > 0
-                        || getTileAt(entry.getValue().getPosition()).getState() == TileState.WATER)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        for (Vector2d position : animals.keySet()) {
+            List<Animal> animalList = animals.get(position);
+
+            animalList = animalList.stream()
+                    .filter(a -> a.getEnergy() > 0 || getTileAt(a.getPosition()).getState() == TileState.WATER)
+                    .toList();
+
+            if (animalList.isEmpty()) {
+                animals.remove(position);
+            }
+            else {
+                animals.put(position, animalList);
+            }
+
+        }
     }
 
 //// Getters and setters
@@ -168,17 +185,8 @@ public class WorldMap {
         return grasses.containsKey(position);
     }
 
-    public void move(Animal animal, int moveDirection) {
-        if (animals.containsValue(animal)) {
-
-            Vector2d initPosition = animal.getPosition();
-            animals.remove(initPosition);
-
-            animal.move(moveDirection);
-
-            Vector2d newPosition = animal.getPosition();
-            animals.put(newPosition, animal);
-        }
+    public void moveAnimals() {
+        // to do
     }
 
     // temporary draw function

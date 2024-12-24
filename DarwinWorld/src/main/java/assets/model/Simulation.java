@@ -87,7 +87,7 @@ public class Simulation implements Runnable{
         map.deleteDeadAnimals();
 
         // 2. Skręt i przemieszczenie każdego zwierzaka.
-
+        map.moveAnimals();
 
         // 5. Wzrastanie nowych roślin na wybranych polach mapy.
         placeGrass(config.grassDaily());

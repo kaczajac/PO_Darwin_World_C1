@@ -1,8 +1,9 @@
 package assets.model;
 
-public class Animal {
+public class Animal{
     private Vector2d position;
-    private int[] genes;
+    private int[] genome;
+    private int activeGene = 0;
     private Vector2d facingVector = new Vector2d(0,-1);
     private Animal[] parents = new Animal[2];
     private int energy;
@@ -21,10 +22,37 @@ public class Animal {
         this.position = position;
     }
 
-    public void move(int moveDir){
-        Vector2d moveDirection = getMoveVector(moveDir);
-        position.add(moveDirection);
-        facingVector = moveDirection;
+    public void move(WorldMap map){
+        Vector2d moveVector = getMoveVector(genome[activeGene]);
+        updateGene(activeGene);
+
+        Vector2d newPosition = position.add(moveVector);
+
+        if (!map.inBounds(newPosition)) {
+
+            if (map.inBounds(new Vector2d(0, map.getHeight()))) {
+
+                if (newPosition.getX() == -1) {
+                    newPosition = new Vector2d(map.getWidth() - 1, newPosition.getY());
+                }
+                else if (newPosition.getX() == map.getWidth()) {
+                    newPosition = new Vector2d(0, newPosition.getY());
+                }
+
+            }
+            else return;
+
+        }
+
+        if (map.getTileAt(newPosition).getState() != TileState.WATER) {
+            position = newPosition;
+            facingVector = moveVector;
+        }
+
+    }
+
+    private void updateGene(int currGene) {
+        activeGene = (currGene + 1) % genome.length;
     }
 
     public Vector2d getMoveVector(int moveDirection){
@@ -71,21 +99,21 @@ public class Animal {
         return energy;
     }
 
-    public int[] getGenes(){
-        return genes;
+    public int[] getGenome(){
+        return genome;
     }
 
     public void setBirthValues(Animal parent1 , Animal parent2){
         parents[0] = parent1;
         parents[1] = parent2;
-        inheritGenes(parent1.getGenes() , parent1.getEnergy(), parent2.getGenes() , parent2.getEnergy());
+        inheritGenes(parent1.getGenome() , parent1.getEnergy(), parent2.getGenome() , parent2.getEnergy());
     }
 
     public void randomGenes(int length){
         if(length == 0) return;
-        genes = new int[length];
+        genome = new int[length];
         for(int i = 0; i < length; i++){
-            genes[i] = (int)(Math.random() * 8);
+            genome[i] = (int)(Math.random() * 8);
         }
     }
 
@@ -103,12 +131,12 @@ public class Animal {
             firstSet = genes2; secondSet = genes1;
         }
 
-        genes = new int[length];
+        genome = new int[length];
         for (int i = 0; i < midPoint; i++) {
-            genes[i] = firstSet[i];
+            genome[i] = firstSet[i];
         }
         for (int i = midPoint; i < length; i++) {
-            genes[i] = secondSet[i];
+            genome[i] = secondSet[i];
         }
     }
 }

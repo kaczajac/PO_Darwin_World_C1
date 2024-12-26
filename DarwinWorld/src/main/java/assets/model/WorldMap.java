@@ -1,7 +1,7 @@
 package assets.model;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class WorldMap {
 
@@ -10,7 +10,7 @@ public class WorldMap {
     private final int height;
     private Tile[][] tiles;
 
-    private Map<Vector2d, Animal> animals = new HashMap<>();
+    private final Map<Vector2d, List<Animal>> animals = new ConcurrentHashMap<>();
     private final Map<Vector2d, Grass> grasses = new HashMap<>();
     private final List<Vector2d> flowTiles = new ArrayList<>();
 
@@ -101,16 +101,30 @@ public class WorldMap {
         }
     }
 
-    private boolean inBounds(int x, int y) {
-        return (x >= 0 && x < height && y >= 0 && y < width);
+    private boolean inBounds(int r, int c) {
+        return (r >= 0
+                && r < height
+                && c >= 0
+                && c < width);
+    }
+
+    public boolean inBounds(Vector2d position) {
+        return inBounds(position.getY(), position.getX());
     }
 
 //// Functions for placing/removing elements from the map
 
     public void place(Animal animal) {
         Vector2d position = animal.getPosition();
-        if (getTileAt(position).getState() != TileState.WATER) {
-            animals.put(position, animal);
+        if (inBounds(position) && getTileAt(position).getState() != TileState.WATER) {
+            List<Animal> animalList = animals.get(position);
+
+            if (animalList == null) {
+                animalList = new ArrayList<>();
+            }
+
+            animalList.add(animal);
+            animals.put(position, animalList);
         }
     }
 
@@ -126,9 +140,25 @@ public class WorldMap {
     }
 
     public void deleteDeadAnimals() {
-        animals = animals.entrySet().stream()
-                .filter(entry -> entry.getValue().getEnergy() > 0)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        for (Vector2d position : animals.keySet()) {
+            List<Animal> animalList = animals.get(position);
+
+            if (animalList != null) {
+
+                animalList = animalList.stream()
+                        .filter(a -> a.getEnergy() > 0 && getTileAt(a.getPosition()).getState() != TileState.WATER)
+                        .toList();
+
+                if (animalList.isEmpty()) {
+                    animals.remove(position);
+                }
+                else {
+                    animals.put(position, animalList);
+                }
+
+            }
+
+        }
     }
 
 //// Getters and setters
@@ -150,7 +180,7 @@ public class WorldMap {
     }
 
     public Tile getTileAt(Vector2d position) {
-        return tiles[position.getX()][position.getY()];
+        return tiles[position.getY()][position.getX()];
     }
 
 //// Other functions
@@ -163,24 +193,33 @@ public class WorldMap {
         return grasses.containsKey(position);
     }
 
-    public void move(Animal animal, int moveDirection) {
-        if (animals.containsValue(animal)) {
+    public void moveAnimals() {
+        List<Animal> animalsToPlace = new ArrayList<>();
+        for (Vector2d position : animals.keySet()) {
+            List<Animal> animalList = animals.get(position);
 
-            Vector2d initPosition = animal.getPosition();
-            animals.remove(initPosition);
+            if (animalList != null) {
 
-            animal.move(moveDirection);
+                for (Animal animal : animalList) {
+                    animal.move(this);
+                    animalsToPlace.add(animal);
+                }
+                animals.remove(position);
 
-            Vector2d newPosition = animal.getPosition();
-            animals.put(newPosition, animal);
+            }
         }
+
+        for (Animal animal : animalsToPlace) {
+            place(animal);
+        }
+
     }
 
     // temporary draw function
     public void drawMap() {
-        for (int r = 0; r < height; r++) {
-            for (int c = 0; c < width; c++) {
-                Vector2d position = new Vector2d(r, c);
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                Vector2d position = new Vector2d(x, y);
                 if (isOccupied(position)) {
                     System.out.print("A "); // animal signature
                 }

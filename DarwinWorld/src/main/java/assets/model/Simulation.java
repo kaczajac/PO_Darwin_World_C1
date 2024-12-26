@@ -28,57 +28,38 @@ Daną symulację opisuje szereg parametrów:
     14. wariant zachowania zwierzaków (wyjaśnione w sekcji poniżej).
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Simulation implements Runnable{
     private final WorldMap map;
-    private List<Animal> animals = new ArrayList<>();
+    private final MapConfig config;
 
-    private final int dailyGrass;
     private int day = 0;
 
-    public Simulation(WorldMap map, int startAnimals, int dailyGrass) {
-        this.map = map;
-        this.dailyGrass = dailyGrass;
+    public Simulation(MapConfig config) {
+        this.map = new WorldMap(config.mapHeight(), config.mapWidth());
+        this.config = config;
 
-        placeGrass(dailyGrass);
-        placeAnimals(startAnimals);
+        placeAnimals(config.animalStartNumber());
+        placeGrass(config.grassDaily());
     }
 
 //// Initializing simulation
 
     private void placeAnimals(int numOfAnimals) {
 
-        RandomPositionGenerator generator = new RandomPositionGenerator(map, numOfAnimals);
+        RandomPositionGenerator generator = new RandomPositionGenerator(map, numOfAnimals, "Animal");
         for (Vector2d position : generator) {
-            int energy = (int) (Math.random() * (20 - 10) + 10); // initial energy is in the range of [10, 20] (temporary)
-            Animal animal = new Animal(position, energy, 8); // geneLength = 8 is temporary
+            Animal animal = new Animal(position, config.animalStartEnergy(), config.animalGenomeLength());
             map.place(animal);
-            animals.add(animal);
         }
 
     }
 
     private void placeGrass(int numOfGrass) {
 
-        RandomPositionGenerator generator = new RandomPositionGenerator(map, numOfGrass);
+        RandomPositionGenerator generator = new RandomPositionGenerator(map, numOfGrass, "Grass");
         for (Vector2d position : generator) {
-            TileState state = map.getTileAt(position).getState();
-            try {
-                switch(state) {
-                    case PLAINS -> {
-                        if (Math.random() <= 0.2) map.place(new Grass(position));
-                    }
-                    case FOREST -> {
-                        if (Math.random() <= 0.8) map.place(new Grass(position));
-                    }
-                    case WATER -> {}
-                    default -> throw new IllegalStateException("Unexpected value: " + state);
-                }
-            } catch (IllegalStateException e) {
-                System.out.println(e.getMessage());
-            }
+            Grass grass = new Grass(position);
+            map.place(grass);
         }
 
     }
@@ -88,17 +69,17 @@ public class Simulation implements Runnable{
     @Override
     public void run() {
         map.drawMap();
-
+        day++;
         // 1. Usunięcie martwych zwierzaków z mapy.
-        animals = animals.stream()
-                .filter(a -> a.getEnergy() > 0)
-                .toList();
         map.deleteDeadAnimals();
 
         // 2. Skręt i przemieszczenie każdego zwierzaka.
+        map.moveAnimals();
+
+        // 3. Konsumpcja roślin, na których pola weszły zwierzaki.
 
 
         // 5. Wzrastanie nowych roślin na wybranych polach mapy.
-        placeGrass(dailyGrass);
+        placeGrass(config.grassDaily());
     }
 }

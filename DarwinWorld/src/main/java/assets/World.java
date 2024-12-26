@@ -1,19 +1,21 @@
 package assets;
 
+import assets.model.MapConfig;
 import assets.model.Simulation;
-import assets.model.WorldMap;
 
 public class World {
 
     public static void main(String[] args) {
         System.out.println("Program started");
 
-        int height = 50;
-        int width = 50;
-        int numOfGrass = 60;
-        int numOfAnimals = 20;
-        WorldMap map = new WorldMap(height, width);
-        Simulation simulation = new Simulation(map, numOfAnimals, numOfGrass);
+        MapConfig config = new MapConfig(20,
+                                        20,
+                                        8,
+                                        10,
+                                        8,
+                                        10,
+                                        8);
+        Simulation simulation = new Simulation(config);
         simulation.run();
         
         System.out.println("Program finished");

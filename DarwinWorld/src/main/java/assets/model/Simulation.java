@@ -34,19 +34,19 @@ public class Simulation implements Runnable{
 
     private int day = 0;
 
-    public Simulation(WorldMap map, MapConfig config) {
-        this.map = map;
+    public Simulation(MapConfig config) {
+        this.map = new WorldMap(config.mapHeight(), config.mapWidth());
         this.config = config;
 
+        placeAnimals(config.animalStartNumber());
         placeGrass(config.grassDaily());
-        placeAnimals(config.animalsStart());
     }
 
 //// Initializing simulation
 
     private void placeAnimals(int numOfAnimals) {
 
-        RandomPositionGenerator generator = new RandomPositionGenerator(map, numOfAnimals);
+        RandomPositionGenerator generator = new RandomPositionGenerator(map, numOfAnimals, "Animal");
         for (Vector2d position : generator) {
             Animal animal = new Animal(position, config.animalStartEnergy(), config.animalGenomeLength());
             map.place(animal);
@@ -56,23 +56,10 @@ public class Simulation implements Runnable{
 
     private void placeGrass(int numOfGrass) {
 
-        RandomPositionGenerator generator = new RandomPositionGenerator(map, numOfGrass);
+        RandomPositionGenerator generator = new RandomPositionGenerator(map, numOfGrass, "Grass");
         for (Vector2d position : generator) {
-            TileState state = map.getTileAt(position).getState();
-            try {
-                switch(state) {
-                    case PLAINS -> {
-                        if (Math.random() <= 0.2) map.place(new Grass(position));
-                    }
-                    case FOREST -> {
-                        if (Math.random() <= 0.8) map.place(new Grass(position));
-                    }
-                    case WATER -> {}
-                    default -> throw new IllegalStateException("Unexpected value: " + state);
-                }
-            } catch (IllegalStateException e) {
-                System.out.println(e.getMessage());
-            }
+            Grass grass = new Grass(position);
+            map.place(grass);
         }
 
     }
@@ -88,6 +75,9 @@ public class Simulation implements Runnable{
 
         // 2. Skręt i przemieszczenie każdego zwierzaka.
         map.moveAnimals();
+
+        // 3. Konsumpcja roślin, na których pola weszły zwierzaki.
+
 
         // 5. Wzrastanie nowych roślin na wybranych polach mapy.
         placeGrass(config.grassDaily());

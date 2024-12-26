@@ -39,14 +39,12 @@ public class Vector2d {
         return new Vector2d(-x , -y);
     }
 
-    public void add(Vector2d add){
-        x += add.getX();
-        y += add.getY();
+    public Vector2d add(Vector2d other){
+        return new Vector2d(this.x + other.x, this.y + other.y);
     }
 
-    public void substract(Vector2d sub){
-        x -= sub.getX();
-        y -= sub.getY();
+    public Vector2d subtract(Vector2d other){
+        return new Vector2d(this.x - other.x, this.y - other.y);
     }
 
     public boolean smallerThan(Vector2d other){

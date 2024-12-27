@@ -15,7 +15,8 @@ public class World {
                                         8,
                                         10,
                                         8,
-                                        5);
+                                        5,
+                                        3);
         Simulation simulation = new Simulation(config);
         simulation.run();
 

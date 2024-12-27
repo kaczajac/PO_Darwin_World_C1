@@ -7,5 +7,6 @@ public record MapConfig(int mapHeight,
                         int animalStartNumber,
                         int animalStartEnergy,
                         int animalGenomeLength,
-                        int animalMinFedEnergy) {
+                        int animalMinFedEnergy,
+                        int animalBirthCost) {
 }

@@ -181,6 +181,29 @@ public class WorldMap {
         }
     }
 
+    public void breedAnimals(MapConfig config, int day){
+        for(List<Animal> animalList : animals.values()) {
+            if(animalList.size() < 2) continue;
+            List<Animal> breedList = new ArrayList<>(animalList);
+
+            // check for suitable
+            for(int i = breedList.size()-1; i >= 0; i--){
+                if(breedList.get(i).getEnergy() < config.animalMinFedEnergy()) breedList.remove(i);
+            }
+
+            // breed possible
+            while(breedList.size() > 1){
+                Animal a1 = breedList.removeFirst();
+                Animal a2 = breedList.removeFirst();
+                Animal baby = new Animal(a1.getPosition() , config.animalStartEnergy(), config.animalGenomeLength());
+                baby.setBirthValues(a1, a2, day);
+                a1.useEnergy(config.animalBirthCost());
+                a2.useEnergy(config.animalBirthCost());
+                place(baby);
+            }
+        }
+    }
+
 //// Getters and setters
 
     public UUID getId() {

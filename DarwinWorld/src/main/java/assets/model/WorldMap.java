@@ -161,6 +161,26 @@ public class WorldMap {
         }
     }
 
+    public void consumeGrass(MapConfig config){
+        for(List<Animal> animalList : animals.values()){
+            if(animalList.isEmpty()) continue;
+            if(!grassAt(animalList.getFirst().getPosition())) continue;
+
+            List<Animal> animalsAt = getAnimalsAt(animalList.getFirst().getPosition());
+            Animal chosen = null;
+            // young and hungry animals have priority
+            for(Animal animal : animalsAt){
+                if(chosen == null) chosen = animal;
+                else if(chosen.getEnergy() > animal.getEnergy()) chosen = animal;
+                else if(chosen.getBirthDay() > animal.getBirthDay()) chosen = animal;
+            }
+
+            // consume the grass
+            chosen.addEnergy(config.grassEnergy());
+            deleteGrassAt(chosen.getPosition());
+        }
+    }
+
 //// Getters and setters
 
     public UUID getId() {
@@ -191,6 +211,10 @@ public class WorldMap {
 
     public boolean grassAt(Vector2d position) {
         return grasses.containsKey(position);
+    }
+
+    public List<Animal> getAnimalsAt(Vector2d position) {
+        return animals.getOrDefault(position, null);
     }
 
     public void moveAnimals() {

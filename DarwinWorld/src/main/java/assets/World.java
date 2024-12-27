@@ -14,10 +14,11 @@ public class World {
                                         10,
                                         8,
                                         10,
-                                        8);
+                                        8,
+                                        5);
         Simulation simulation = new Simulation(config);
         simulation.run();
-        
+
         System.out.println("Program finished");
     }
 

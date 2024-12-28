@@ -8,111 +8,44 @@ public class WorldMap {
     private final UUID id;
     private final int width;
     private final int height;
-    private Tile[][] tiles;
+    private final Tile[][] tiles;
 
     private final Map<Vector2d, List<Animal>> animals = new ConcurrentHashMap<>();
     private final Map<Vector2d, Grass> grasses = new HashMap<>();
     private final List<Vector2d> flowTiles = new ArrayList<>();
 
-    public WorldMap(int height, int width) {
+    public WorldMap(int height, int width, double waterLevel) {
         this.id = UUID.randomUUID();
         this.width = width;
         this.height = height;
-        this.tiles = new Tile[height][width];
 
-        setup();
+        TileGenerator generator = new TileGenerator(height, width, waterLevel);
+        this.tiles = generator.getTiles();
 
-        int loops = Math.max(height, width);
-        for (int i = 0; i < loops; i++) {
-            iterateTiles();
-        }
-
-        fillEquator();
         findFlowTiles();
     }
 
-//// Helper functions for initializing a map ('cellular automata rule 45' algorithm for procedural generation)
+//// Simulation functions
 
-    private void fillEquator() {
-        int numOfLines = (int) Math.ceil(height * 0.2);
-        int r = (int) Math.ceil((height - numOfLines) / 2.0);
+    public void placeAnimals(MapConfig config) {
 
-        while (numOfLines > 0) {
-            for (int c = 0; c < width; c++) {
-                if (tiles[r][c].getState() != TileState.WATER) tiles[r][c].setState(TileState.FOREST);
-            }
-            r++; numOfLines--;
-        }
-    }
-
-    private void setup() {
-
-        for (int r = 0; r < height; r++) {
-            for (int c = 0; c < width; c++) {
-                if (Math.random() < 0.4) tiles[r][c] = new Tile(TileState.WATER);
-                else tiles[r][c] = new Tile(TileState.PLAINS);
-            }
+        RandomPositionGenerator generator = new RandomPositionGenerator(this, config.animalStartNumber(), Animal.class);
+        for (Vector2d position : generator) {
+            Animal animal = new Animal(position, config.animalStartEnergy(), config.animalGenomeLength());
+            place(animal);
         }
 
     }
 
-    private void iterateTiles() {
-        Tile[][] newTiles = new Tile[height][width];
+    public void placeGrasses(int numOfGrass) {
 
-        for (int r = 0; r < height; r++) {
-            for (int c = 0; c < width; c++) {
-                if (numWallsAround(r, c) >= 5) newTiles[r][c] = new Tile(TileState.PLAINS);
-                else newTiles[r][c] = new Tile(TileState.WATER);
-            }
+        RandomPositionGenerator generator = new RandomPositionGenerator(this, numOfGrass, Grass.class);
+        for (Vector2d position : generator) {
+            Grass grass = new Grass(position);
+            place(grass);
         }
 
-        tiles = newTiles;
     }
-
-    private int numWallsAround(int x, int y) {
-        int num = 0;
-        for (int r = -1; r <= 1; r++) {
-            for (int c = -1; c <= 1; c++) {
-                if (inBounds(x + r, y + c)) {
-                    if (tiles[x + r][y + c].getState() != TileState.WATER){
-                        num++;
-                    }
-                }
-            }
-        }
-        return num;
-    }
-
-    private void findFlowTiles() {
-
-        int[][] neighbors = { {1, 0}, {-1, 0}, {0, -1}, {0, 1} };
-
-        for (int r = 0; r < height; r++) {
-            for (int c = 0; c < width; c++) {
-                if (tiles[r][c].getState() != TileState.WATER) {
-                    for (int[] n : neighbors) {
-                        if (inBounds(r + n[0], c + n[1]) && tiles[r + n[0]][c + n[1]].getState() == TileState.WATER) {
-                            flowTiles.add(new Vector2d(r, c));
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private boolean inBounds(int r, int c) {
-        return (r >= 0
-                && r < height
-                && c >= 0
-                && c < width);
-    }
-
-    public boolean inBounds(Vector2d position) {
-        return inBounds(position.getY(), position.getX());
-    }
-
-//// Functions for placing/removing elements from the map
 
     public void place(Animal animal) {
         Vector2d position = animal.getPosition();
@@ -159,6 +92,28 @@ public class WorldMap {
             }
 
         }
+    }
+
+    public void moveAnimals() {
+        List<Animal> animalsToPlace = new ArrayList<>();
+        for (Vector2d position : animals.keySet()) {
+            List<Animal> animalList = animals.get(position);
+
+            if (animalList != null) {
+
+                for (Animal animal : animalList) {
+                    animal.move(this);
+                    animalsToPlace.add(animal);
+                }
+                animals.remove(position);
+
+            }
+        }
+
+        for (Animal animal : animalsToPlace) {
+            place(animal);
+        }
+
     }
 
     public void consumeGrass(MapConfig config){
@@ -226,7 +181,7 @@ public class WorldMap {
         return tiles[position.getY()][position.getX()];
     }
 
-//// Other functions
+//// Other helper functions
 
     public boolean isOccupied(Vector2d position) {
         return animals.containsKey(position);
@@ -240,26 +195,33 @@ public class WorldMap {
         return animals.getOrDefault(position, null);
     }
 
-    public void moveAnimals() {
-        List<Animal> animalsToPlace = new ArrayList<>();
-        for (Vector2d position : animals.keySet()) {
-            List<Animal> animalList = animals.get(position);
+    private void findFlowTiles() {
 
-            if (animalList != null) {
+        int[][] neighbors = { {1, 0}, {-1, 0}, {0, -1}, {0, 1} };
 
-                for (Animal animal : animalList) {
-                    animal.move(this);
-                    animalsToPlace.add(animal);
+        for (int r = 0; r < height; r++) {
+            for (int c = 0; c < width; c++) {
+                if (tiles[r][c].getState() != TileState.WATER) {
+                    for (int[] n : neighbors) {
+                        if (inBounds(r + n[0], c + n[1]) && tiles[r + n[0]][c + n[1]].getState() == TileState.WATER) {
+                            flowTiles.add(new Vector2d(r, c));
+                            break;
+                        }
+                    }
                 }
-                animals.remove(position);
-
             }
         }
+    }
 
-        for (Animal animal : animalsToPlace) {
-            place(animal);
-        }
+    private boolean inBounds(int r, int c) {
+        return (r >= 0
+                && r < height
+                && c >= 0
+                && c < width);
+    }
 
+    public boolean inBounds(Vector2d position) {
+        return inBounds(position.getY(), position.getX());
     }
 
     // temporary draw function

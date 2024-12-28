@@ -35,33 +35,11 @@ public class Simulation implements Runnable{
     private int day = 0;
 
     public Simulation(MapConfig config) {
-        this.map = new WorldMap(config.mapHeight(), config.mapWidth());
+        this.map = new WorldMap(config.mapHeight(), config.mapWidth(), config.mapWaterLevel());
         this.config = config;
 
-        placeAnimals(config.animalStartNumber());
-        placeGrass(config.grassDaily());
-    }
-
-//// Initializing simulation
-
-    private void placeAnimals(int numOfAnimals) {
-
-        RandomPositionGenerator generator = new RandomPositionGenerator(map, numOfAnimals, Animal.class);
-        for (Vector2d position : generator) {
-            Animal animal = new Animal(position, config.animalStartEnergy(), config.animalGenomeLength());
-            map.place(animal);
-        }
-
-    }
-
-    private void placeGrass(int numOfGrass) {
-
-        RandomPositionGenerator generator = new RandomPositionGenerator(map, numOfGrass, Grass.class);
-        for (Vector2d position : generator) {
-            Grass grass = new Grass(position);
-            map.place(grass);
-        }
-
+        map.placeAnimals(config);
+        map.placeGrasses(config.grassDaily());
     }
 
 ////
@@ -83,6 +61,6 @@ public class Simulation implements Runnable{
         map.breedAnimals(config , day);
 
         // 5. Wzrastanie nowych roślin na wybranych polach mapy.
-        placeGrass(config.grassDaily());
+        map.placeGrasses(config.grassDaily());
     }
 }

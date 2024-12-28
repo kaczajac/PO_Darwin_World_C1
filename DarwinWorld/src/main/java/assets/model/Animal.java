@@ -1,6 +1,6 @@
 package assets.model;
 
-public class Animal{
+public class Animal implements WorldElement{
     private Vector2d position;
     private int[] genome;
     private int activeGene = 0;

@@ -64,7 +64,7 @@ public class Simulation implements Runnable{
 
     }
 
-////     
+////
 
     @Override
     public void run() {
@@ -77,7 +77,10 @@ public class Simulation implements Runnable{
         map.moveAnimals();
 
         // 3. Konsumpcja roślin, na których pola weszły zwierzaki.
+        map.consumeGrass(config);
 
+        // 4. Rozmnażanie zwierząt
+        map.breedAnimals(config , day);
 
         // 5. Wzrastanie nowych roślin na wybranych polach mapy.
         placeGrass(config.grassDaily());

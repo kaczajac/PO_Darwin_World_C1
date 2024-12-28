@@ -7,11 +7,13 @@ public class Animal{
     private Vector2d facingVector = new Vector2d(0,-1);
     private Animal[] parents = new Animal[2];
     private int energy;
+    private int birthDay = 0;
 
     public Animal(Vector2d position, int startEnergy , int geneLength) {
         this.position = position;
         randomGenes(geneLength);
         energy = startEnergy;
+        birthDay = 0;
     }
 
     public Vector2d getPosition() {
@@ -103,11 +105,14 @@ public class Animal{
         return genome;
     }
 
-    public void setBirthValues(Animal parent1 , Animal parent2){
+    public void setBirthValues(Animal parent1 , Animal parent2, int birthDay){
         parents[0] = parent1;
         parents[1] = parent2;
         inheritGenes(parent1.getGenome() , parent1.getEnergy(), parent2.getGenome() , parent2.getEnergy());
+        this.birthDay = birthDay;
     }
+
+    public int getBirthDay() { return birthDay; }
 
     public void randomGenes(int length){
         if(length == 0) return;
@@ -138,5 +143,9 @@ public class Animal{
         for (int i = midPoint; i < length; i++) {
             genome[i] = secondSet[i];
         }
+    }
+
+    public boolean isFed(MapConfig config){
+        return energy >= config.animalMinFedEnergy();
     }
 }

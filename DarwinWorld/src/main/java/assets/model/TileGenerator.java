@@ -64,7 +64,7 @@ public class TileGenerator {
                 if (inBounds(x + r, y + c)) {
                     if (tiles[x + r][y + c].getState() != TileState.WATER){
                         num++;
-                    } else num++;
+                    }
                 }
             }
         }

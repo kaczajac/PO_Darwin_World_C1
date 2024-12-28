@@ -46,7 +46,7 @@ public class Simulation implements Runnable{
 
     private void placeAnimals(int numOfAnimals) {
 
-        RandomPositionGenerator generator = new RandomPositionGenerator(map, numOfAnimals, "Animal");
+        RandomPositionGenerator generator = new RandomPositionGenerator(map, numOfAnimals, Animal.class);
         for (Vector2d position : generator) {
             Animal animal = new Animal(position, config.animalStartEnergy(), config.animalGenomeLength());
             map.place(animal);
@@ -56,7 +56,7 @@ public class Simulation implements Runnable{
 
     private void placeGrass(int numOfGrass) {
 
-        RandomPositionGenerator generator = new RandomPositionGenerator(map, numOfGrass, "Grass");
+        RandomPositionGenerator generator = new RandomPositionGenerator(map, numOfGrass, Grass.class);
         for (Vector2d position : generator) {
             Grass grass = new Grass(position);
             map.place(grass);

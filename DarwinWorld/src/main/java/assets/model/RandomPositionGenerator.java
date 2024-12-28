@@ -9,19 +9,20 @@ public class RandomPositionGenerator implements Iterable<Vector2d> {
     private final List<Vector2d> forestPositions = new ArrayList<>();
 
     private final int numOfElements;
-    private final String element;
+    private final String className;
     private int cursor = 0;
 
-    public RandomPositionGenerator(WorldMap map, int numOfElements, String element) {
+    public <T extends WorldElement> RandomPositionGenerator(WorldMap map, int numOfElements, Class<T> elementClass) {
         this.numOfElements = numOfElements;
-        this.element = element;
+        this.className = elementClass.getSimpleName();
 
         int height = map.getHeight();
         int width = map.getWidth();
         for (int r = 0; r < height; r++) {
             for (int c = 0; c < width; c++) {
                 Vector2d position = new Vector2d(r, c);
-                if (!map.grassAt(position)) {
+
+                if (isValidPosition(position, map)) {
 
                     switch (map.getTileAt(position).getState()) {
                         case PLAINS -> plainsPositions.add(position);
@@ -35,9 +36,19 @@ public class RandomPositionGenerator implements Iterable<Vector2d> {
         }
     }
 
+    private boolean isValidPosition(Vector2d position, WorldMap map) {
+        boolean isGrass = className.equals("Grass");
+        boolean isAnimal = className.equals("Animal");
+
+        return ((isGrass && !map.grassAt(position))
+                || (isAnimal && !map.isOccupied(position)));
+    }
+
     @Override
     public Iterator<Vector2d> iterator() {
-        return element.equals("Animal") ? new AnimalIterator() : new GrassIterator();
+        if (className.equals("Grass")) return new GrassIterator();
+        else if (className.equals("Animal")) return new AnimalIterator();
+        else throw new IllegalArgumentException("Unexpected class name: " + className);
     }
 
 //// Different iterators for different world elements
@@ -48,7 +59,7 @@ public class RandomPositionGenerator implements Iterable<Vector2d> {
         private final int size;
 
         public AnimalIterator() {
-            allPossiblePositions = plainsPositions;
+            allPossiblePositions = new ArrayList<>(plainsPositions);
             allPossiblePositions.addAll(forestPositions);
 
             size = Math.min(numOfElements, allPossiblePositions.size());
@@ -65,9 +76,8 @@ public class RandomPositionGenerator implements Iterable<Vector2d> {
         }
 
         private Vector2d getNextElement() {
-            int i = (int) (Math.random() * allPossiblePositions.size());
-            Vector2d randomPosition = allPossiblePositions.get(i);
-            allPossiblePositions.remove(i);
+            Vector2d randomPosition = selectRandomPosition(allPossiblePositions);
+
             cursor++;
             return randomPosition;
         }
@@ -93,24 +103,20 @@ public class RandomPositionGenerator implements Iterable<Vector2d> {
         }
 
         private Vector2d getNextElement() {
-            // 80% chance of not-preferred positions (plains)
-            if ((Math.random() < 0.2 && !plainsPositions.isEmpty()) || forestPositions.isEmpty()) {
-                int i = (int) (Math.random() * plainsPositions.size());
-                Vector2d randomPosition = plainsPositions.get(i);
-                plainsPositions.remove(i);
-                cursor++;
-                return randomPosition;
-            }
+            boolean selectFromPlains = (Math.random() < 0.2 && !plainsPositions.isEmpty()) || forestPositions.isEmpty();
+            Vector2d randomPosition = selectRandomPosition(selectFromPlains ? plainsPositions : forestPositions);
 
-            // 20% chance of preferred positions (forest)
-            else {
-                int i = (int) (Math.random() * forestPositions.size());
-                Vector2d randomPosition = forestPositions.get(i);
-                forestPositions.remove(i);
-                cursor++;
-                return randomPosition;
-            }
+            cursor++;
+            return randomPosition;
         }
+
+    }
+
+    private Vector2d selectRandomPosition(List<Vector2d> positions) {
+        int i = (int) (Math.random() * positions.size());
+        Vector2d randomPosition = positions.get(i);
+        positions.remove(i);
+        return randomPosition;
     }
 
 }

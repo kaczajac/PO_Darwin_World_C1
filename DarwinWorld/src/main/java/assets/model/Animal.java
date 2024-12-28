@@ -32,7 +32,7 @@ public class Animal implements WorldElement{
 
         if (!map.inBounds(newPosition)) {
 
-            if (map.inBounds(new Vector2d(0, map.getHeight()))) {
+            if (map.inBounds(new Vector2d(0, newPosition.getY()))) {
 
                 if (newPosition.getX() == -1) {
                     newPosition = new Vector2d(map.getWidth() - 1, newPosition.getY());

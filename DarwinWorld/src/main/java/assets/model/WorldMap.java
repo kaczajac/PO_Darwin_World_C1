@@ -49,7 +49,7 @@ public class WorldMap {
 
     public void place(Animal animal) {
         Vector2d position = animal.getPosition();
-        if (inBounds(position) && getTileAt(position).getState() != TileState.WATER) {
+        if (inBounds(position) && !isWater(getTileAt(position))) {
             List<Animal> animalList = animals.get(position);
 
             if (animalList == null) {
@@ -63,7 +63,7 @@ public class WorldMap {
 
     public void place(Grass grass) {
         Vector2d position = grass.getPosition();
-        if (!grassAt(position) && getTileAt(position).getState() != TileState.WATER) {
+        if (!grassAt(position) && !isWater(getTileAt(position))) {
             grasses.put(position, grass);
         }
     }
@@ -79,7 +79,7 @@ public class WorldMap {
             if (animalList != null) {
 
                 animalList = animalList.stream()
-                        .filter(a -> a.getEnergy() > 0 && getTileAt(a.getPosition()).getState() != TileState.WATER)
+                        .filter(a -> a.getEnergy() > 0 && !isWater(getTileAt(a.getPosition())))
                         .toList();
 
                 if (animalList.isEmpty()) {
@@ -164,6 +164,24 @@ public class WorldMap {
         return !animals.isEmpty();
     }
 
+    public void triggerFlow() {
+        if (flowTiles.isEmpty()) return;
+
+        Vector2d position = flowTiles.getFirst();
+        Tile tile = getTileAt(position);
+
+        TileState targetState = isWater(tile) ? TileState.PLAINS : TileState.WATER;
+
+        for (Vector2d flowPosition : flowTiles) {
+            Tile flowTile = getTileAt(flowPosition);
+            flowTile.setState(targetState);
+
+            if (grassAt(position)) {
+                deleteGrassAt(position);
+            }
+        }
+    }
+
 //// Getters and setters
 
     public UUID getId() {
@@ -196,22 +214,33 @@ public class WorldMap {
         return animals.getOrDefault(position, null);
     }
 
+    public boolean isWater(Tile tile) {
+        return tile.getState() == TileState.WATER;
+    }
+
     private void findFlowTiles() {
 
         int[][] neighbors = { {1, 0}, {-1, 0}, {0, -1}, {0, 1} };
 
-        for (int r = 0; r < height; r++) {
-            for (int c = 0; c < width; c++) {
-                if (tiles[r][c].getState() != TileState.WATER) {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+
+                Vector2d position = new Vector2d(x, y);
+                if (!isWater(getTileAt(position))) {
+
                     for (int[] n : neighbors) {
-                        if (inBounds(r + n[0], c + n[1]) && tiles[r + n[0]][c + n[1]].getState() == TileState.WATER) {
-                            flowTiles.add(new Vector2d(r, c));
+                        Vector2d neighbor = new Vector2d(x + n[0], y + n[1]);
+                        if (inBounds(neighbor) && isWater(getTileAt(neighbor))) {
+                            flowTiles.add(position);
                             break;
                         }
                     }
+
                 }
+
             }
         }
+
     }
 
     private boolean inBounds(int r, int c) {
@@ -229,8 +258,13 @@ public class WorldMap {
     public void drawMap(int day) {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
+
                 Vector2d position = new Vector2d(x, y);
-                if (isOccupied(position)) {
+
+                if (isWater(getTileAt(position))) {
+                    System.out.print("  "); // tile of state WATER signature
+                }
+                else if (isOccupied(position)) {
                     System.out.print("A "); // animal signature
                 }
                 else if (grassAt(position)) {
@@ -240,7 +274,6 @@ public class WorldMap {
                     switch (getTileAt(position).getState()) {
                         case PLAINS -> System.out.print(". "); // tile of state PLAINS signature
                         case FOREST -> System.out.print("; "); // tile of state FOREST signature
-                        case WATER -> System.out.print("  "); // tile of state WATER signature
                     }
                 }
             }
@@ -253,6 +286,7 @@ public class WorldMap {
         System.out.println("\n\n\n\n\n");
     }
 
+    // temporary function for testing
     private int countAnimals() {
         int result = 0;
         for (List<Animal> animalList : animals.values()) {

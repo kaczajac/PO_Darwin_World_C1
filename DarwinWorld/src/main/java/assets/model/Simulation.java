@@ -42,6 +42,11 @@ public class Simulation implements Runnable{
         while (simulationIsRunning) {
             map.drawMap(day);
             simulationIsRunning = map.checkSimulationEnd();
+
+            if (flowCycleHasPassed()) {
+                map.triggerFlow();
+            }
+
             day++;
 
             // 1. Usunięcie martwych zwierzaków z mapy.
@@ -59,6 +64,15 @@ public class Simulation implements Runnable{
             // 5. Wzrastanie nowych roślin na wybranych polach mapy.
             map.placeGrasses(config.grassDaily());
         }
+
+    }
+
+    private boolean flowCycleHasPassed() {
+
+        int cycle = config.mapFlowsDuration();
+
+        if (cycle == 0) return false;
+        else return (day % cycle) == 0;
 
     }
 }

@@ -42,7 +42,7 @@ public class Animal implements WorldElement{
 
         }
 
-        if (map.getTileAt(newPosition).getState() != TileState.WATER) {
+        if (!map.isWater(map.getTileAt(newPosition))) {
             position = newPosition;
             facingVector = moveVector;
         }

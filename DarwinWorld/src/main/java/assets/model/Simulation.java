@@ -19,6 +19,8 @@ Daną symulację opisuje szereg parametrów:
     14. wariant zachowania zwierzaków (wyjaśnione w sekcji poniżej).
  */
 
+import java.util.ArrayList;
+
 public class Simulation implements Runnable{
     private final WorldMap map;
     private final MapConfig config;
@@ -26,6 +28,7 @@ public class Simulation implements Runnable{
     private int day = 0;
     private boolean simulationIsRunning = true;
     private SimulationManager simulationManager;
+    private ArrayList<Observer> observers = new ArrayList<>();
 
     public Simulation(MapConfig config , SimulationManager simulationManager) {
         this.map = new WorldMap(config.mapHeight(), config.mapWidth(), config.mapWaterLevel());
@@ -42,7 +45,7 @@ public class Simulation implements Runnable{
     public void run() {
 
         while (simulationIsRunning && !Thread.currentThread().isInterrupted()) {
-            map.drawMap(day);
+            sendMapChanges();
             try{
                 Thread.sleep(100);
             } catch (InterruptedException e) {}
@@ -74,6 +77,16 @@ public class Simulation implements Runnable{
             simulationManager.removeSimulation(this);
         }
 
+    }
+
+    private void sendMapChanges(){
+        for(Observer observer : observers){
+            observer.mapChanged(map , day);
+        }
+    }
+
+    public void addObserver(Observer observer){
+        observers.add(observer);
     }
 
     private boolean flowCycleHasPassed() {

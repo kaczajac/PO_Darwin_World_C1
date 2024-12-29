@@ -32,15 +32,11 @@ public class Animal implements WorldElement{
 
         if (!map.inBounds(newPosition)) {
 
-            if (map.inBounds(new Vector2d(0, newPosition.getY()))) {
-
-                if (newPosition.getX() == -1) {
-                    newPosition = new Vector2d(map.getWidth() - 1, newPosition.getY());
-                }
-                else if (newPosition.getX() == map.getWidth()) {
-                    newPosition = new Vector2d(0, newPosition.getY());
-                }
-
+            if (newPosition.equals(new Vector2d(-1, newPosition.getY()))) {
+                newPosition = new Vector2d(map.getWidth() - 1, newPosition.getY());
+            }
+            else if (newPosition.equals(new Vector2d(map.getWidth(), newPosition.getY()))) {
+                newPosition = new Vector2d(0, newPosition.getY());
             }
             else return;
 
@@ -91,14 +87,12 @@ public class Animal implements WorldElement{
         return energy;
     }
 
-    public int addEnergy(int amount) {
+    public void addEnergy(int amount) {
         energy += amount;
-        return energy;
     }
 
-    public int useEnergy(int amount) {
+    public void useEnergy(int amount) {
         energy -= amount;
-        return energy;
     }
 
     public int[] getGenome(){

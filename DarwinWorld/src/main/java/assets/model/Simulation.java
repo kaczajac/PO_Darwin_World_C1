@@ -1,15 +1,6 @@
 package assets.model;
 
 /*
-Symulacja każdego dnia składa się z poniższej sekwencji kroków:
-    1. Usunięcie martwych zwierzaków z mapy.
-    2. Skręt i przemieszczenie każdego zwierzaka.
-    3. Konsumpcja roślin, na których pola weszły zwierzaki.
-    4. Rozmnażanie się najedzonych zwierzaków znajdujących się na tym samym polu.
-    5. Wzrastanie nowych roślin na wybranych polach mapy.
- */
-
-/*
 Daną symulację opisuje szereg parametrów:
 
     1. wysokość i szerokość mapy,
@@ -33,6 +24,7 @@ public class Simulation implements Runnable{
     private final MapConfig config;
 
     private int day = 0;
+    private boolean simulationIsRunning = true;
 
     public Simulation(MapConfig config) {
         this.map = new WorldMap(config.mapHeight(), config.mapWidth(), config.mapWaterLevel());
@@ -46,21 +38,27 @@ public class Simulation implements Runnable{
 
     @Override
     public void run() {
-        map.drawMap();
-        day++;
-        // 1. Usunięcie martwych zwierzaków z mapy.
-        map.deleteDeadAnimals();
 
-        // 2. Skręt i przemieszczenie każdego zwierzaka.
-        map.moveAnimals();
+        while (simulationIsRunning) {
+            map.drawMap(day);
+            simulationIsRunning = map.checkSimulationEnd();
+            day++;
 
-        // 3. Konsumpcja roślin, na których pola weszły zwierzaki.
-        map.consumeGrass(config);
+            // 1. Usunięcie martwych zwierzaków z mapy.
+            map.deleteDeadAnimals();
 
-        // 4. Rozmnażanie zwierząt
-        map.breedAnimals(config , day);
+            // 2. Skręt i przemieszczenie każdego zwierzaka.
+            map.moveAnimals();
 
-        // 5. Wzrastanie nowych roślin na wybranych polach mapy.
-        map.placeGrasses(config.grassDaily());
+            // 3. Konsumpcja roślin, na których pola weszły zwierzaki.
+            map.consumeGrass(config);
+
+            // 4. Rozmnażanie zwierząt
+            map.breedAnimals(config , day);
+
+            // 5. Wzrastanie nowych roślin na wybranych polach mapy.
+            map.placeGrasses(config.grassDaily());
+        }
+
     }
 }

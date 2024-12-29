@@ -103,6 +103,7 @@ public class WorldMap {
 
                 for (Animal animal : animalList) {
                     animal.move(this);
+                    animal.useEnergy(1);
                     animalsToPlace.add(animal);
                 }
                 animals.remove(position);
@@ -159,6 +160,10 @@ public class WorldMap {
         }
     }
 
+    public boolean checkSimulationEnd() {
+        return !animals.isEmpty();
+    }
+
 //// Getters and setters
 
     public UUID getId() {
@@ -171,10 +176,6 @@ public class WorldMap {
 
     public int getWidth() {
         return width;
-    }
-
-    public List<Vector2d> getFlowTiles() {
-        return flowTiles;
     }
 
     public Tile getTileAt(Vector2d position) {
@@ -225,7 +226,7 @@ public class WorldMap {
     }
 
     // temporary draw function
-    public void drawMap() {
+    public void drawMap(int day) {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 Vector2d position = new Vector2d(x, y);
@@ -245,6 +246,19 @@ public class WorldMap {
             }
             System.out.println();
         }
+        System.out.println("Map ID: " + id);
+        System.out.println("Animals: " + countAnimals());
+        System.out.println("Grasses: " + grasses.size());
+        System.out.println("Day: " + day);
+        System.out.println("\n\n\n\n\n");
+    }
+
+    private int countAnimals() {
+        int result = 0;
+        for (List<Animal> animalList : animals.values()) {
+            result += animalList.size();
+        }
+        return result;
     }
 
 

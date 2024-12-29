@@ -8,14 +8,14 @@ public class World {
     public static void main(String[] args) {
         System.out.println("Program started");
 
-        MapConfig config = new MapConfig(20,
-                                        20,
-                                        0.4,
-                                        10,
-                                        10,
+        MapConfig config = new MapConfig(15,
+                                        15,
+                                        0.2,
+                                        4,
+                                        2,
                                         8,
-                                        10,
                                         8,
+                                        5,
                                         5,
                                         3);
         Simulation simulation = new Simulation(config);

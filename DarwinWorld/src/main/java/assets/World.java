@@ -2,6 +2,7 @@ package assets;
 
 import assets.model.MapConfig;
 import assets.model.Simulation;
+import assets.model.SimulationManager;
 
 public class World {
 
@@ -19,8 +20,13 @@ public class World {
                                         5,
                                         5,
                                         3);
-        Simulation simulation = new Simulation(config);
-        simulation.run();
+        SimulationManager simulationManager = new SimulationManager();
+
+        Simulation sim1 = new Simulation(config, simulationManager);
+        simulationManager.addAndStartSimulation(sim1);
+
+        Simulation sim2 = new Simulation(config, simulationManager);
+        simulationManager.addAndStartSimulation(sim2);
 
         System.out.println("Program finished");
     }

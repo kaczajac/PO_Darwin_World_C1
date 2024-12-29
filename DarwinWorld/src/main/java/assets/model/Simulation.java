@@ -25,10 +25,12 @@ public class Simulation implements Runnable{
 
     private int day = 0;
     private boolean simulationIsRunning = true;
+    private SimulationManager simulationManager;
 
-    public Simulation(MapConfig config) {
+    public Simulation(MapConfig config , SimulationManager simulationManager) {
         this.map = new WorldMap(config.mapHeight(), config.mapWidth(), config.mapWaterLevel());
         this.config = config;
+        this.simulationManager = simulationManager;
 
         map.placeAnimals(config);
         map.placeGrasses(config.grassDaily());
@@ -39,8 +41,11 @@ public class Simulation implements Runnable{
     @Override
     public void run() {
 
-        while (simulationIsRunning) {
+        while (simulationIsRunning && !Thread.currentThread().isInterrupted()) {
             map.drawMap(day);
+            try{
+                Thread.sleep(100);
+            } catch (InterruptedException e) {}
             simulationIsRunning = map.checkSimulationEnd();
 
             if (flowCycleHasPassed()) {
@@ -63,6 +68,10 @@ public class Simulation implements Runnable{
 
             // 5. Wzrastanie nowych roślin na wybranych polach mapy.
             map.placeGrasses(config.grassDaily());
+        }
+
+        if(!Thread.currentThread().isInterrupted()){
+            simulationManager.removeSimulation(this);
         }
 
     }

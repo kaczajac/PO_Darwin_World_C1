@@ -11,7 +11,7 @@ public class World {
         MapConfig config = new MapConfig(15,
                                         15,
                                         0.2,
-                                        4,
+                                        3,
                                         2,
                                         8,
                                         8,

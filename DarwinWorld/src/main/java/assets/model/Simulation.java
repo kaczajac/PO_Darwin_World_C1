@@ -19,16 +19,21 @@ Daną symulację opisuje szereg parametrów:
     14. wariant zachowania zwierzaków (wyjaśnione w sekcji poniżej).
  */
 
+import java.util.ArrayList;
+
 public class Simulation implements Runnable{
     private final WorldMap map;
     private final MapConfig config;
 
     private int day = 0;
     private boolean simulationIsRunning = true;
+    private SimulationManager simulationManager;
+    private ArrayList<Observer> observers = new ArrayList<>();
 
-    public Simulation(MapConfig config) {
+    public Simulation(MapConfig config , SimulationManager simulationManager) {
         this.map = new WorldMap(config.mapHeight(), config.mapWidth(), config.mapWaterLevel());
         this.config = config;
+        this.simulationManager = simulationManager;
 
         map.placeAnimals(config);
         map.placeGrasses(config.grassDaily());
@@ -39,8 +44,11 @@ public class Simulation implements Runnable{
     @Override
     public void run() {
 
-        while (simulationIsRunning) {
-            map.drawMap(day);
+        while (simulationIsRunning && !Thread.currentThread().isInterrupted()) {
+            sendMapChanges();
+            try{
+                Thread.sleep(100);
+            } catch (InterruptedException e) {}
             simulationIsRunning = map.checkSimulationEnd();
 
             if (flowCycleHasPassed()) {
@@ -65,6 +73,20 @@ public class Simulation implements Runnable{
             map.placeGrasses(config.grassDaily());
         }
 
+        if(!Thread.currentThread().isInterrupted()){
+            simulationManager.removeSimulation(this);
+        }
+
+    }
+
+    private void sendMapChanges(){
+        for(Observer observer : observers){
+            observer.mapChanged(map , day);
+        }
+    }
+
+    public void addObserver(Observer observer){
+        observers.add(observer);
     }
 
     private boolean flowCycleHasPassed() {

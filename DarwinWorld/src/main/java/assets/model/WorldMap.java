@@ -255,7 +255,7 @@ public class WorldMap {
     }
 
     // temporary draw function
-    public void drawMap(int day) {
+    public synchronized void drawMap(int day) {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
 

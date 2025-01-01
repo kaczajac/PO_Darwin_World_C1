@@ -13,6 +13,7 @@ public class WorldMap {
     private final Map<Vector2d, List<Animal>> animals = new ConcurrentHashMap<>();
     private final Map<Vector2d, Grass> grasses = new HashMap<>();
     private final List<Vector2d> flowTiles = new ArrayList<>();
+    private final ArrayList<MapChangeListener> observers = new ArrayList<>();
 
     public WorldMap(int height, int width, double waterLevel) {
         this.id = UUID.randomUUID();
@@ -103,7 +104,6 @@ public class WorldMap {
 
                 for (Animal animal : animalList) {
                     animal.move(this);
-                    animal.useEnergy(1);
                     animalsToPlace.add(animal);
                 }
                 animals.remove(position);
@@ -182,6 +182,83 @@ public class WorldMap {
         }
     }
 
+    public void updateAnimalEnergy() {
+        for (List<Animal> animalList : animals.values()) {
+            for (Animal animal : animalList) {
+                animal.useEnergy(1);
+            }
+        }
+    }
+
+//// Scoreboard functions
+
+    public int countAnimals() {
+        int result = 0;
+        for (List<Animal> animalList : animals.values()) {
+            result += animalList.size();
+        }
+        return result;
+    }
+
+    public int countGrasses() {
+        return grasses.size();
+    }
+
+    public int countEmptyPositions() {
+        int result = 0;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+
+                Vector2d position = new Vector2d(x, y);
+                if (!isWater(getTileAt(position)) && !isOccupied(position)) {
+                    result++;
+                }
+
+            }
+        }
+        return result;
+    }
+
+    public int calculateAverageEnergy() {
+        int sumOfEnergy = 0;
+        int numOfAnimals = 0;
+        for (List<Animal> animalList : animals.values()) {
+
+            for (Animal animal : animalList) {
+                sumOfEnergy += animal.getEnergy();
+            }
+            numOfAnimals += animalList.size();
+
+        }
+        return sumOfEnergy / numOfAnimals;
+    }
+
+    public int calculateAverageLifeTime() {
+        // TODO
+        return 0;
+    }
+
+    public int calculateAverageNumOfChildren() {
+        // TODO
+        return 0;
+    }
+
+//// Listeners
+
+    public void addObserver(MapChangeListener observer) {
+        observers.add(observer);
+    }
+
+    public void removeObserver(MapChangeListener observer) {
+        observers.remove(observer);
+    }
+
+    public void sendMapChanges(int day){
+        for(MapChangeListener observer : observers){
+            observer.mapChanged(this, day);
+        }
+    }
+
 //// Getters and setters
 
     public UUID getId() {
@@ -252,47 +329,6 @@ public class WorldMap {
 
     public boolean inBounds(Vector2d position) {
         return inBounds(position.getY(), position.getX());
-    }
-
-    // temporary draw function
-    public synchronized void drawMap(int day) {
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-
-                Vector2d position = new Vector2d(x, y);
-
-                if (isWater(getTileAt(position))) {
-                    System.out.print("  "); // tile of state WATER signature
-                }
-                else if (isOccupied(position)) {
-                    System.out.print("A "); // animal signature
-                }
-                else if (grassAt(position)) {
-                    System.out.print("* "); // grass signature
-                }
-                else {
-                    switch (getTileAt(position).getState()) {
-                        case PLAINS -> System.out.print(". "); // tile of state PLAINS signature
-                        case FOREST -> System.out.print("; "); // tile of state FOREST signature
-                    }
-                }
-            }
-            System.out.println();
-        }
-        System.out.println("Map ID: " + id);
-        System.out.println("Animals: " + countAnimals());
-        System.out.println("Grasses: " + grasses.size());
-        System.out.println("Day: " + day);
-        System.out.println("\n\n\n\n\n");
-    }
-
-    // temporary function for testing
-    private int countAnimals() {
-        int result = 0;
-        for (List<Animal> animalList : animals.values()) {
-            result += animalList.size();
-        }
-        return result;
     }
 
 

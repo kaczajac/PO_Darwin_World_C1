@@ -1,6 +1,6 @@
 package assets.model;
 
-public class ConsoleMapPrinter implements Observer{
+public class ConsoleMapPrinter implements MapChangeListener {
 
     @Override
     public synchronized void mapChanged(WorldMap map, int day) {

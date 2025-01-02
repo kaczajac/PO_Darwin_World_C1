@@ -3,18 +3,18 @@ package assets.model;
 public class Simulation implements Runnable{
     private final WorldMap map;
     private final MapConfig config;
-    private Scoreboard scoreboard;
+    private final Scoreboard scoreboard = new Scoreboard();
 
     private int day = 0;
     private boolean simulationIsRunning = true;
-    private SimulationManager simulationManager;
+    private final SimulationManager simulationManager;
 
-    public Simulation(MapConfig config , SimulationManager simulationManager) {
+    public Simulation(MapConfig config, SimulationManager simulationManager, ConsoleMapPrinter cmp) {
         this.map = new WorldMap(config.mapHeight(), config.mapWidth(), config.mapWaterLevel());
         this.config = config;
         this.simulationManager = simulationManager;
 
-        map.addObserver(new ConsoleMapPrinter());
+        map.addObserver(cmp);
         map.placeAnimals(config);
         map.placeGrasses(config.grassDaily());
         updateScoreboard();

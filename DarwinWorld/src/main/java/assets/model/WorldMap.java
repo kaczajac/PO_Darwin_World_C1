@@ -13,7 +13,11 @@ public class WorldMap {
     private final Map<Vector2d, List<Animal>> animals = new ConcurrentHashMap<>();
     private final Map<Vector2d, Grass> grasses = new HashMap<>();
     private final List<Vector2d> flowTiles = new ArrayList<>();
-    private final ArrayList<MapChangeListener> observers = new ArrayList<>();
+    private final List<MapChangeListener> observers = new ArrayList<>();
+
+    // Additional parameters for statistics
+    private int numOfDeadAnimals = 0;
+    private int sumOfDeadAnimalsLifeTime = 0;
 
     public WorldMap(int height, int width, double waterLevel) {
         this.id = UUID.randomUUID();
@@ -220,6 +224,8 @@ public class WorldMap {
     }
 
     public int calculateAverageEnergy() {
+        if (animals.isEmpty()) return 0;
+
         int sumOfEnergy = 0;
         int numOfAnimals = 0;
         for (List<Animal> animalList : animals.values()) {
@@ -234,8 +240,7 @@ public class WorldMap {
     }
 
     public int calculateAverageLifeTime() {
-        // TODO
-        return 0;
+        return numOfDeadAnimals == 0 ? 0 : (sumOfDeadAnimalsLifeTime / numOfDeadAnimals);
     }
 
     public int calculateAverageNumOfChildren() {

@@ -1,5 +1,6 @@
 package assets;
 
+import assets.model.ConsoleMapPrinter;
 import assets.model.MapConfig;
 import assets.model.Simulation;
 import assets.model.SimulationManager;
@@ -21,11 +22,12 @@ public class World {
                                         5,
                                         3);
         SimulationManager simulationManager = new SimulationManager();
+        ConsoleMapPrinter cmp = new ConsoleMapPrinter();
 
-        Simulation sim1 = new Simulation(config, simulationManager);
+        Simulation sim1 = new Simulation(config, simulationManager, cmp);
         simulationManager.addAndStartSimulation(sim1);
 
-        Simulation sim2 = new Simulation(config, simulationManager);
+        Simulation sim2 = new Simulation(config, simulationManager, cmp);
         simulationManager.addAndStartSimulation(sim2);
 
         System.out.println("Program finished");

@@ -1,5 +1,8 @@
 package assets.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Animal implements WorldElement{
     private Vector2d position;
     private int[] genome;
@@ -8,6 +11,8 @@ public class Animal implements WorldElement{
     private Animal[] parents = new Animal[2];
     private int energy;
     private int birthDay = 0;
+
+    private final List<Animal> children = new ArrayList<>();
 
     public Animal(Vector2d position, int startEnergy , int geneLength) {
         this.position = position;
@@ -47,6 +52,14 @@ public class Animal implements WorldElement{
             facingVector = moveVector;
         }
 
+    }
+
+    public int getNumberOfChildren(){
+        return children.size();
+    }
+
+    public void addNewChild(Animal child) {
+        children.add(child);
     }
 
     private void updateGene(int currGene) {

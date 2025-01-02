@@ -41,7 +41,7 @@ public class Simulation implements Runnable{
             }
 
             // 1. Usunięcie martwych zwierzaków z mapy.
-            map.deleteDeadAnimals();
+            map.deleteDeadAnimals(day);
 
             // 2. Skręt i przemieszczenie każdego zwierzaka.
             map.moveAnimals();

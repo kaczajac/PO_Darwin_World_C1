@@ -77,15 +77,22 @@ public class WorldMap {
         grasses.remove(position);
     }
 
-    public void deleteDeadAnimals() {
+    public void deleteDeadAnimals(int day) {
         for (Vector2d position : animals.keySet()) {
             List<Animal> animalList = animals.get(position);
 
             if (animalList != null) {
 
-                animalList = animalList.stream()
-                        .filter(a -> a.getEnergy() > 0 && !isWater(getTileAt(a.getPosition())))
+                List<Animal> deadAnimals = animalList.stream()
+                        .filter(a -> a.getEnergy() <= 0 || isWater(getTileAt(a.getPosition())))
                         .toList();
+
+                deadAnimals.forEach(deadAnimal -> {
+                    numOfDeadAnimals++;
+                    sumOfDeadAnimalsLifeTime += (day - deadAnimal.getBirthDay() + 1);
+                });
+
+                animalList.removeAll(deadAnimals);
 
                 if (animalList.isEmpty()) {
                     animals.remove(position);
@@ -159,6 +166,8 @@ public class WorldMap {
                 baby.setBirthValues(a1, a2, day);
                 a1.useEnergy(config.animalBirthCost());
                 a2.useEnergy(config.animalBirthCost());
+                a1.addNewChild(baby);
+                a2.addNewChild(baby);
                 place(baby);
             }
         }
@@ -236,7 +245,7 @@ public class WorldMap {
             numOfAnimals += animalList.size();
 
         }
-        return sumOfEnergy / numOfAnimals;
+        return (sumOfEnergy / numOfAnimals);
     }
 
     public int calculateAverageLifeTime() {
@@ -244,8 +253,19 @@ public class WorldMap {
     }
 
     public int calculateAverageNumOfChildren() {
-        // TODO
-        return 0;
+        if (animals.isEmpty()) return 0;
+
+        int allChildren = 0;
+        int numOfAnimals = 0;
+        for (List<Animal> animalList : animals.values()) {
+
+            for (Animal animal : animalList) {
+                allChildren += animal.getNumberOfChildren();
+            }
+            numOfAnimals += animalList.size();
+
+        }
+        return (allChildren / numOfAnimals);
     }
 
 //// Listeners

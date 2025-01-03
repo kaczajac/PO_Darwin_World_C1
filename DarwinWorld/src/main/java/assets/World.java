@@ -5,17 +5,22 @@ import assets.model.enums.MapType;
 import assets.model.util.ConsoleMapPrinter;
 import assets.model.records.SimulationConfig;
 
+import javafx.application.Application;
+import assets.model.application.ConfigurationApp;
+
 public class World {
 
     public static void main(String[] args) {
         System.out.println("Program started");
-        
+
+        Application.launch(ConfigurationApp.class, args);
+        /*
         MapSettings settings = new MapSettings(15,
                                                 15,
                                                 MapType.WATER,
                                                 0.2
         );
-        
+
         SimulationConfig config = new SimulationConfig(settings,
                                                         5,
                                                         3,
@@ -26,7 +31,7 @@ public class World {
                                                         5,
                                                         3
         );
-        
+
         SimulationManager simulationManager = new SimulationManager();
         ConsoleMapPrinter cmp = new ConsoleMapPrinter();
 
@@ -37,6 +42,7 @@ public class World {
         simulationManager.addAndStartSimulation(sim2);
 
         System.out.println("Program finished");
-    }
 
+        */
+    }
 }

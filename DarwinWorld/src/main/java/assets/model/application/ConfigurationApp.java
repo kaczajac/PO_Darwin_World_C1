@@ -1,5 +1,11 @@
 package assets.model.application;
 
+import assets.Simulation;
+import assets.SimulationManager;
+import assets.model.enums.MapType;
+import assets.model.records.MapSettings;
+import assets.model.records.SimulationConfig;
+import assets.model.util.ConsoleMapPrinter;
 import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -27,8 +33,14 @@ public class ConfigurationApp extends Application {
     @FXML public TextField animalBirthCostField;
     @FXML public Button startSimulationButton;
 
+    SimulationManager simulationManager;
+    ConsoleMapPrinter consoleMapPrinter;
+
     @Override
     public void start(Stage stage) throws Exception {
+        simulationManager = new SimulationManager();
+        consoleMapPrinter = new ConsoleMapPrinter();
+
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getClassLoader().getResource("config-window.fxml"));
         loader.setController(this);
@@ -42,16 +54,24 @@ public class ConfigurationApp extends Application {
 
     // Called when button pressed
     public void startSimulation() {
-        mapHeightField.getText();
-        mapWidthField.getText();
-        mapWaterLevelField.getText();
-        mapFlowsDurationField.getText();
-        grassDailyField.getText();
-        grassEnergyField.getText();
-        animalStartNumberField.getText();
-        animalStartEnergyField.getText();
-        animalGenomeLengthField.getText();
-        animalMinFedEnergyField.getText();
-        animalBirthCostField.getText();
+        int mapHeigth = Integer.parseInt(mapHeightField.getText());
+        int mapWidth = Integer.parseInt(mapWidthField.getText());
+        double waterLevel = Double.parseDouble(mapWaterLevelField.getText());
+        int mapFlowDuration = Integer.parseInt(mapFlowsDurationField.getText());
+        int grassDailyGrow = Integer.parseInt(grassDailyField.getText());
+        int grassEnergy = Integer.parseInt(grassEnergyField.getText());
+        int animalsOnStartup = Integer.parseInt(animalStartNumberField.getText());
+        int animalStartEnergy = Integer.parseInt(animalStartEnergyField.getText());
+        int animalGenomeLength = Integer.parseInt(animalGenomeLengthField.getText());
+        int animalMinFedEnergy = Integer.parseInt(animalMinFedEnergyField.getText());
+        int animalBirthCost = Integer.parseInt(animalBirthCostField.getText());
+
+        MapSettings mapSettings = new MapSettings(mapHeigth, mapWidth, MapType.WATER, waterLevel);
+        SimulationConfig simConfig = new SimulationConfig(mapSettings , mapFlowDuration, grassDailyGrow,
+                grassEnergy, animalsOnStartup, animalStartEnergy, animalGenomeLength,
+                animalMinFedEnergy, animalBirthCost);
+
+        Simulation sim = new Simulation(simConfig, simulationManager, consoleMapPrinter);
+        simulationManager.addAndStartSimulation(sim);
     }
 }

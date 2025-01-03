@@ -1,6 +1,7 @@
 package assets.model;
 
 import assets.model.contract.MapChangeListener;
+import assets.model.exceptions.IllegalPositionException;
 import assets.model.util.RandomPositionGenerator;
 import assets.model.util.TileGenerator;
 
@@ -41,7 +42,13 @@ public class WorldMap {
         RandomPositionGenerator generator = new RandomPositionGenerator(this, config.animalStartNumber(), Animal.class);
         for (Vector2d position : generator) {
             Animal animal = new Animal(position, config.animalStartEnergy(), config.animalGenomeLength());
-            place(animal);
+
+            try {
+                place(animal);
+            } catch (IllegalPositionException e) {
+                System.out.println(e.getMessage());
+            }
+
         }
 
     }
@@ -51,12 +58,18 @@ public class WorldMap {
         RandomPositionGenerator generator = new RandomPositionGenerator(this, numOfGrass, Grass.class);
         for (Vector2d position : generator) {
             Grass grass = new Grass(position);
-            place(grass);
+
+            try {
+                place(grass);
+            } catch (IllegalPositionException e) {
+                System.out.println(e.getMessage());
+            }
+
         }
 
     }
 
-    public void place(Animal animal) {
+    public void place(Animal animal) throws IllegalPositionException {
         Vector2d position = animal.getPosition();
         if (inBounds(position) && !isWater(getTileAt(position))) {
             List<Animal> animalList = animals.get(position);
@@ -68,13 +81,15 @@ public class WorldMap {
             animalList.add(animal);
             animals.put(position, animalList);
         }
+        else throw new IllegalPositionException(position);
     }
 
-    public void place(Grass grass) {
+    public void place(Grass grass) throws IllegalPositionException {
         Vector2d position = grass.getPosition();
-        if (!grassAt(position) && !isWater(getTileAt(position))) {
+        if (inBounds(position) && !grassAt(position) && !isWater(getTileAt(position))) {
             grasses.put(position, grass);
         }
+        else throw new IllegalPositionException(position);
     }
 
     public void deleteGrassAt(Vector2d position) {
@@ -127,7 +142,13 @@ public class WorldMap {
         }
 
         for (Animal animal : animalsToPlace) {
-            place(animal);
+
+            try {
+                place(animal);
+            } catch (IllegalPositionException e) {
+                System.out.println(e.getMessage());
+            }
+
         }
 
     }
@@ -172,7 +193,13 @@ public class WorldMap {
                 a2.useEnergy(config.animalBirthCost());
                 a1.addNewChild(baby);
                 a2.addNewChild(baby);
-                place(baby);
+
+                try {
+                    place(baby);
+                } catch (IllegalPositionException e) {
+                    System.out.println(e.getMessage());
+                }
+
             }
         }
     }

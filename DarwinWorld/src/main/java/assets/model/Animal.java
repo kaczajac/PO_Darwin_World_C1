@@ -1,9 +1,11 @@
 package assets.model;
 
+import assets.model.contract.MapElement;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Animal implements WorldElement{
+public class Animal implements MapElement {
     private Vector2d position;
     private int[] genome;
     private int activeGene = 0;

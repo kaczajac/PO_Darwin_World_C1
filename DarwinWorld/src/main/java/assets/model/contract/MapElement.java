@@ -1,6 +1,8 @@
-package assets.model;
+package assets.model.contract;
 
-public interface WorldElement {
+import assets.model.Vector2d;
+
+public interface MapElement {
     /**
      * Returns Vector2d which represents position of a world element
      *

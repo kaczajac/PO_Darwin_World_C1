@@ -1,6 +1,8 @@
 package assets.model;
 
-public class Grass implements WorldElement {
+import assets.model.contract.MapElement;
+
+public class Grass implements MapElement {
     private final Vector2d position;
 
     public Grass(Vector2d position) {

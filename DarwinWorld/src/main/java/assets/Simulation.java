@@ -1,4 +1,9 @@
-package assets.model;
+package assets;
+
+import assets.model.MapConfig;
+import assets.model.Scoreboard;
+import assets.model.WorldMap;
+import assets.model.util.ConsoleMapPrinter;
 
 public class Simulation implements Runnable{
     private final WorldMap map;

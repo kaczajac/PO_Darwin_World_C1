@@ -1,4 +1,8 @@
-package assets.model;
+package assets.model.util;
+
+import assets.model.contract.MapChangeListener;
+import assets.model.Vector2d;
+import assets.model.WorldMap;
 
 public class ConsoleMapPrinter implements MapChangeListener {
 

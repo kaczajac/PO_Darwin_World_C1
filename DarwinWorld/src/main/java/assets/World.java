@@ -1,9 +1,7 @@
 package assets;
 
-import assets.model.ConsoleMapPrinter;
+import assets.model.util.ConsoleMapPrinter;
 import assets.model.MapConfig;
-import assets.model.Simulation;
-import assets.model.SimulationManager;
 
 public class World {
 

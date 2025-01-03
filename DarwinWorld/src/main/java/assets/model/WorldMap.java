@@ -1,5 +1,9 @@
 package assets.model;
 
+import assets.model.contract.MapChangeListener;
+import assets.model.util.RandomPositionGenerator;
+import assets.model.util.TileGenerator;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 

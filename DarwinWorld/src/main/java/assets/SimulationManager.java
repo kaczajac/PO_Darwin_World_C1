@@ -1,4 +1,4 @@
-package assets.model;
+package assets;
 
 import java.util.ArrayList;
 

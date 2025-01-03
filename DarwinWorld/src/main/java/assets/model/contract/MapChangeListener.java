@@ -1,4 +1,6 @@
-package assets.model;
+package assets.model.contract;
+
+import assets.model.WorldMap;
 
 public interface MapChangeListener {
 

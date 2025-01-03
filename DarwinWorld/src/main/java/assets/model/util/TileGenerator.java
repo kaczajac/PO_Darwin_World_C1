@@ -1,4 +1,7 @@
-package assets.model;
+package assets.model.util;
+
+import assets.model.Tile;
+import assets.model.TileState;
 
 public class TileGenerator {
 

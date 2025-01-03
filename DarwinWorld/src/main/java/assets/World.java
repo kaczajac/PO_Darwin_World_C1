@@ -1,24 +1,32 @@
 package assets;
 
+import assets.model.records.MapSettings;
+import assets.model.enums.MapType;
 import assets.model.util.ConsoleMapPrinter;
-import assets.model.MapConfig;
+import assets.model.records.SimulationConfig;
 
 public class World {
 
     public static void main(String[] args) {
         System.out.println("Program started");
-
-        MapConfig config = new MapConfig(15,
-                                        15,
-                                        0.2,
-                                        5,
-                                        3,
-                                        2,
-                                        8,
-                                        8,
-                                        5,
-                                        5,
-                                        3);
+        
+        MapSettings settings = new MapSettings(15,
+                                                15,
+                                                MapType.WATER,
+                                                0.2
+        );
+        
+        SimulationConfig config = new SimulationConfig(settings,
+                                                        5,
+                                                        3,
+                                                        2,
+                                                        8,
+                                                        8,
+                                                        5,
+                                                        5,
+                                                        3
+        );
+        
         SimulationManager simulationManager = new SimulationManager();
         ConsoleMapPrinter cmp = new ConsoleMapPrinter();
 

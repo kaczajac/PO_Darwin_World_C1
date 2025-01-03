@@ -1,6 +1,9 @@
 package assets.model;
 
 import assets.model.contract.MapElement;
+import assets.model.enums.TileState;
+import assets.model.map.WorldMap;
+import assets.model.records.SimulationConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +52,7 @@ public class Animal implements MapElement {
 
         }
 
-        if (!map.isWater(map.getTileAt(newPosition))) {
+        if (map.getTileAt(newPosition).getState() != TileState.WATER) {
             position = newPosition;
             facingVector = moveVector;
         }
@@ -154,7 +157,7 @@ public class Animal implements MapElement {
         }
     }
 
-    public boolean isFed(MapConfig config){
+    public boolean isFed(SimulationConfig config){
         return energy >= config.animalMinFedEnergy();
     }
 }

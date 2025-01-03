@@ -1,4 +1,4 @@
-package assets.model;
+package assets.model.enums;
 
 public enum TileState {
     PLAINS,

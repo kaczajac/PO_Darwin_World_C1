@@ -1,32 +1,47 @@
 package assets.model.util;
 
+import assets.model.records.MapSettings;
 import assets.model.Tile;
-import assets.model.TileState;
+import assets.model.enums.TileState;
 
 public class TileGenerator {
 
+    // size
     private final int rows;
     private final int columns;
-    private final double waterLevel;
 
+    // optional parameters
+    private final Double waterLevel;
+
+    // final result
     private Tile[][] tiles;
 
-    public TileGenerator(int rows, int columns, double waterLevel) {
-        this.rows = rows;
-        this.columns = columns;
-        this.waterLevel = waterLevel;
+    public TileGenerator(MapSettings settings) {
+        this.rows = settings.mapHeight();
+        this.columns = settings.mapWidth();
+        this.waterLevel = settings.mapWaterLevel() != null ? settings.mapWaterLevel() : 0.0;
         this.tiles = new Tile[rows][columns];
 
-        setup();
-        iterateTiles();
-        fillEquator();
+        switch (settings.mapType()) {
+            case DEFAULT -> defaultMapGeneration();
+            case WATER -> waterMapGeneration();
+            default -> throw new IllegalStateException("Unexpected value: " + settings.mapType());
+        }
     }
 
     public Tile[][] getTiles() {
         return tiles;
     }
 
-//// Helper functions for initializing tiles ('cellular automata rule 45' algorithm for procedural generation)
+//// Water map generation ('cellular automata rule 45' algorithm for procedural generation)
+
+    private void waterMapGeneration() {
+
+        setup();
+        iterateTiles();
+        fillEquator();
+
+    }
 
     private void setup() {
 
@@ -58,6 +73,21 @@ public class TileGenerator {
         }
 
     }
+
+//// Default map generation
+
+    private void defaultMapGeneration() {
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < columns; c++) {
+                tiles[r][c] = new Tile(TileState.PLAINS);
+            }
+        }
+        fillEquator();
+
+    }
+
+//// Helper functions
 
     private int numWallsAround(int x, int y) {
 

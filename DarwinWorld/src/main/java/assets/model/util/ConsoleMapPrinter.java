@@ -1,8 +1,9 @@
 package assets.model.util;
 
+import assets.model.enums.TileState;
 import assets.model.contract.MapChangeListener;
 import assets.model.Vector2d;
-import assets.model.WorldMap;
+import assets.model.map.WorldMap;
 
 public class ConsoleMapPrinter implements MapChangeListener {
 
@@ -13,7 +14,7 @@ public class ConsoleMapPrinter implements MapChangeListener {
 
                 Vector2d position = new Vector2d(x, y);
 
-                if (map.isWater(map.getTileAt(position))) {
+                if (map.getTileAt(position).getState() == TileState.WATER) {
                     System.out.print("  "); // tile of state WATER signature
                 }
                 else if (map.isOccupied(position)) {
@@ -32,8 +33,6 @@ public class ConsoleMapPrinter implements MapChangeListener {
             System.out.println();
         }
         System.out.println("Map ID: " + map.getId());
-        //System.out.println("Animals: " + map.countAnimals());
-        //System.out.println("Grasses: " + map.grasses.size());
         System.out.println("Day: " + day);
         System.out.println("\n\n\n\n\n");
     }

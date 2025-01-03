@@ -1,43 +1,46 @@
-package assets.model;
+package assets.model.map;
 
+import assets.model.Animal;
+import assets.model.Grass;
+import assets.model.Tile;
+import assets.model.Vector2d;
 import assets.model.contract.MapChangeListener;
 import assets.model.exceptions.IllegalPositionException;
+import assets.model.records.MapSettings;
+import assets.model.records.SimulationConfig;
 import assets.model.util.RandomPositionGenerator;
 import assets.model.util.TileGenerator;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class WorldMap {
+public abstract class WorldMap {
 
     private final UUID id;
-    private final int width;
-    private final int height;
+    protected final int width;
+    protected final int height;
     private final Tile[][] tiles;
 
     private final Map<Vector2d, List<Animal>> animals = new ConcurrentHashMap<>();
     private final Map<Vector2d, Grass> grasses = new HashMap<>();
-    private final List<Vector2d> flowTiles = new ArrayList<>();
     private final List<MapChangeListener> observers = new ArrayList<>();
 
     // Additional parameters for statistics
     private int numOfDeadAnimals = 0;
     private int sumOfDeadAnimalsLifeTime = 0;
 
-    public WorldMap(int height, int width, double waterLevel) {
+    public WorldMap(MapSettings settings) {
         this.id = UUID.randomUUID();
-        this.width = width;
-        this.height = height;
+        this.width = settings.mapWidth();
+        this.height = settings.mapHeight();
 
-        TileGenerator generator = new TileGenerator(height, width, waterLevel);
+        TileGenerator generator = new TileGenerator(settings);
         this.tiles = generator.getTiles();
-
-        findFlowTiles();
     }
 
 //// Simulation functions
 
-    public void placeAnimals(MapConfig config) {
+    public void placeAnimals(SimulationConfig config) {
 
         RandomPositionGenerator generator = new RandomPositionGenerator(this, config.animalStartNumber(), Animal.class);
         for (Vector2d position : generator) {
@@ -70,8 +73,9 @@ public class WorldMap {
     }
 
     public void place(Animal animal) throws IllegalPositionException {
+
         Vector2d position = animal.getPosition();
-        if (inBounds(position) && !isWater(getTileAt(position))) {
+        if (isValidAnimalPosition(position)) {
             List<Animal> animalList = animals.get(position);
 
             if (animalList == null) {
@@ -82,14 +86,17 @@ public class WorldMap {
             animals.put(position, animalList);
         }
         else throw new IllegalPositionException(position);
+
     }
 
     public void place(Grass grass) throws IllegalPositionException {
+
         Vector2d position = grass.getPosition();
-        if (inBounds(position) && !grassAt(position) && !isWater(getTileAt(position))) {
+        if (isValidGrassPosition(position)) {
             grasses.put(position, grass);
         }
         else throw new IllegalPositionException(position);
+
     }
 
     public void deleteGrassAt(Vector2d position) {
@@ -103,7 +110,7 @@ public class WorldMap {
             if (animalList != null) {
 
                 List<Animal> deadAnimals = animalList.stream()
-                        .filter(a -> a.getEnergy() <= 0 || isWater(getTileAt(a.getPosition())))
+                        .filter(this::isDead)
                         .toList();
 
                 deadAnimals.forEach(deadAnimal -> {
@@ -153,7 +160,7 @@ public class WorldMap {
 
     }
 
-    public void consumeGrass(MapConfig config){
+    public void consumeGrass(SimulationConfig config){
         for(List<Animal> animalList : animals.values()){
             if(animalList.isEmpty()) continue;
             if(!grassAt(animalList.getFirst().getPosition())) continue;
@@ -173,7 +180,7 @@ public class WorldMap {
         }
     }
 
-    public void breedAnimals(MapConfig config, int day){
+    public void breedAnimals(SimulationConfig config, int day){
         for(List<Animal> animalList : animals.values()) {
             if(animalList.size() < 2) continue;
             List<Animal> breedList = new ArrayList<>(animalList);
@@ -208,24 +215,6 @@ public class WorldMap {
         return !animals.isEmpty();
     }
 
-    public void triggerFlow() {
-        if (flowTiles.isEmpty()) return;
-
-        Vector2d position = flowTiles.getFirst();
-        Tile tile = getTileAt(position);
-
-        TileState targetState = isWater(tile) ? TileState.PLAINS : TileState.WATER;
-
-        for (Vector2d flowPosition : flowTiles) {
-            Tile flowTile = getTileAt(flowPosition);
-            flowTile.setState(targetState);
-
-            if (grassAt(position)) {
-                deleteGrassAt(position);
-            }
-        }
-    }
-
     public void updateAnimalEnergy() {
         for (List<Animal> animalList : animals.values()) {
             for (Animal animal : animalList) {
@@ -254,7 +243,7 @@ public class WorldMap {
             for (int x = 0; x < width; x++) {
 
                 Vector2d position = new Vector2d(x, y);
-                if (!isWater(getTileAt(position)) && !isOccupied(position)) {
+                if (isValidEmpty(position)) {
                     result++;
                 }
 
@@ -305,10 +294,6 @@ public class WorldMap {
         observers.add(observer);
     }
 
-    public void removeObserver(MapChangeListener observer) {
-        observers.remove(observer);
-    }
-
     public void sendMapChanges(int day){
         for(MapChangeListener observer : observers){
             observer.mapChanged(this, day);
@@ -333,7 +318,7 @@ public class WorldMap {
         return tiles[position.getY()][position.getX()];
     }
 
-//// Other helper functions
+//// Helper/abstract functions
 
     public boolean isOccupied(Vector2d position) {
         return animals.containsKey(position);
@@ -347,35 +332,6 @@ public class WorldMap {
         return animals.getOrDefault(position, null);
     }
 
-    public boolean isWater(Tile tile) {
-        return tile.getState() == TileState.WATER;
-    }
-
-    private void findFlowTiles() {
-
-        int[][] neighbors = { {1, 0}, {-1, 0}, {0, -1}, {0, 1} };
-
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-
-                Vector2d position = new Vector2d(x, y);
-                if (!isWater(getTileAt(position))) {
-
-                    for (int[] n : neighbors) {
-                        Vector2d neighbor = new Vector2d(x + n[0], y + n[1]);
-                        if (inBounds(neighbor) && isWater(getTileAt(neighbor))) {
-                            flowTiles.add(position);
-                            break;
-                        }
-                    }
-
-                }
-
-            }
-        }
-
-    }
-
     private boolean inBounds(int r, int c) {
         return (r >= 0
                 && r < height
@@ -387,7 +343,12 @@ public class WorldMap {
         return inBounds(position.getY(), position.getX());
     }
 
+    protected abstract boolean isValidAnimalPosition(Vector2d position);
 
+    protected abstract boolean isValidGrassPosition(Vector2d position);
 
+    protected abstract boolean isDead(Animal animal);
+
+    protected abstract boolean isValidEmpty(Vector2d position);
 
 }

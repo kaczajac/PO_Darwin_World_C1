@@ -1,21 +1,31 @@
 package assets;
 
-import assets.model.MapConfig;
-import assets.model.Scoreboard;
-import assets.model.WorldMap;
+import assets.model.*;
+import assets.model.enums.MapType;
+import assets.model.map.DefaultMap;
+import assets.model.map.WaterMap;
+import assets.model.map.WorldMap;
+import assets.model.records.SimulationConfig;
 import assets.model.util.ConsoleMapPrinter;
 
 public class Simulation implements Runnable{
     private final WorldMap map;
-    private final MapConfig config;
+    private final SimulationConfig config;
     private final Scoreboard scoreboard = new Scoreboard();
 
     private int day = 0;
     private boolean simulationIsRunning = true;
     private final SimulationManager simulationManager;
 
-    public Simulation(MapConfig config, SimulationManager simulationManager, ConsoleMapPrinter cmp) {
-        this.map = new WorldMap(config.mapHeight(), config.mapWidth(), config.mapWaterLevel());
+    public Simulation(SimulationConfig config, SimulationManager simulationManager, ConsoleMapPrinter cmp) {
+
+        MapType type = config.mapSettings().mapType();
+        switch(type) {
+            case WATER -> map = new WaterMap(config.mapSettings());
+            case DEFAULT -> map = new DefaultMap(config.mapSettings());
+            default -> throw new IllegalStateException("Unexpected value: " + type);
+        }
+
         this.config = config;
         this.simulationManager = simulationManager;
 
@@ -41,8 +51,9 @@ public class Simulation implements Runnable{
 
             simulationIsRunning = map.checkSimulationEnd();
 
+            // Inflows and outflows handling if the map is 'WaterMap'
             if (flowCycleHasPassed()) {
-                map.triggerFlow();
+                ( (WaterMap) map ).triggerFlow();
             }
 
             // 1. Usunięcie martwych zwierzaków z mapy.
@@ -75,6 +86,7 @@ public class Simulation implements Runnable{
 ////
 
     private boolean flowCycleHasPassed() {
+        if (config.mapSettings().mapType() != MapType.WATER) return false;
 
         int cycle = config.mapFlowsDuration();
 

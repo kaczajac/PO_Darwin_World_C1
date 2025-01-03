@@ -2,7 +2,7 @@ package assets.model.util;
 
 import assets.model.Vector2d;
 import assets.model.contract.MapElement;
-import assets.model.WorldMap;
+import assets.model.map.WorldMap;
 
 import java.util.ArrayList;
 import java.util.Iterator;

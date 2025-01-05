@@ -19,7 +19,7 @@ public class Simulation implements Runnable{
     private final SimulationManager simulationManager;
 
     public Simulation(SimulationConfig config, SimulationManager simulationManager, ConsoleMapPrinter cmp) throws IllegalMapSettingsException{
-        this.map = new MapBuilder().setSettings(config.mapSettings()).build();
+        this.map = new MapBuilder().changeSettings(config.mapSettings()).build();
         this.config = config;
         this.simulationManager = simulationManager;
 

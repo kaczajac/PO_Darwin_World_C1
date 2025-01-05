@@ -17,7 +17,7 @@ public class MapBuilder {
     // Optional parameters for map generation
     private Double waterLevel = 0.0;
 
-    public MapBuilder setSettings(MapSettings settings) {
+    public MapBuilder changeSettings(MapSettings settings) {
         this.height = settings.mapHeight();
         this.width = settings.mapWidth();
         this.type = settings.mapType();

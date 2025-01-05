@@ -33,9 +33,7 @@ public abstract class BaseMap {
         this.id = UUID.randomUUID();
         this.width = settings.mapWidth();
         this.height = settings.mapHeight();
-
-        TileGenerator generator = new TileGenerator(settings);
-        this.tiles = generator.getTiles();
+        this.tiles = new TileGenerator(settings).getTiles();
     }
 
 //// Simulation functions

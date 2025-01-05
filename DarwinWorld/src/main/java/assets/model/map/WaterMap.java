@@ -9,7 +9,7 @@ import assets.model.records.MapSettings;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WaterMap extends WorldMap {
+public class WaterMap extends BaseMap {
 
     private final List<Vector2d> flowTilesPositions = new ArrayList<>();
 
@@ -41,6 +41,8 @@ public class WaterMap extends WorldMap {
     private void findFlowTiles() {
 
         int[][] neighbors = { {1, 0}, {-1, 0}, {0, -1}, {0, 1} };
+        int height = super.getHeight();
+        int width = super.getWidth();
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
@@ -65,7 +67,7 @@ public class WaterMap extends WorldMap {
 
 //// Other functions
 
-    public boolean isWater(Tile tile) {
+    private boolean isWater(Tile tile) {
         return tile.getState() == TileState.WATER;
     }
 

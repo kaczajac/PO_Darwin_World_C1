@@ -3,6 +3,7 @@ package assets.model.application;
 import assets.Simulation;
 import assets.SimulationManager;
 import assets.model.enums.MapType;
+import assets.model.exceptions.IllegalMapSettingsException;
 import assets.model.records.MapSettings;
 import assets.model.records.SimulationConfig;
 import assets.model.util.ConsoleMapPrinter;
@@ -10,8 +11,6 @@ import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -54,7 +53,7 @@ public class ConfigurationApp extends Application {
 
     // Called when button pressed
     public void startSimulation() {
-        int mapHeigth = Integer.parseInt(mapHeightField.getText());
+        int mapHeight = Integer.parseInt(mapHeightField.getText());
         int mapWidth = Integer.parseInt(mapWidthField.getText());
         double waterLevel = Double.parseDouble(mapWaterLevelField.getText());
         int mapFlowDuration = Integer.parseInt(mapFlowsDurationField.getText());
@@ -66,12 +65,17 @@ public class ConfigurationApp extends Application {
         int animalMinFedEnergy = Integer.parseInt(animalMinFedEnergyField.getText());
         int animalBirthCost = Integer.parseInt(animalBirthCostField.getText());
 
-        MapSettings mapSettings = new MapSettings(mapHeigth, mapWidth, MapType.WATER, waterLevel);
+        MapSettings mapSettings = new MapSettings(mapHeight, mapWidth, MapType.WATER, waterLevel);
         SimulationConfig simConfig = new SimulationConfig(mapSettings , mapFlowDuration, grassDailyGrow,
                 grassEnergy, animalsOnStartup, animalStartEnergy, animalGenomeLength,
                 animalMinFedEnergy, animalBirthCost);
 
-        Simulation sim = new Simulation(simConfig, simulationManager, consoleMapPrinter);
-        simulationManager.addAndStartSimulation(sim);
+        try {
+            Simulation sim = new Simulation(simConfig, simulationManager, consoleMapPrinter);
+            simulationManager.addAndStartSimulation(sim);
+        } catch (IllegalMapSettingsException e) {
+            System.out.println("Unable to build a map: " + e.getMessage());
+        }
+
     }
 }

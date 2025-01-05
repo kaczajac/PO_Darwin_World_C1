@@ -4,7 +4,7 @@ import assets.model.Animal;
 import assets.model.Vector2d;
 import assets.model.records.MapSettings;
 
-public class DefaultMap extends WorldMap {
+public class DefaultMap extends BaseMap {
 
     public DefaultMap(MapSettings settings) {
         super(settings);

@@ -2,14 +2,15 @@ package assets;
 
 import assets.model.*;
 import assets.model.enums.MapType;
-import assets.model.map.DefaultMap;
+import assets.model.exceptions.IllegalMapSettingsException;
 import assets.model.map.WaterMap;
-import assets.model.map.WorldMap;
+import assets.model.map.BaseMap;
 import assets.model.records.SimulationConfig;
 import assets.model.util.ConsoleMapPrinter;
+import assets.model.util.MapBuilder;
 
 public class Simulation implements Runnable{
-    private final WorldMap map;
+    private final BaseMap map;
     private final SimulationConfig config;
     private final Scoreboard scoreboard = new Scoreboard();
 
@@ -17,15 +18,8 @@ public class Simulation implements Runnable{
     private boolean simulationIsRunning = true;
     private final SimulationManager simulationManager;
 
-    public Simulation(SimulationConfig config, SimulationManager simulationManager, ConsoleMapPrinter cmp) {
-
-        MapType type = config.mapSettings().mapType();
-        switch(type) {
-            case WATER -> map = new WaterMap(config.mapSettings());
-            case DEFAULT -> map = new DefaultMap(config.mapSettings());
-            default -> throw new IllegalStateException("Unexpected value: " + type);
-        }
-
+    public Simulation(SimulationConfig config, SimulationManager simulationManager, ConsoleMapPrinter cmp) throws IllegalMapSettingsException{
+        this.map = new MapBuilder().setSettings(config.mapSettings()).build();
         this.config = config;
         this.simulationManager = simulationManager;
 

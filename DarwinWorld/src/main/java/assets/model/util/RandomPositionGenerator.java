@@ -2,7 +2,7 @@ package assets.model.util;
 
 import assets.model.Vector2d;
 import assets.model.contract.MapElement;
-import assets.model.map.WorldMap;
+import assets.model.map.BaseMap;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,7 +16,7 @@ public class RandomPositionGenerator implements Iterable<Vector2d> {
     private final String className;
     private int cursor = 0;
 
-    public <T extends MapElement> RandomPositionGenerator(WorldMap map, int numOfElements, Class<T> elementClass) {
+    public <T extends MapElement> RandomPositionGenerator(BaseMap map, int numOfElements, Class<T> elementClass) {
         this.numOfElements = numOfElements;
         this.className = elementClass.getSimpleName();
 
@@ -40,7 +40,7 @@ public class RandomPositionGenerator implements Iterable<Vector2d> {
         }
     }
 
-    private boolean isValidPosition(Vector2d position, WorldMap map) {
+    private boolean isValidPosition(Vector2d position, BaseMap map) {
         boolean isGrass = className.equals("Grass");
         boolean isAnimal = className.equals("Animal");
 

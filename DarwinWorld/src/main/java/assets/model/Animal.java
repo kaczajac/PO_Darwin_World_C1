@@ -2,7 +2,7 @@ package assets.model;
 
 import assets.model.contract.MapElement;
 import assets.model.enums.TileState;
-import assets.model.map.WorldMap;
+import assets.model.map.BaseMap;
 import assets.model.records.SimulationConfig;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public class Animal implements MapElement {
         this.position = position;
     }
 
-    public void move(WorldMap map){
+    public void move(BaseMap map){
         Vector2d moveVector = getMoveVector(genome[activeGene]);
         updateGene(activeGene);
 

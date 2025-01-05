@@ -1,9 +1,9 @@
 package assets.model.contract;
 
-import assets.model.map.WorldMap;
+import assets.model.map.BaseMap;
 
 public interface MapChangeListener {
 
-    void mapChanged(WorldMap map, int day);
+    void mapChanged(BaseMap map, int day);
 
 }

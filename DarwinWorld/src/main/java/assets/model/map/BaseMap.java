@@ -14,11 +14,11 @@ import assets.model.util.TileGenerator;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class WorldMap {
+public abstract class BaseMap {
 
     private final UUID id;
-    protected final int width;
-    protected final int height;
+    private final int width;
+    private final int height;
     private final Tile[][] tiles;
 
     private final Map<Vector2d, List<Animal>> animals = new ConcurrentHashMap<>();
@@ -29,7 +29,7 @@ public abstract class WorldMap {
     private int numOfDeadAnimals = 0;
     private int sumOfDeadAnimalsLifeTime = 0;
 
-    public WorldMap(MapSettings settings) {
+    public BaseMap(MapSettings settings) {
         this.id = UUID.randomUUID();
         this.width = settings.mapWidth();
         this.height = settings.mapHeight();

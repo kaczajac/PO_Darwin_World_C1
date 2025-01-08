@@ -2,7 +2,7 @@ package assets.model.application;
 
 import assets.SimulationManager;
 import assets.model.contract.MapChangeListener;
-import assets.model.map.BaseMap;
+import assets.model.map.AbstractMap;
 import assets.model.util.ConsoleMapPrinter;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -29,7 +29,7 @@ public class SimulationApp implements MapChangeListener {
     }
 
     @Override
-    public void mapChanged(BaseMap map, int day) {
+    public void mapChanged(AbstractMap map, int day) {
         drawMap();
     }
 }

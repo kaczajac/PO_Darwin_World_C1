@@ -3,12 +3,12 @@ package assets.model.util;
 import assets.model.enums.TileState;
 import assets.model.contract.MapChangeListener;
 import assets.model.Vector2d;
-import assets.model.map.BaseMap;
+import assets.model.map.AbstractMap;
 
 public class ConsoleMapPrinter implements MapChangeListener {
 
     @Override
-    public synchronized void mapChanged(BaseMap map, int day) {
+    public synchronized void mapChanged(AbstractMap map, int day) {
         for (int y = 0; y < map.getHeight(); y++) {
             for (int x = 0; x < map.getWidth(); x++) {
 

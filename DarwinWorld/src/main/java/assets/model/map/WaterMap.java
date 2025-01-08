@@ -9,7 +9,7 @@ import assets.model.records.MapSettings;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WaterMap extends BaseMap {
+public class WaterMap extends AbstractMap {
 
     private final List<Vector2d> flowTilesPositions = new ArrayList<>();
 
@@ -39,33 +39,37 @@ public class WaterMap extends BaseMap {
     }
 
     private void findFlowTiles() {
-
-        int[][] neighbors = { {1, 0}, {-1, 0}, {0, -1}, {0, 1} };
         int height = super.getHeight();
         int width = super.getWidth();
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-
                 Vector2d position = new Vector2d(x, y);
-                if (!isWater(getTileAt(position))) {
-
-                    for (int[] n : neighbors) {
-                        Vector2d neighbor = new Vector2d(x + n[0], y + n[1]);
-                        if (inBounds(neighbor) && isWater(getTileAt(neighbor))) {
-                            flowTilesPositions.add(position);
-                            break;
-                        }
-                    }
-
+                if (positionNextToWater(position)) {
+                    flowTilesPositions.add(position);
                 }
-
             }
         }
-
     }
 
 //// Other functions
+
+    private boolean positionNextToWater(Vector2d position) {
+        if (isWater(getTileAt(position))) {
+            return false;
+        }
+
+        int[][] neighbors = { {1, 0}, {-1, 0}, {0, -1}, {0, 1} };
+
+        for (int[] n : neighbors) {
+            Vector2d neighbor = new Vector2d(position.getX() + n[0], position.getY() + n[1]);
+            if (inBounds(neighbor) && isWater(getTileAt(neighbor))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     private boolean isWater(Tile tile) {
         return tile.getState() == TileState.WATER;
@@ -87,7 +91,7 @@ public class WaterMap extends BaseMap {
     }
 
     @Override
-    protected boolean isValidEmpty(Vector2d position) {
+    protected boolean isValidEmptyPosition(Vector2d position) {
         return !isWater(getTileAt(position)) && !isOccupied(position);
     }
 }

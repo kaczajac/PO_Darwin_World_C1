@@ -4,13 +4,13 @@ import assets.model.*;
 import assets.model.enums.MapType;
 import assets.model.exceptions.IllegalMapSettingsException;
 import assets.model.map.WaterMap;
-import assets.model.map.BaseMap;
+import assets.model.map.AbstractMap;
 import assets.model.records.SimulationConfig;
 import assets.model.util.ConsoleMapPrinter;
 import assets.model.util.MapBuilder;
 
 public class Simulation implements Runnable{
-    private final BaseMap map;
+    private final AbstractMap map;
     private final SimulationConfig config;
     private final Scoreboard scoreboard = new Scoreboard();
 
@@ -50,24 +50,16 @@ public class Simulation implements Runnable{
                 ( (WaterMap) map ).triggerFlow();
             }
 
-            // 1. Usunięcie martwych zwierzaków z mapy.
+            // Simulation procedure
             map.deleteDeadAnimals(day);
-
-            // 2. Skręt i przemieszczenie każdego zwierzaka.
             map.moveAnimals();
-
-            // 3. Konsumpcja roślin, na których pola weszły zwierzaki.
             map.consumeGrass(config);
-
-            // 4. Rozmnażanie zwierząt
-            map.breedAnimals(config , day);
-
-            // 5. Wzrastanie nowych roślin na wybranych polach mapy.
+            map.breedAnimals(config, day);
             map.placeGrasses(config.grassDaily());
 
             // New day setup
             day++;
-            map.updateAnimalEnergy();
+            map.updateAnimalStatistics();
             updateScoreboard();
         }
 

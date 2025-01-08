@@ -4,7 +4,7 @@ import assets.model.Animal;
 import assets.model.Vector2d;
 import assets.model.records.MapSettings;
 
-public class DefaultMap extends BaseMap {
+public class DefaultMap extends AbstractMap {
 
     public DefaultMap(MapSettings settings) {
         super(settings);
@@ -26,7 +26,7 @@ public class DefaultMap extends BaseMap {
     }
 
     @Override
-    protected boolean isValidEmpty(Vector2d position) {
+    protected boolean isValidEmptyPosition(Vector2d position) {
         return !isOccupied(position);
     }
 }

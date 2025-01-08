@@ -16,6 +16,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+
 public class ConfigurationApp extends Application {
 
     // FXML Variables
@@ -69,6 +71,13 @@ public class ConfigurationApp extends Application {
         SimulationConfig simConfig = new SimulationConfig(mapSettings , mapFlowDuration, grassDailyGrow,
                 grassEnergy, animalsOnStartup, animalStartEnergy, animalGenomeLength,
                 animalMinFedEnergy, animalBirthCost);
+
+        SimulationApp simApp = new SimulationApp();
+        try {
+            simApp.launchSimulation();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         try {
             Simulation sim = new Simulation(simConfig, simulationManager, consoleMapPrinter);

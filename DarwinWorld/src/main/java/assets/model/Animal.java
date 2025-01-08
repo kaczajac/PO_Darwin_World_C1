@@ -2,39 +2,37 @@ package assets.model;
 
 import assets.model.contract.MapElement;
 import assets.model.enums.TileState;
-import assets.model.map.BaseMap;
-import assets.model.records.SimulationConfig;
+import assets.model.map.AbstractMap;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Animal implements MapElement {
+
     private Vector2d position;
-    private int[] genome;
-    private int activeGene = 0;
-    private Vector2d facingVector = new Vector2d(0,-1);
-    private Animal[] parents = new Animal[2];
+    private Vector2d facingVector;
     private int energy;
-    private int birthDay = 0;
+    private int activeGene;
+    private int age;
+    private int birthDay;
+    private int deathDay;
 
     private final List<Animal> children = new ArrayList<>();
+    private final int[] genome;
 
-    public Animal(Vector2d position, int startEnergy , int geneLength) {
+    public Animal(Vector2d position, int startEnergy , int geneCount) {
         this.position = position;
-        randomGenes(geneLength);
-        energy = startEnergy;
-        birthDay = 0;
+        this.energy = startEnergy;
+        this.activeGene = 0;
+        this.age = 0;
+
+        this.facingVector = getMoveVector((int) (Math.random() * 8));
+        this.genome = randomGenes(geneCount);
     }
 
-    public Vector2d getPosition() {
-        return position;
-    }
+//// Move mechanism
 
-    public void setPosition(Vector2d position) {
-        this.position = position;
-    }
-
-    public void move(BaseMap map){
+    public void move(AbstractMap map){
         Vector2d moveVector = getMoveVector(genome[activeGene]);
         updateGene(activeGene);
 
@@ -59,19 +57,109 @@ public class Animal implements MapElement {
 
     }
 
+//// Genes and inheritance mechanism
+
+    public void setBirthValues(Animal parent1 , Animal parent2, int day) {
+        inheritGenes(parent1.getGenome(), parent1.getEnergy(), parent2.getGenome(), parent2.getEnergy());
+        this.birthDay = day;
+    }
+
+    private void inheritGenes(int[] genes1 , int energy1, int[] genes2 , int energy2){
+        int length = genome.length;
+        int maxEnergy = energy1 + energy2;
+
+        // Determine the mid-point based on the energy levels
+        int midPoint = (int) Math.floor(length * (Math.max(energy1, energy2) / (double) maxEnergy));
+
+        // Choose which gene set to use for the first and second part of the genome
+        int[] firstSet = (energy1 > energy2) ? genes1 : genes2;
+        int[] secondSet = (energy1 > energy2) ? genes2 : genes1;
+
+        // Create the new genome by combining both gene sets
+        int[] newGenome = new int[length];
+        System.arraycopy(firstSet, 0, newGenome, 0, midPoint);
+        System.arraycopy(secondSet, midPoint, newGenome, midPoint, length - midPoint);
+
+        // Update the current genome
+        System.arraycopy(newGenome, 0, genome, 0, length);
+
+    }
+
+//// Getters for simulation and statistics
+
+    public Vector2d getPosition() {
+        return position;
+    }
+
+    public Vector2d getFacingVector() {
+        return facingVector;
+    }
+
     public int getNumberOfChildren(){
         return children.size();
     }
+
+    public int getNumberOfDescendants() {
+        int result = this.getNumberOfChildren();
+        for (Animal child : children) {
+            result += child.getNumberOfDescendants();
+        }
+        return result;
+    }
+
+    public int getEnergy() {
+        return energy;
+    }
+
+    public int[] getGenome(){
+        return genome;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public int getBirthDay() {
+        return birthDay;
+    }
+
+    public int getDeathDay() {
+        return deathDay;
+    }
+
+//// Setters
 
     public void addNewChild(Animal child) {
         children.add(child);
     }
 
-    private void updateGene(int currGene) {
-        activeGene = (currGene + 1) % genome.length;
+    public void addEnergy(int amount) {
+        energy += amount;
     }
 
-    public Vector2d getMoveVector(int moveDirection){
+    public void useEnergy(int amount) {
+        energy -= amount;
+    }
+
+    public void setDeathDay(int deathDay) {
+        this.deathDay = deathDay;
+    }
+
+//// Helper functions
+
+    private int[] randomGenes(int geneCount){
+        if (geneCount == 0) {
+            return new int[0];
+        }
+
+        int[] newGenome = new int[geneCount];
+        for(int i = 0; i < geneCount; i++){
+            newGenome[i] = (int) (Math.random() * 8);
+        }
+        return newGenome;
+    }
+
+    private Vector2d getMoveVector(int moveDirection){
         switch (moveDirection){
             case 0 -> {
                 return new Vector2d(0,1);
@@ -101,63 +189,14 @@ public class Animal implements MapElement {
         return new Vector2d(0,0);
     }
 
-    public int getEnergy() {
-        return energy;
+    private void updateGene(int currentGene) {
+        activeGene = (currentGene + 1) % genome.length;
     }
 
-    public void addEnergy(int amount) {
-        energy += amount;
+    public void updateAge() { age += 1; }
+
+    public boolean isFed(int minFedEnergy){
+        return energy >= minFedEnergy;
     }
 
-    public void useEnergy(int amount) {
-        energy -= amount;
-    }
-
-    public int[] getGenome(){
-        return genome;
-    }
-
-    public void setBirthValues(Animal parent1 , Animal parent2, int birthDay){
-        parents[0] = parent1;
-        parents[1] = parent2;
-        inheritGenes(parent1.getGenome() , parent1.getEnergy(), parent2.getGenome() , parent2.getEnergy());
-        this.birthDay = birthDay;
-    }
-
-    public int getBirthDay() { return birthDay; }
-
-    public void randomGenes(int length){
-        if(length == 0) return;
-        genome = new int[length];
-        for(int i = 0; i < length; i++){
-            genome[i] = (int)(Math.random() * 8);
-        }
-    }
-
-    public void inheritGenes(int[] genes1 , int energy1, int[] genes2 , int energy2){
-        int length = genes1.length;
-        int midPoint;
-        int maxEnergy = energy1 + energy2;
-        int[] firstSet, secondSet;
-        if(energy1 > energy2){
-            midPoint = (int)Math.floor(length * ((double)energy1 / maxEnergy));
-            firstSet = genes1; secondSet = genes2;
-        }
-        else {
-            midPoint = (int)Math.floor(length * ((double)energy2 / maxEnergy));
-            firstSet = genes2; secondSet = genes1;
-        }
-
-        genome = new int[length];
-        for (int i = 0; i < midPoint; i++) {
-            genome[i] = firstSet[i];
-        }
-        for (int i = midPoint; i < length; i++) {
-            genome[i] = secondSet[i];
-        }
-    }
-
-    public boolean isFed(SimulationConfig config){
-        return energy >= config.animalMinFedEnergy();
-    }
 }

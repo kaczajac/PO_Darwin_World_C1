@@ -4,7 +4,7 @@ import assets.model.enums.MapType;
 import assets.model.exceptions.IllegalMapSettingsException;
 import assets.model.map.DefaultMap;
 import assets.model.map.WaterMap;
-import assets.model.map.BaseMap;
+import assets.model.map.AbstractMap;
 import assets.model.records.MapSettings;
 
 public class MapBuilder {
@@ -45,7 +45,7 @@ public class MapBuilder {
         return this;
     }
 
-    public BaseMap build() throws IllegalMapSettingsException {
+    public AbstractMap build() throws IllegalMapSettingsException {
 
         if (incorrectSettings()) {
             throw new IllegalMapSettingsException();

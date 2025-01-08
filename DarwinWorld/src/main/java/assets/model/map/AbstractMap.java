@@ -14,7 +14,7 @@ import assets.model.util.TileGenerator;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class BaseMap {
+public abstract class AbstractMap {
 
     private final UUID id;
     private final int width;
@@ -29,7 +29,7 @@ public abstract class BaseMap {
     private int numOfDeadAnimals = 0;
     private int sumOfDeadAnimalsLifeTime = 0;
 
-    public BaseMap(MapSettings settings) {
+    public AbstractMap(MapSettings settings) {
         this.id = UUID.randomUUID();
         this.width = settings.mapWidth();
         this.height = settings.mapHeight();
@@ -102,48 +102,47 @@ public abstract class BaseMap {
     }
 
     public void deleteDeadAnimals(int day) {
+
         for (Vector2d position : animals.keySet()) {
             List<Animal> animalList = animals.get(position);
+            if (animalList == null) continue;
 
-            if (animalList != null) {
+            List<Animal> deadAnimals = animalList.stream()
+                    .filter(this::isDead)
+                    .toList();
 
-                List<Animal> deadAnimals = animalList.stream()
-                        .filter(this::isDead)
-                        .toList();
+            deadAnimals.forEach(deadAnimal -> {
+                numOfDeadAnimals++;
+                sumOfDeadAnimalsLifeTime += deadAnimal.getAge();
+                deadAnimal.setDeathDay(day);
+            });
 
-                deadAnimals.forEach(deadAnimal -> {
-                    numOfDeadAnimals++;
-                    sumOfDeadAnimalsLifeTime += (day - deadAnimal.getBirthDay() + 1);
-                });
+            animalList.removeAll(deadAnimals);
 
-                animalList.removeAll(deadAnimals);
-
-                if (animalList.isEmpty()) {
-                    animals.remove(position);
-                }
-                else {
-                    animals.put(position, animalList);
-                }
-
+            if (animalList.isEmpty()) {
+                animals.remove(position);
+            }
+            else {
+                animals.put(position, animalList);
             }
 
         }
     }
 
     public void moveAnimals() {
+
         List<Animal> animalsToPlace = new ArrayList<>();
+
         for (Vector2d position : animals.keySet()) {
             List<Animal> animalList = animals.get(position);
+            if (animalList == null) continue;
 
-            if (animalList != null) {
-
-                for (Animal animal : animalList) {
-                    animal.move(this);
-                    animalsToPlace.add(animal);
-                }
-                animals.remove(position);
-
+            for (Animal animal : animalList) {
+                animal.move(this);
+                animalsToPlace.add(animal);
             }
+            animals.remove(position);
+
         }
 
         for (Animal animal : animalsToPlace) {
@@ -158,35 +157,30 @@ public abstract class BaseMap {
 
     }
 
-    public void consumeGrass(SimulationConfig config){
-        for(List<Animal> animalList : animals.values()){
-            if(animalList.isEmpty()) continue;
-            if(!grassAt(animalList.getFirst().getPosition())) continue;
+    public void consumeGrass(SimulationConfig config) {
 
-            List<Animal> animalsAt = getAnimalsAt(animalList.getFirst().getPosition());
-            Animal chosen = null;
-            // young and hungry animals have priority
-            for(Animal animal : animalsAt){
-                if(chosen == null) chosen = animal;
-                else if(chosen.getEnergy() > animal.getEnergy()) chosen = animal;
-                else if(chosen.getBirthDay() > animal.getBirthDay()) chosen = animal;
+        for (List<Animal> animalList : animals.values()) {
+            if (animalList.isEmpty() || !grassAt(animalList.getFirst().getPosition())) continue;
+
+            Animal chosen = selectDominantAnimal(animalList);
+
+            if (chosen != null) {
+                chosen.addEnergy(config.grassEnergy());
+                deleteGrassAt(chosen.getPosition());
             }
-
-            // consume the grass
-            chosen.addEnergy(config.grassEnergy());
-            deleteGrassAt(chosen.getPosition());
         }
     }
 
     public void breedAnimals(SimulationConfig config, int day){
+
         for(List<Animal> animalList : animals.values()) {
-            if(animalList.size() < 2) continue;
+            if (animalList.size() < 2) continue;
             List<Animal> breedList = new ArrayList<>(animalList);
 
             // check for suitable
-            for(int i = breedList.size()-1; i >= 0; i--){
-                if(breedList.get(i).getEnergy() < config.animalMinFedEnergy()) breedList.remove(i);
-            }
+            breedList = breedList.stream()
+                    .filter(a -> a.isFed(config.animalMinFedEnergy()))
+                    .toList();
 
             // breed possible
             while(breedList.size() > 1){
@@ -213,10 +207,11 @@ public abstract class BaseMap {
         return !animals.isEmpty();
     }
 
-    public void updateAnimalEnergy() {
+    public void updateAnimalStatistics() {
         for (List<Animal> animalList : animals.values()) {
             for (Animal animal : animalList) {
                 animal.useEnergy(1);
+                animal.updateAge();
             }
         }
     }
@@ -241,7 +236,7 @@ public abstract class BaseMap {
             for (int x = 0; x < width; x++) {
 
                 Vector2d position = new Vector2d(x, y);
-                if (isValidEmpty(position)) {
+                if (isValidEmptyPosition(position)) {
                     result++;
                 }
 
@@ -318,16 +313,27 @@ public abstract class BaseMap {
 
 //// Helper/abstract functions
 
+    private Animal selectDominantAnimal(List<Animal> animalList) {
+
+        return animalList.stream()
+                .max(Comparator.comparingInt(Animal::getEnergy)
+                        .thenComparingInt(Animal::getAge)
+                        .thenComparingInt(Animal::getNumberOfChildren))
+                .orElseGet(() -> selectRandomAnimal(animalList));
+
+    }
+
+    private Animal selectRandomAnimal(List<Animal> animalList) {
+        int randomIndex = (int) (Math.random() * animalList.size());
+        return animalList.get(randomIndex);
+    }
+
     public boolean isOccupied(Vector2d position) {
         return animals.containsKey(position);
     }
 
     public boolean grassAt(Vector2d position) {
         return grasses.containsKey(position);
-    }
-
-    public List<Animal> getAnimalsAt(Vector2d position) {
-        return animals.getOrDefault(position, null);
     }
 
     private boolean inBounds(int r, int c) {
@@ -347,6 +353,6 @@ public abstract class BaseMap {
 
     protected abstract boolean isDead(Animal animal);
 
-    protected abstract boolean isValidEmpty(Vector2d position);
+    protected abstract boolean isValidEmptyPosition(Vector2d position);
 
 }

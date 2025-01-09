@@ -196,14 +196,14 @@ public class Animal implements MapElement {
         descendants.remove(this);
     }
 
-    private void collectDescendants(Animal animal, Set<Animal> descendants) {
+    private void collectDescendants(Animal animal, Set<Animal> descendantSet) {
         // Mark the current animal as descendant
-        descendants.add(animal);
+        descendantSet.add(animal);
 
         // Recur for all the children
         for (Animal child : animal.getChildren()) {
-            if (!descendants.contains(child)) {
-                collectDescendants(child, descendants);
+            if (!descendantSet.contains(child)) {
+                collectDescendants(child, descendantSet);
             }
         }
     }

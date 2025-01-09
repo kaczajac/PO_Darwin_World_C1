@@ -4,11 +4,11 @@ import assets.model.contract.MapElement;
 import assets.model.enums.TileState;
 import assets.model.map.AbstractMap;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Animal implements MapElement {
 
+    private final UUID id;
     private Vector2d position;
     private Vector2d facingVector;
     private int energy;
@@ -18,9 +18,11 @@ public class Animal implements MapElement {
     private int deathDay;
 
     private final List<Animal> children = new ArrayList<>();
+    private final Set<Animal> descendants = new HashSet<>();
     private final int[] genome;
 
     public Animal(Vector2d position, int startEnergy , int geneCount) {
+        this.id = UUID.randomUUID();
         this.position = position;
         this.energy = startEnergy;
         this.activeGene = 0;
@@ -55,6 +57,36 @@ public class Animal implements MapElement {
             facingVector = moveVector;
         }
 
+    }
+
+    private Vector2d getMoveVector(int moveDirection){
+        switch (moveDirection){
+            case 0 -> {
+                return new Vector2d(0,1);
+            }
+            case 1 -> {
+                return new Vector2d(1,1);
+            }
+            case 2 -> {
+                return new Vector2d(1,0);
+            }
+            case 3 -> {
+                return new Vector2d(1,-1);
+            }
+            case 4 -> {
+                return new Vector2d(0,-1);
+            }
+            case 5 -> {
+                return new Vector2d(-1,-1);
+            }
+            case 6 -> {
+                return new Vector2d(-1,0);
+            }
+            case 7 -> {
+                return new Vector2d(-1,1);
+            }
+        }
+        return new Vector2d(0,0);
     }
 
 //// Genes and inheritance mechanism
@@ -95,16 +127,16 @@ public class Animal implements MapElement {
         return facingVector;
     }
 
+    public List<Animal> getChildren() {
+        return children;
+    }
+
     public int getNumberOfChildren(){
         return children.size();
     }
 
     public int getNumberOfDescendants() {
-        int result = this.getNumberOfChildren();
-        for (Animal child : children) {
-            result += child.getNumberOfDescendants();
-        }
-        return result;
+        return descendants.size();
     }
 
     public int getEnergy() {
@@ -159,34 +191,21 @@ public class Animal implements MapElement {
         return newGenome;
     }
 
-    private Vector2d getMoveVector(int moveDirection){
-        switch (moveDirection){
-            case 0 -> {
-                return new Vector2d(0,1);
-            }
-            case 1 -> {
-                return new Vector2d(1,1);
-            }
-            case 2 -> {
-                return new Vector2d(1,0);
-            }
-            case 3 -> {
-                return new Vector2d(1,-1);
-            }
-            case 4 -> {
-                return new Vector2d(0,-1);
-            }
-            case 5 -> {
-                return new Vector2d(-1,-1);
-            }
-            case 6 -> {
-                return new Vector2d(-1,0);
-            }
-            case 7 -> {
-                return new Vector2d(-1,1);
+    public void updateDescendants() {
+        collectDescendants(this, descendants);
+        descendants.remove(this);
+    }
+
+    private void collectDescendants(Animal animal, Set<Animal> descendants) {
+        // Mark the current animal as descendant
+        descendants.add(animal);
+
+        // Recur for all the children
+        for (Animal child : animal.getChildren()) {
+            if (!descendants.contains(child)) {
+                collectDescendants(child, descendants);
             }
         }
-        return new Vector2d(0,0);
     }
 
     private void updateGene(int currentGene) {
@@ -197,6 +216,11 @@ public class Animal implements MapElement {
 
     public boolean isFed(int minFedEnergy){
         return energy >= minFedEnergy;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
 }

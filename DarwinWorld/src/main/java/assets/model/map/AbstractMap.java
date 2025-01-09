@@ -13,6 +13,7 @@ import assets.model.util.TileGenerator;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public abstract class AbstractMap {
 
@@ -175,12 +176,11 @@ public abstract class AbstractMap {
 
         for(List<Animal> animalList : animals.values()) {
             if (animalList.size() < 2) continue;
-            List<Animal> breedList = new ArrayList<>(animalList);
 
             // check for suitable
-            breedList = breedList.stream()
+            List<Animal> breedList = animalList.stream()
                     .filter(a -> a.isFed(config.animalMinFedEnergy()))
-                    .toList();
+                    .collect(Collectors.toCollection(ArrayList::new));
 
             // breed possible
             while(breedList.size() > 1){
@@ -212,6 +212,7 @@ public abstract class AbstractMap {
             for (Animal animal : animalList) {
                 animal.useEnergy(1);
                 animal.updateAge();
+                animal.updateDescendants();
             }
         }
     }

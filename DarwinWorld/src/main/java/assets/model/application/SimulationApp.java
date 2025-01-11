@@ -2,6 +2,7 @@ package assets.model.application;
 
 import assets.SimulationManager;
 import assets.model.Animal;
+import assets.model.Grass;
 import assets.model.Tile;
 import assets.model.Vector2d;
 import assets.model.contract.MapChangeListener;
@@ -140,11 +141,14 @@ public class SimulationApp implements MapChangeListener {
         if(objAt instanceof Animal) {
             return createImageView("/images/animals/animal_1.png");
         }
+        else if(objAt instanceof Grass) {
+            return createImageView("/images/grass/grass_1.png");
+        }
         return null;
     }
 
     public ImageView createImageView(String imagePath) {
-        Image image = new Image(getClass().getResource(imagePath).toString());
+        Image image = new Image(getClass().getResource(imagePath).toString(),64, 64, false, false);
         ImageView imageView = new ImageView(image);
         imageView.setPreserveRatio(true);
 

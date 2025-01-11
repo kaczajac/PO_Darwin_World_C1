@@ -1,7 +1,11 @@
 package assets.model.application;
 
 import assets.SimulationManager;
+import assets.model.Animal;
+import assets.model.Tile;
+import assets.model.Vector2d;
 import assets.model.contract.MapChangeListener;
+import assets.model.enums.TileState;
 import assets.model.map.AbstractMap;
 import assets.model.util.ConsoleMapPrinter;
 import javafx.application.Platform;
@@ -105,8 +109,13 @@ public class SimulationApp implements MapChangeListener {
             for (int row = 0; row < rows; row++) {
                 for (int col = 0; col < cols; col++) {
                     Rectangle cell = new Rectangle(cellSize, cellSize);
-                    cell.setFill(Color.GREENYELLOW);
-                    cell.setStroke(Color.GREEN);
+
+                    // painting map tiles
+                    switch(map.getTileAt(new Vector2d(col, row)).getState()){
+                        case TileState.PLAINS ->  {cell.setFill(Color.GREENYELLOW); cell.setStroke(Color.GREEN);}
+                        case TileState.FOREST ->  {cell.setFill(Color.DARKGREEN); cell.setStroke(Color.GREEN);}
+                        case TileState.WATER ->  {cell.setFill(Color.DEEPSKYBLUE); cell.setStroke(Color.DARKCYAN);}
+                    }
                     cell.setStrokeWidth(1);
 
                     StackPane cellContainer = new StackPane();
@@ -116,6 +125,8 @@ public class SimulationApp implements MapChangeListener {
 
                     if (imageView != null) {
                         cellContainer.getChildren().add(imageView);
+                        imageView.setFitWidth(Math.floor(cellSize/2)*2);
+                        imageView.setFitHeight(Math.floor(cellSize/2)*2);
                     }
 
                     mapGrid.add(cellContainer, col, (rows - 1 - row));
@@ -125,18 +136,21 @@ public class SimulationApp implements MapChangeListener {
     }
 
     private ImageView getImageForCell(int row, int col, AbstractMap map) {
-        
+        Object objAt = map.objectAt(new Vector2d(col, row));
+        if(objAt instanceof Animal) {
+            return createImageView("/images/animals/animal_1.png");
+        }
         return null;
     }
 
-    public ImageView createImageView(String imagePath, double width, double height) {
+    public ImageView createImageView(String imagePath) {
         Image image = new Image(getClass().getResource(imagePath).toString());
         ImageView imageView = new ImageView(image);
-
-        imageView.setFitWidth(width);
-        imageView.setFitHeight(height);
         imageView.setPreserveRatio(true);
 
+        // disabling art filters
+        imageView.setSmooth(false);
+        imageView.setEffect(null);
         return imageView;
     }
 

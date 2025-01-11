@@ -80,7 +80,7 @@ public class ConfigurationApp extends Application {
         }
 
         try {
-            Simulation sim = new Simulation(simConfig, simulationManager, consoleMapPrinter);
+            Simulation sim = new Simulation(simConfig, simulationManager, simApp);
             simulationManager.addAndStartSimulation(sim);
         } catch (IllegalMapSettingsException e) {
             System.out.println("Unable to build a map: " + e.getMessage());

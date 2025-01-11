@@ -98,6 +98,12 @@ public abstract class AbstractMap {
 
     }
 
+    public Object objectAt(Vector2d position){
+        if(animals.containsKey(position)) return animals.get(position).getFirst();
+        if(grassAt(position)) return grasses.get(position);
+        return null;
+    }
+
     public void deleteGrassAt(Vector2d position) {
         grasses.remove(position);
     }

@@ -1,6 +1,7 @@
 package assets;
 
 import assets.model.*;
+import assets.model.contract.MapChangeListener;
 import assets.model.enums.MapType;
 import assets.model.exceptions.IllegalMapSettingsException;
 import assets.model.map.WaterMap;
@@ -18,12 +19,12 @@ public class Simulation implements Runnable{
     private boolean simulationIsRunning = true;
     private final SimulationManager simulationManager;
 
-    public Simulation(SimulationConfig config, SimulationManager simulationManager, ConsoleMapPrinter cmp) throws IllegalMapSettingsException{
+    public Simulation(SimulationConfig config, SimulationManager simulationManager, MapChangeListener mapListener) throws IllegalMapSettingsException{
         this.map = new MapBuilder().changeSettings(config.mapSettings()).build();
         this.config = config;
         this.simulationManager = simulationManager;
 
-        map.addObserver(cmp);
+        map.addObserver(mapListener);
         map.placeAnimals(config);
         map.placeGrasses(config.grassDaily());
         updateScoreboard();

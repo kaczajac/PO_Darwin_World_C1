@@ -2,6 +2,7 @@ package assets.controllers;
 
 import assets.SimulationThread;
 import assets.model.MapElementBox;
+import assets.model.Scoreboard;
 import assets.model.Vector2d;
 import assets.model.contract.MapChangeListener;
 import assets.model.map.AbstractMap;
@@ -9,6 +10,7 @@ import assets.model.records.SimulationConfig;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 
 
@@ -26,10 +28,20 @@ public class SimulationController implements MapChangeListener {
     @FXML
     private Button pauseButton;
 
+    //// Scoreboard labels
+
+    @FXML private Label numOfAnimals;
+    @FXML private Label numOfGrasses;
+    @FXML private Label numOfEmptyPositions;
+    @FXML private Label averageAnimalEnergy;
+    @FXML private Label averageLifeTime;
+    @FXML private Label averageChildren;
+
+    ////
 
     public SimulationController(SimulationConfig config, SimulationThread thread) {
 
-        this.CELL_SIZE = GRID_SIZE / config.map().getHeight();
+        this.CELL_SIZE = GRID_SIZE / Math.max(config.map().getHeight(), config.map().getWidth());
         this.config = config;
         this.thread = thread;
 
@@ -58,7 +70,10 @@ public class SimulationController implements MapChangeListener {
     @Override
     public void mapChanged(AbstractMap map) {
 
-        Platform.runLater(() -> drawMap(map));
+        Platform.runLater(() -> {
+            renderScoreboard();
+            drawMap(map);
+        });
 
     }
 
@@ -106,6 +121,16 @@ public class SimulationController implements MapChangeListener {
             mapGrid.getColumnConstraints().add(colConstraints);
         }
 
+    }
+
+    private void renderScoreboard() {
+        Scoreboard board = thread.getSimulationScoreboard();
+        numOfAnimals.setText(String.format("%d", board.getNumOfAnimals()));
+        numOfGrasses.setText(String.format("%d", board.getNumOfGrass()));
+        numOfEmptyPositions.setText(String.format("%d", board.getNumOfEmptyPositions()));
+        averageAnimalEnergy.setText(String.format("%d", board.getAverageAnimalEnergy()));
+        averageLifeTime.setText(String.format("%d", board.getAverageLifeTime()));
+        averageChildren.setText(String.format("%d", board.getAverageNumOfChildren()));
     }
 
 }

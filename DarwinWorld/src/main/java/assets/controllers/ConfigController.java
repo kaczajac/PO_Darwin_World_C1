@@ -100,6 +100,7 @@ public class ConfigController {
 
         stage.setTitle("Darwin World - Simulation");
         stage.setScene(scene);
+        stage.setResizable(false);
         return stage;
     }
 

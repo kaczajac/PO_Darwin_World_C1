@@ -5,12 +5,15 @@ import assets.model.map.WaterMap;
 import assets.model.map.AbstractMap;
 import assets.model.records.SimulationConfig;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class Simulation implements Runnable{
 
     private final AbstractMap map;
     private final SimulationConfig config;
     private final Scoreboard scoreboard = new Scoreboard();
-
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss.SS");
 
     private int day = 0;
     private boolean simulationIsRunning = true;
@@ -67,7 +70,7 @@ public class Simulation implements Runnable{
 
     }
 
-////
+//// Helpers
 
     private boolean flowCycleHasPassed() {
         if (isNotWaterMap()) return false;
@@ -92,23 +95,27 @@ public class Simulation implements Runnable{
         return !map.getClass().isAssignableFrom(WaterMap.class);
     }
 
-    public void terminate() {
-        simulationIsRunning = false;
-        suspendedThread = true;
-        System.out.println("Simulation has been terminated");
-    }
-
 //// Thread management
 
     public synchronized void pause() {
         suspendedThread = true;
-        System.out.println("Pausing...");
+        System.out.println(LocalDateTime.now().format(formatter) + " | " + map.getId() + " | " + "Pausing...");
     }
 
     public synchronized void revive() {
         suspendedThread = false;
-        System.out.println("Resuming...");
+        System.out.println(LocalDateTime.now().format(formatter) + " | " + map.getId() + " | " + "Resuming...");
         this.notify();
+    }
+
+    public void terminate() {
+        simulationIsRunning = false;
+        suspendedThread = true;
+        System.out.println(LocalDateTime.now().format(formatter) + " | " + map.getId() + " | " + "Simulation has been terminated");
+    }
+
+    public Scoreboard getScoreboard() {
+        return this.scoreboard;
     }
 
 }

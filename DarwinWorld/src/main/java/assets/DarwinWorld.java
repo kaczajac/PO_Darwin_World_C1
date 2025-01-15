@@ -25,6 +25,7 @@ public class DarwinWorld extends Application {
     private void setupConfigStage(Stage stage, BorderPane viewRoot) {
         Scene scene = new Scene(viewRoot, 400, 600);
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.setOnCloseRequest(event -> System.exit(0));
         stage.setTitle("Darwin World - Configuration");
     }

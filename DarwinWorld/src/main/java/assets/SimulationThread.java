@@ -1,6 +1,7 @@
 package assets;
 
 
+import assets.model.Scoreboard;
 
 public class SimulationThread extends Thread {
 
@@ -30,6 +31,10 @@ public class SimulationThread extends Thread {
         this.interrupt();
         this.revive();
         simulation.terminate();
+    }
+
+    public Scoreboard getSimulationScoreboard() {
+        return simulation.getScoreboard();
     }
 
 }

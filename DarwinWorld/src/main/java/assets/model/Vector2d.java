@@ -3,36 +3,25 @@ package assets.model;
 import java.util.Objects;
 
 public class Vector2d {
-    private int x;
-    private int y;
+    private final int x;
+    private final int y;
 
     public Vector2d(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
+    @Override
+    public String toString() {
+        return String.format("(%d, %d)", this.x, this.y);
+    }
+
     public int getX() {
         return x;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
     public int getY() {
         return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public Vector2d getPosition(){
-        return new Vector2d(x,y);
-    }
-
-    public Vector2d getPositionReference(){
-        return this;
     }
 
     public Vector2d opposite(){
@@ -47,14 +36,12 @@ public class Vector2d {
         return new Vector2d(this.x - other.x, this.y - other.y);
     }
 
-    public boolean smallerThan(Vector2d other){
-        if(x >= other.getX()) return false;
-        return !(y >= other.getY());
+    public boolean follows(Vector2d other){
+        return (this.x <= other.x) && (this.y <= other.y);
     }
 
-    public boolean biggerThan(Vector2d other){
-        if(x <= other.getX()) return false;
-        return !(y <= other.getY());
+    public boolean precedes(Vector2d other){
+        return (this.x >= other.x) && (this.y >= other.y);
     }
 
     @Override

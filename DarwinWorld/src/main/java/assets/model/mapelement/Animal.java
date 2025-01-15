@@ -1,12 +1,13 @@
-package assets.model;
+package assets.model.mapelement;
 
-import assets.model.contract.MapElement;
+import assets.model.Vector2d;
 import assets.model.enums.TileState;
 import assets.model.map.AbstractMap;
+import javafx.scene.image.ImageView;
 
 import java.util.*;
 
-public class Animal implements MapElement {
+public class Animal extends MapElement {
 
     private final UUID id;
     private Vector2d position;
@@ -16,10 +17,11 @@ public class Animal implements MapElement {
     private int age;
     private int birthDay;
     private int deathDay;
+    private int descendantsCount;
 
     private final List<Animal> children = new ArrayList<>();
-    private final Set<Animal> descendants = new HashSet<>();
     private final int[] genome;
+    private final int imageNumber;
 
     public Animal(Vector2d position, int startEnergy , int geneCount) {
         this.id = UUID.randomUUID();
@@ -30,6 +32,7 @@ public class Animal implements MapElement {
 
         this.facingVector = getMoveVector((int) (Math.random() * 8));
         this.genome = randomGenes(geneCount);
+        this.imageNumber = (int) (Math.random() * 3) + 1;
     }
 
 //// Move mechanism
@@ -42,13 +45,14 @@ public class Animal implements MapElement {
 
         if (!map.inBounds(newPosition)) {
 
-            if (newPosition.equals(new Vector2d(-1, newPosition.getY()))) {
+            if (newPosition.getY() <= -1 || newPosition.getY() >= map.getHeight()) return;
+
+            if (newPosition.getX() <= -1) {
                 newPosition = new Vector2d(map.getWidth() - 1, newPosition.getY());
             }
-            else if (newPosition.equals(new Vector2d(map.getWidth(), newPosition.getY()))) {
+            else if (newPosition.getX() >= map.getWidth()) {
                 newPosition = new Vector2d(0, newPosition.getY());
             }
-            else return;
 
         }
 
@@ -93,6 +97,7 @@ public class Animal implements MapElement {
 
     public void setBirthValues(Animal parent1 , Animal parent2, int day) {
         inheritGenes(parent1.getGenome(), parent1.getEnergy(), parent2.getGenome(), parent2.getEnergy());
+        this.activeGene = (int) (Math.random() * this.genome.length);
         this.birthDay = day;
     }
 
@@ -136,7 +141,7 @@ public class Animal implements MapElement {
     }
 
     public int getNumberOfDescendants() {
-        return descendants.size();
+        return descendantsCount;
     }
 
     public int getEnergy() {
@@ -159,7 +164,17 @@ public class Animal implements MapElement {
         return deathDay;
     }
 
-//// Setters
+    @Override
+    public ImageView getImageRepresentation() {
+        return createImageView(ANIMAL_IMAGES.get(imageNumber));
+    }
+
+    @Override
+    public UUID getID() {
+        return null;
+    }
+
+    //// Setters
 
     public void addNewChild(Animal child) {
         children.add(child);
@@ -192,20 +207,14 @@ public class Animal implements MapElement {
     }
 
     public void updateDescendants() {
-        collectDescendants(this, descendants);
-        descendants.remove(this);
-    }
 
-    private void collectDescendants(Animal animal, Set<Animal> descendantSet) {
-        // Mark the current animal as descendant
-        descendantSet.add(animal);
-
-        // Recur for all the children
-        for (Animal child : animal.getChildren()) {
-            if (!descendantSet.contains(child)) {
-                collectDescendants(child, descendantSet);
-            }
+        int count = 0;
+        for (Animal child : children) {
+            count += (1 + child.getNumberOfDescendants());
         }
+
+        this.descendantsCount = count;
+
     }
 
     private void updateGene(int currentGene) {

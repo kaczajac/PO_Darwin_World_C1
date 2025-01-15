@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.scene.control.Label?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
+
    <center>
       <StackPane>
          <!-- Ustawienie GridPane na wyśrodkowany -->
-         <GridPane fx:id="mapGrid" gridLinesVisible="true" alignment="CENTER">
-         </GridPane>
+         <GridPane fx:id="mapGrid" alignment="CENTER" gridLinesVisible="true"/>
       </StackPane>
    </center>
+
+   <bottom>
+      <VBox alignment="CENTER">
+         <Button fx:id="pauseButton" alignment="CENTER" prefWidth="100" text="Pause" />
+      </VBox>
+   </bottom>
+
 </BorderPane>

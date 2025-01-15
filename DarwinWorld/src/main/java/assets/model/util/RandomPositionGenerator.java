@@ -1,7 +1,7 @@
 package assets.model.util;
 
 import assets.model.Vector2d;
-import assets.model.contract.MapElement;
+import assets.model.mapelement.MapElement;
 import assets.model.map.AbstractMap;
 
 import java.util.ArrayList;

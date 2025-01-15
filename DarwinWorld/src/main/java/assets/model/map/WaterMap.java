@@ -1,6 +1,6 @@
 package assets.model.map;
 
-import assets.model.Animal;
+import assets.model.mapelement.Animal;
 import assets.model.Tile;
 import assets.model.Vector2d;
 import assets.model.enums.TileState;
@@ -32,8 +32,8 @@ public class WaterMap extends AbstractMap {
             Tile flowTile = getTileAt(flowPosition);
             flowTile.setState(targetState);
 
-            if (grassAt(position)) {
-                deleteGrassAt(position);
+            if (grassAt(flowPosition)) {
+                deleteGrassAt(flowPosition);
             }
         }
     }

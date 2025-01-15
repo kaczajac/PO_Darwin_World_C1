@@ -1,10 +1,11 @@
 package assets.model.map;
 
-import assets.model.Animal;
-import assets.model.Grass;
+import assets.model.mapelement.Animal;
+import assets.model.mapelement.Grass;
 import assets.model.Tile;
 import assets.model.Vector2d;
 import assets.model.contract.MapChangeListener;
+import assets.model.mapelement.MapElement;
 import assets.model.exceptions.IllegalPositionException;
 import assets.model.records.MapSettings;
 import assets.model.records.SimulationConfig;
@@ -26,9 +27,9 @@ public abstract class AbstractMap {
     private final Map<Vector2d, Grass> grasses = new HashMap<>();
     private final List<MapChangeListener> observers = new ArrayList<>();
 
-    // Additional parameters for statistics
     private int numOfDeadAnimals = 0;
     private int sumOfDeadAnimalsLifeTime = 0;
+
 
     public AbstractMap(MapSettings settings) {
         this.id = UUID.randomUUID();
@@ -98,12 +99,6 @@ public abstract class AbstractMap {
 
     }
 
-    public Object objectAt(Vector2d position){
-        if(animals.containsKey(position)) return animals.get(position).getFirst();
-        if(grassAt(position)) return grasses.get(position);
-        return null;
-    }
-
     public void deleteGrassAt(Vector2d position) {
         grasses.remove(position);
     }
@@ -170,11 +165,8 @@ public abstract class AbstractMap {
             if (animalList.isEmpty() || !grassAt(animalList.getFirst().getPosition())) continue;
 
             Animal chosen = selectDominantAnimal(animalList);
-
-            if (chosen != null) {
-                chosen.addEnergy(config.grassEnergy());
-                deleteGrassAt(chosen.getPosition());
-            }
+            chosen.addEnergy(config.grassEnergy());
+            deleteGrassAt(chosen.getPosition());
         }
     }
 
@@ -214,12 +206,19 @@ public abstract class AbstractMap {
     }
 
     public void updateAnimalStatistics() {
+
+        List<Animal> allAnimals = new ArrayList<>();
+
         for (List<Animal> animalList : animals.values()) {
-            for (Animal animal : animalList) {
-                animal.useEnergy(1);
-                animal.updateAge();
-                animal.updateDescendants();
-            }
+            allAnimals.addAll(animalList);
+        }
+
+        allAnimals.sort(Comparator.comparingInt(Animal::getAge));
+
+        for (Animal animal : allAnimals) {
+            animal.useEnergy(1);
+            animal.updateAge();
+            animal.updateDescendants();
         }
     }
 
@@ -294,9 +293,9 @@ public abstract class AbstractMap {
         observers.add(observer);
     }
 
-    public void sendMapChanges(int day){
+    public void sendMapChanges(){
         for(MapChangeListener observer : observers){
-            observer.mapChanged(this, day);
+            observer.mapChanged(this);
         }
     }
 
@@ -343,15 +342,14 @@ public abstract class AbstractMap {
         return grasses.containsKey(position);
     }
 
-    private boolean inBounds(int r, int c) {
-        return (r >= 0
-                && r < height
-                && c >= 0
-                && c < width);
+    public MapElement objectAt(Vector2d position) {
+        if (animals.containsKey(position)) return animals.get(position).getFirst();
+        if (grassAt(position)) return grasses.get(position);
+        return null;
     }
 
     public boolean inBounds(Vector2d position) {
-        return inBounds(position.getY(), position.getX());
+        return position.precedes(new Vector2d(0, 0)) && position.follows(new Vector2d(this.getWidth() - 1, this.getHeight() - 1));
     }
 
     protected abstract boolean isValidAnimalPosition(Vector2d position);

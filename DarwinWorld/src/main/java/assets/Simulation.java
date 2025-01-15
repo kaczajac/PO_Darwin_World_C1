@@ -1,30 +1,25 @@
 package assets;
 
 import assets.model.*;
-import assets.model.contract.MapChangeListener;
-import assets.model.enums.MapType;
-import assets.model.exceptions.IllegalMapSettingsException;
 import assets.model.map.WaterMap;
 import assets.model.map.AbstractMap;
 import assets.model.records.SimulationConfig;
-import assets.model.util.ConsoleMapPrinter;
-import assets.model.util.MapBuilder;
 
 public class Simulation implements Runnable{
+
     private final AbstractMap map;
     private final SimulationConfig config;
     private final Scoreboard scoreboard = new Scoreboard();
 
+
     private int day = 0;
     private boolean simulationIsRunning = true;
-    private final SimulationManager simulationManager;
+    private boolean suspendedThread = false;
 
-    public Simulation(SimulationConfig config, SimulationManager simulationManager, MapChangeListener mapListener) throws IllegalMapSettingsException{
-        this.map = new MapBuilder().changeSettings(config.mapSettings()).build();
+    public Simulation(SimulationConfig config) {
+        this.map = config.map();
         this.config = config;
-        this.simulationManager = simulationManager;
 
-        map.addObserver(mapListener);
         map.placeAnimals(config);
         map.placeGrasses(config.grassDaily());
         updateScoreboard();
@@ -35,11 +30,16 @@ public class Simulation implements Runnable{
     @Override
     public void run() {
 
-        while (simulationIsRunning && !Thread.currentThread().isInterrupted()) {
+        while (simulationIsRunning) {
 
             try {
-                map.sendMapChanges(day);
-                Thread.sleep(100);
+                map.sendMapChanges();
+                Thread.sleep(200);
+                synchronized (this) {
+                    while (suspendedThread) {
+                        wait();
+                    }
+                }
             } catch (InterruptedException e) {
                 System.out.println(e.getMessage());
             }
@@ -64,16 +64,12 @@ public class Simulation implements Runnable{
             updateScoreboard();
         }
 
-        if(!Thread.currentThread().isInterrupted()){
-            simulationManager.removeSimulation(this);
-        }
-
     }
 
 ////
 
     private boolean flowCycleHasPassed() {
-        if (config.mapSettings().mapType() != MapType.WATER) return false;
+        if (isNotWaterMap()) return false;
 
         int cycle = config.mapFlowsDuration();
 
@@ -90,4 +86,27 @@ public class Simulation implements Runnable{
                                     map.calculateAverageLifeTime(),
                                     map.calculateAverageNumOfChildren());
     }
+
+    private boolean isNotWaterMap() {
+        return !map.getClass().isAssignableFrom(WaterMap.class);
+    }
+
+    public void terminate() {
+        simulationIsRunning = false;
+        System.out.println("Simulation has been terminated");
+    }
+
+//// Thread management
+
+    public synchronized void pause() {
+        suspendedThread = true;
+        System.out.println("Pausing...");
+    }
+
+    public synchronized void revive() {
+        suspendedThread = false;
+        System.out.println("Resuming...");
+        this.notify();
+    }
+
 }

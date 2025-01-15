@@ -1,6 +1,6 @@
 package assets.model.map;
 
-import assets.model.Animal;
+import assets.model.mapelement.Animal;
 import assets.model.Vector2d;
 import assets.model.records.MapSettings;
 

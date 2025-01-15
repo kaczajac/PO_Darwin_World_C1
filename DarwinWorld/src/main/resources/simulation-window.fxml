@@ -2,20 +2,34 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
-
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
    <center>
-      <StackPane>
-         <!-- Ustawienie GridPane na wyśrodkowany -->
-         <GridPane fx:id="mapGrid" alignment="CENTER" gridLinesVisible="true"/>
-      </StackPane>
-   </center>
+      <AnchorPane>
 
-   <bottom>
-      <VBox alignment="CENTER">
-         <Button fx:id="pauseButton" alignment="CENTER" prefWidth="100" text="Pause" />
-      </VBox>
-   </bottom>
+         <!-- Ustawienie GridPane na wyśrodkowany -->
+         <GridPane fx:id="mapGrid" alignment="CENTER" gridLinesVisible="true" layoutX="275.0" layoutY="50.0" prefHeight="500" prefWidth="500" />
+         <Button fx:id="pauseButton" alignment="CENTER" layoutX="87.0" layoutY="524.0" prefWidth="100" text="Pause" />
+         <Label layoutX="19.0" layoutY="50.0" prefHeight="17.0" prefWidth="109.0" text="Number Of Animals" />
+         <Label layoutX="19.0" layoutY="77.0" text="Number Of Grasses" />
+         <Label layoutX="19.0" layoutY="103.0" text="Number Of Empty Positions" />
+         <Label layoutX="19.0" layoutY="131.0" text="Average Animal Energy" />
+         <Label layoutX="19.0" layoutY="159.0" text="Average Life Time" />
+         <Label layoutX="19.0" layoutY="188.0" text="Average Number Of Children" />
+         <Label layoutX="92.0" layoutY="23.0" text="Scoreboard">
+            <font>
+               <Font name="Verdana Bold" size="14.0" />
+            </font>
+         </Label>
+         <TextField layoutX="175.0" layoutY="46.0" prefHeight="25.0" prefWidth="76.0" />
+         <TextField layoutX="175.0" layoutY="73.0" prefHeight="25.0" prefWidth="76.0" />
+         <TextField layoutX="175.0" layoutY="100" prefHeight="25.0" prefWidth="76.0" />
+         <TextField layoutX="175.0" layoutY="127.0" prefHeight="25.0" prefWidth="76.0" />
+         <TextField layoutX="175.0" layoutY="155.0" prefHeight="25.0" prefWidth="76.0" />
+         <TextField editable="false" layoutX="175.0" layoutY="184.0" prefHeight="25.0" prefWidth="76.0" />
+
+      </AnchorPane>
+   </center>
 
 </BorderPane>

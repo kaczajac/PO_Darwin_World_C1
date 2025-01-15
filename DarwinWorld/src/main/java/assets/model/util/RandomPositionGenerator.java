@@ -24,7 +24,7 @@ public class RandomPositionGenerator implements Iterable<Vector2d> {
         int width = map.getWidth();
         for (int r = 0; r < height; r++) {
             for (int c = 0; c < width; c++) {
-                Vector2d position = new Vector2d(r, c);
+                Vector2d position = new Vector2d(c, r);
 
                 if (isValidPosition(position, map)) {
 

@@ -26,4 +26,10 @@ public class SimulationThread extends Thread {
         simulation.pause();
     }
 
+    public void terminate() {
+        this.interrupt();
+        this.revive();
+        simulation.terminate();
+    }
+
 }

@@ -42,6 +42,7 @@ public class Simulation implements Runnable{
                 }
             } catch (InterruptedException e) {
                 System.out.println(e.getMessage());
+                if (!simulationIsRunning) return;
             }
 
             simulationIsRunning = map.checkSimulationEnd();
@@ -93,6 +94,7 @@ public class Simulation implements Runnable{
 
     public void terminate() {
         simulationIsRunning = false;
+        suspendedThread = true;
         System.out.println("Simulation has been terminated");
     }
 

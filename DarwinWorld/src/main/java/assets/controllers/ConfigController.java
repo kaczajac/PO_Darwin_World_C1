@@ -76,7 +76,7 @@ public class ConfigController {
         Stage stage = setupNewStage(viewRoot);
 
         thread.start();
-        stage.setOnCloseRequest(event -> simulation.terminate());
+        stage.setOnCloseRequest(event -> thread.terminate());
         stage.show();
     }
 

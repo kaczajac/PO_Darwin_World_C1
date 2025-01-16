@@ -27,6 +27,7 @@ public abstract class AbstractMap {
     private final Map<Vector2d, Grass> grasses = new HashMap<>();
     private final List<MapChangeListener> observers = new ArrayList<>();
 
+    private int numOfNewBornAnimals = 0;
     private int numOfDeadAnimals = 0;
     private int sumOfDeadAnimalsLifeTime = 0;
 
@@ -166,7 +167,9 @@ public abstract class AbstractMap {
 
             Animal chosen = selectDominantAnimal(animalList);
             chosen.addEnergy(config.grassEnergy());
+            chosen.updateGrassEaten();
             deleteGrassAt(chosen.getPosition());
+
         }
     }
 
@@ -175,21 +178,25 @@ public abstract class AbstractMap {
         for(List<Animal> animalList : animals.values()) {
             if (animalList.size() < 2) continue;
 
-            // check for suitable
+            // check for suitable and sort them in order of dominance
             List<Animal> breedList = animalList.stream()
                     .filter(a -> a.isFed(config.animalMinFedEnergy()))
+                    .sorted(Comparator.comparingInt(Animal::getEnergy)
+                            .thenComparingInt(Animal::getAge)
+                            .thenComparingInt(Animal::getNumberOfChildren))
                     .collect(Collectors.toCollection(ArrayList::new));
 
             // breed possible
             while(breedList.size() > 1){
                 Animal a1 = breedList.removeFirst();
                 Animal a2 = breedList.removeFirst();
-                Animal baby = new Animal(a1.getPosition() , config.animalStartEnergy(), config.animalGenomeLength());
+                Animal baby = new Animal(a1.getPosition() , 2 * config.animalBirthCost(), config.animalGenomeLength());
                 baby.setBirthValues(a1, a2, day);
                 a1.useEnergy(config.animalBirthCost());
                 a2.useEnergy(config.animalBirthCost());
                 a1.addNewChild(baby);
                 a2.addNewChild(baby);
+                numOfNewBornAnimals++;
 
                 try {
                     place(baby);
@@ -255,16 +262,16 @@ public abstract class AbstractMap {
         if (animals.isEmpty()) return 0;
 
         int sumOfEnergy = 0;
-        int numOfAnimals = 0;
+        int numOfLivingAnimals = 0;
         for (List<Animal> animalList : animals.values()) {
 
             for (Animal animal : animalList) {
                 sumOfEnergy += animal.getEnergy();
             }
-            numOfAnimals += animalList.size();
+            numOfLivingAnimals += animalList.size();
 
         }
-        return (sumOfEnergy / numOfAnimals);
+        return (sumOfEnergy / (numOfLivingAnimals + numOfDeadAnimals));
     }
 
     public int calculateAverageLifeTime() {
@@ -274,17 +281,12 @@ public abstract class AbstractMap {
     public int calculateAverageNumOfChildren() {
         if (animals.isEmpty()) return 0;
 
-        int allChildren = 0;
-        int numOfAnimals = 0;
+        int numOfLivingAnimals = 0;
         for (List<Animal> animalList : animals.values()) {
-
-            for (Animal animal : animalList) {
-                allChildren += animal.getNumberOfChildren();
-            }
-            numOfAnimals += animalList.size();
-
+            numOfLivingAnimals += animalList.size();
         }
-        return (allChildren / numOfAnimals);
+
+        return (numOfNewBornAnimals / numOfLivingAnimals);
     }
 
 //// Listeners
@@ -342,14 +344,13 @@ public abstract class AbstractMap {
         return grasses.containsKey(position);
     }
 
-    public MapElement objectAt(Vector2d position) {
-        if (animals.containsKey(position)) return animals.get(position).getFirst();
-        if (grassAt(position)) return grasses.get(position);
-        return null;
+    public Optional<MapElement> objectAt(Vector2d position) {
+        if (animals.containsKey(position)) return Optional.ofNullable(selectDominantAnimal(animals.get(position)));
+        else return Optional.ofNullable(grasses.get(position));
     }
 
     public boolean inBounds(Vector2d position) {
-        return position.precedes(new Vector2d(0, 0)) && position.follows(new Vector2d(this.getWidth() - 1, this.getHeight() - 1));
+        return position.follows(new Vector2d(0, 0)) && position.precedes(new Vector2d(this.getWidth() - 1, this.getHeight() - 1));
     }
 
     protected abstract boolean isValidAnimalPosition(Vector2d position);

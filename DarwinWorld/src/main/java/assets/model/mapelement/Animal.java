@@ -13,6 +13,7 @@ public class Animal extends MapElement {
     private Vector2d position;
     private Vector2d facingVector;
     private int energy;
+    private int grassEaten;
     private int activeGene;
     private int age;
     private int birthDay;
@@ -27,8 +28,10 @@ public class Animal extends MapElement {
         this.id = UUID.randomUUID();
         this.position = position;
         this.energy = startEnergy;
+        this.grassEaten = 0;
         this.activeGene = 0;
         this.age = 0;
+        this.deathDay = -1;
 
         this.facingVector = getMoveVector((int) (Math.random() * 8));
         this.genome = randomGenes(geneCount);
@@ -128,14 +131,6 @@ public class Animal extends MapElement {
         return position;
     }
 
-    public Vector2d getFacingVector() {
-        return facingVector;
-    }
-
-    public List<Animal> getChildren() {
-        return children;
-    }
-
     public int getNumberOfChildren(){
         return children.size();
     }
@@ -148,8 +143,16 @@ public class Animal extends MapElement {
         return energy;
     }
 
+    public int getGrassEaten() {
+        return grassEaten;
+    }
+
     public int[] getGenome(){
         return genome;
+    }
+
+    public int getGene() {
+        return activeGene;
     }
 
     public int getAge() {
@@ -222,6 +225,10 @@ public class Animal extends MapElement {
     }
 
     public void updateAge() { age += 1; }
+
+    public void updateGrassEaten() {
+        this.grassEaten += 1;
+    }
 
     public boolean isFed(int minFedEnergy){
         return energy >= minFedEnergy;

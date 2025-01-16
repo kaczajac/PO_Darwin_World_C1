@@ -88,7 +88,8 @@ public class Simulation implements Runnable{
                                     map.countEmptyPositions(),
                                     map.calculateAverageEnergy(),
                                     map.calculateAverageLifeTime(),
-                                    map.calculateAverageNumOfChildren());
+                                    map.calculateAverageNumOfChildren(),
+                                    this.day);
     }
 
     private boolean isNotWaterMap() {

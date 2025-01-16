@@ -63,7 +63,9 @@ public class MapBuilder {
 //// Helper functions
 
     private boolean incorrectSettings(){
-        return height < 0 || width < 0 || type == null;
+        return height < 0 || height > 100
+                || width < 0 || width > 100
+                || type == null
+                || waterLevel < 0 || waterLevel > 0.5;
     }
-
 }

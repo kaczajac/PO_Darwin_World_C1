@@ -6,12 +6,16 @@ import assets.model.Scoreboard;
 import assets.model.Vector2d;
 import assets.model.contract.MapChangeListener;
 import assets.model.map.AbstractMap;
+import assets.model.mapelement.Animal;
+import assets.model.mapelement.MapElement;
 import assets.model.records.SimulationConfig;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
+
+import java.util.Arrays;
 
 
 public class SimulationController implements MapChangeListener {
@@ -22,11 +26,11 @@ public class SimulationController implements MapChangeListener {
     private final SimulationThread thread;
     private final SimulationConfig config;
 
-    @FXML
-    private GridPane mapGrid;
+    private MapElementBox selectedAnimalBox = null;
 
-    @FXML
-    private Button pauseButton;
+    @FXML private GridPane mapGrid;
+
+    @FXML private Label simulationLabel;
 
     //// Scoreboard labels
 
@@ -36,6 +40,24 @@ public class SimulationController implements MapChangeListener {
     @FXML private Label averageAnimalEnergy;
     @FXML private Label averageLifeTime;
     @FXML private Label averageChildren;
+    @FXML private Label dayCounter;
+
+    //// Animal statistics labels
+
+    @FXML private Label animalGenome;
+    @FXML private Label animalGene;
+    @FXML private Label animalEnergy;
+    @FXML private Label animalGrass;
+    @FXML private Label animalChildren;
+    @FXML private Label animalDescendants;
+    @FXML private Label animalAge;
+    @FXML private Label animalDeathDay;
+    @FXML private Label animalBirthDay;
+
+    //// Other Controls
+
+    @FXML private Button pauseButton;
+    @FXML private Button unfollowAnimalButton;
 
     ////
 
@@ -54,6 +76,7 @@ public class SimulationController implements MapChangeListener {
     private void initialize() {
 
         adjustGridPane();
+        renderSimulationNumber();
 
         pauseButton.setOnAction(event -> {
             if (thread.isRunning()) {
@@ -65,6 +88,13 @@ public class SimulationController implements MapChangeListener {
             }
         });
 
+        unfollowAnimalButton.setOnAction(event -> {
+            selectedAnimalBox.restoreDefaultBackground(config.map());
+            selectedAnimalBox = null;
+            clearSelectedAnimalStats();
+            unfollowAnimalButton.setDisable(true);
+        });
+
     }
 
     @Override
@@ -72,6 +102,7 @@ public class SimulationController implements MapChangeListener {
 
         Platform.runLater(() -> {
             renderScoreboard();
+            renderSelectedAnimalStats();
             drawMap(map);
         });
 
@@ -89,7 +120,9 @@ public class SimulationController implements MapChangeListener {
 
                 Vector2d position = new Vector2d(col, row);
                 MapElementBox box = new MapElementBox(map, position, CELL_SIZE);
+                configureBox(box);
                 mapGrid.add(box.display(), col, (rows - 1 - row));
+
             }
         }
 
@@ -123,14 +156,87 @@ public class SimulationController implements MapChangeListener {
 
     }
 
-    private void renderScoreboard() {
-        Scoreboard board = thread.getSimulationScoreboard();
-        numOfAnimals.setText(String.format("%d", board.getNumOfAnimals()));
-        numOfGrasses.setText(String.format("%d", board.getNumOfGrass()));
-        numOfEmptyPositions.setText(String.format("%d", board.getNumOfEmptyPositions()));
-        averageAnimalEnergy.setText(String.format("%d", board.getAverageAnimalEnergy()));
-        averageLifeTime.setText(String.format("%d", board.getAverageLifeTime()));
-        averageChildren.setText(String.format("%d", board.getAverageNumOfChildren()));
+    private void renderSimulationNumber() {
+        simulationLabel.setText("Simulation ID : " + config.map().getId());
     }
+
+    private void renderScoreboard() {
+
+        Scoreboard board = thread.getSimulationScoreboard();
+
+        numOfAnimals.setText(String.valueOf(board.getNumOfAnimals()));
+        numOfGrasses.setText(String.valueOf(board.getNumOfGrass()));
+        numOfEmptyPositions.setText(String.valueOf(board.getNumOfEmptyPositions()));
+        averageAnimalEnergy.setText(String.valueOf(board.getAverageAnimalEnergy()));
+        averageLifeTime.setText(String.valueOf(board.getAverageLifeTime()));
+        averageChildren.setText(String.valueOf(board.getAverageNumOfChildren()));
+        dayCounter.setText(String.valueOf(board.getDay()));
+
+    }
+
+    private void renderSelectedAnimalStats() {
+
+        if (selectedAnimalBox == null) return;
+
+        Animal selectedAnimal = (Animal) selectedAnimalBox.getMapElement();
+
+        animalGenome.setText(Arrays.toString(selectedAnimal.getGenome()));
+        animalGene.setText(String.valueOf(selectedAnimal.getGene()));
+        animalEnergy.setText(String.valueOf(selectedAnimal.getEnergy()));
+        animalGrass.setText(String.valueOf(selectedAnimal.getGrassEaten()));
+        animalChildren.setText(String.valueOf(selectedAnimal.getNumberOfChildren()));
+        animalDescendants.setText(String.valueOf(selectedAnimal.getNumberOfDescendants()));
+        animalAge.setText(String.valueOf(selectedAnimal.getAge()));
+        animalDeathDay.setText(selectedAnimal.getDeathDay() == -1 ? "-" : String.valueOf(selectedAnimal.getDeathDay()));
+        animalBirthDay.setText(String.valueOf(selectedAnimal.getBirthDay()));
+
+    }
+
+    private void clearSelectedAnimalStats() {
+
+        animalGenome.setText("-");
+        animalGene.setText("-");
+        animalEnergy.setText("-");
+        animalGrass.setText("-");
+        animalChildren.setText("-");
+        animalDescendants.setText("-");
+        animalAge.setText("-");
+        animalDeathDay.setText("-");
+        animalBirthDay.setText("-");
+
+    }
+
+    private void configureBox(MapElementBox box) {
+
+        if (box.getMapElement() == null) return;
+
+        if (box.equals(selectedAnimalBox)) {
+            selectedAnimalBox = box;
+            box.markAsSelected();
+        }
+
+        if (isAnimal(box.getMapElement())) {
+
+            box.display().setOnMouseClicked(event -> {
+
+                if (selectedAnimalBox != null) {
+                    selectedAnimalBox.restoreDefaultBackground(config.map());
+                }
+
+                selectedAnimalBox = box;
+                selectedAnimalBox.markAsSelected();
+                renderSelectedAnimalStats();
+                unfollowAnimalButton.setDisable(false);
+            });
+
+        }
+
+    }
+
+    private boolean isAnimal(MapElement element) {
+        return element.getClass().isAssignableFrom(Animal.class);
+    }
+
+
 
 }

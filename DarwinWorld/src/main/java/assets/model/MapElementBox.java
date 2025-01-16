@@ -8,30 +8,64 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import java.util.Optional;
+
+
 public class MapElementBox {
 
-    private final Group cell = new Group();
+    private final Group box = new Group();
+
+    private final Rectangle background;
+    private final MapElement element;
+    private final double size;
 
     public MapElementBox(AbstractMap map, Vector2d position, double size) {
 
-        TileState positionTileState = map.getTileAt(position).getState();
-        Rectangle cellBackground = getBackground(positionTileState, size);
-        cell.getChildren().add(cellBackground);
+        this.size = size;
 
-        MapElement positionElement = map.objectAt(position);
-        ImageView cellImage = getImageForCell(positionElement);
-        if (cellImage != null) {
-            cell.getChildren().add(cellImage);
-            cellImage.setFitWidth(Math.floor(size / 2) * 2);
-            cellImage.setFitHeight(Math.floor(size / 2) * 2);
+        this.background = getBackground(map, position);
+        box.getChildren().add(this.background);
+
+        Optional<MapElement> elementOptional = map.objectAt(position);
+
+        if (elementOptional.isPresent()) {
+
+            this.element = elementOptional.get();
+
+            ImageView elementImage = element.getImageRepresentation();
+            box.getChildren().add(elementImage);
+            elementImage.setFitWidth(Math.floor(size / 2) * 2);
+            elementImage.setFitHeight(Math.floor(size / 2) * 2);
+
+        }
+        else {
+            this.element = null;
         }
 
     }
 
-    private Rectangle getBackground(TileState positionTileState, double size) {
-        Rectangle background = new Rectangle(size, size);
+    public Group display() {
+        return box;
+    }
 
-        switch(positionTileState) {
+    public MapElement getMapElement() {
+        return element;
+    }
+
+//// Helpers
+
+    private Rectangle getBackground(AbstractMap map, Vector2d position) {
+
+        Rectangle background = new Rectangle(size, size);
+        TileState positionTileState = map.getTileAt(position).getState();
+        changeBackgroundColorBasedOnTileState(background, positionTileState);
+        return background;
+
+    }
+
+    private void changeBackgroundColorBasedOnTileState(Rectangle background, TileState positionTileState) {
+
+        switch (positionTileState) {
             case PLAINS ->  {
                 background.setFill(Color.LIMEGREEN); background.setStroke(Color.GREEN);}
             case FOREST ->  {
@@ -40,15 +74,22 @@ public class MapElementBox {
                 background.setFill(Color.DODGERBLUE); background.setStroke(Color.DARKCYAN);}
         }
         background.setStrokeWidth(1);
-        return background;
+
     }
 
-    private ImageView getImageForCell(MapElement element) {
-        if (element == null) return null;
-        else return element.getImageRepresentation();
+    public void markAsSelected() {
+        this.background.setFill(Color.SPRINGGREEN);
     }
 
-    public Group display() {
-        return cell;
+    public void restoreDefaultBackground(AbstractMap map) {
+        changeBackgroundColorBasedOnTileState(this.background, map.getTileAt(this.element.getPosition()).getState());
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof MapElementBox other)) return false;
+        return this.element.getPosition() == other.element.getPosition();
+    }
+
 }

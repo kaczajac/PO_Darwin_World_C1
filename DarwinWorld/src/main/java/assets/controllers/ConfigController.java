@@ -96,7 +96,7 @@ public class ConfigController {
 
     private Stage setupNewStage(BorderPane viewRoot) {
         Stage stage = new Stage();
-        Scene scene = new Scene(viewRoot, 800, 600);
+        Scene scene = new Scene(viewRoot);
 
         stage.setTitle("Darwin World - Simulation");
         stage.setScene(scene);

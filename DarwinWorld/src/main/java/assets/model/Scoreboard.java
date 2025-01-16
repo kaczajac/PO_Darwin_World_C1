@@ -2,6 +2,7 @@ package assets.model;
 
 public class Scoreboard {
 
+    private int day;
     private int numOfAnimals;
     private int numOfGrass;
     private int numOfEmptyPositions;
@@ -15,7 +16,8 @@ public class Scoreboard {
                                 int numOfEmptyPositions,
                                 int averageAnimalEnergy,
                                 int averageLifeTime,
-                                int averageNumOfChildren)
+                                int averageNumOfChildren,
+                                int day)
     {
         this.numOfAnimals = numOfAnimals;
         this.numOfGrass = numOfGrass;
@@ -23,6 +25,7 @@ public class Scoreboard {
         this.averageAnimalEnergy = averageAnimalEnergy;
         this.averageLifeTime = averageLifeTime;
         this.averageNumOfChildren = averageNumOfChildren;
+        this.day = day;
     }
 
     public int getNumOfAnimals() {
@@ -47,6 +50,10 @@ public class Scoreboard {
 
     public int getAverageNumOfChildren() {
         return averageNumOfChildren;
+    }
+
+    public int getDay() {
+        return day;
     }
 
 }

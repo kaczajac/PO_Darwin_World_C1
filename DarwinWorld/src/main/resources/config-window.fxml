@@ -8,13 +8,13 @@
    <center>
        <AnchorPane prefHeight="680" prefWidth="400" BorderPane.alignment="CENTER">
 
-           <Label layoutX="102.0" layoutY="26.0" text="Darwin World" textAlignment="CENTER">
+           <Label layoutX="58.0" layoutY="14.0" text="Darwin World" textAlignment="CENTER">
                <font>
-                   <Font name="Verdana Bold" size="24.0" />
+                   <Font name="Verdana Bold" size="36.0" />
                </font>
            </Label>
 
-           <Label layoutX="14.0" layoutY="75.0" text="Map Generation">
+           <Label layoutX="14.0" layoutY="75.0" text="Map Generation Settings">
                <font>
                    <Font name="Verdana Bold" size="14.0" />
                </font>
@@ -72,6 +72,15 @@
 
            <Label layoutX="52.0" layoutY="503.0" text="Energy" />
            <TextField fx:id="grassEnergyField" alignment="CENTER" layoutX="156.0" layoutY="499.0" prefHeight="25.0" prefWidth="83.0" text="5" />
+
+           <Label layoutX="14.0" layoutY="544.0" text="CSV Settings">
+               <font>
+                   <Font name="Verdana Bold" size="14.0" />
+               </font>
+           </Label>
+
+           <Label layoutX="51.0" layoutY="578.0" text="Write world statistics to a CSV file?" />
+           <CheckBox fx:id="csvFileWriterBox" layoutX="254.0" layoutY="578.0" mnemonicParsing="false" />
 
            <Button fx:id="startSimulationButton" layoutX="262.0" layoutY="619.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="115.0" text="Create New World" />
            <Button fx:id="exportConfigButton" layoutX="149.0" layoutY="619.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="92.0" text="Save Config" />

@@ -240,4 +240,10 @@ public class Animal extends MapElement {
         return Objects.hash(id);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Animal other)) return false;
+        return this.id == other.id;
+    }
 }

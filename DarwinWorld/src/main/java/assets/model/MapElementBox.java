@@ -89,7 +89,7 @@ public class MapElementBox {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof MapElementBox other)) return false;
-        return this.element.getPosition().equals(other.element.getPosition());
+        return this.element.getPosition().equals(other.element.getPosition()) && element.equals(other.element);
     }
 
 }

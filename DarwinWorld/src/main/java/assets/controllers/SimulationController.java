@@ -9,12 +9,15 @@ import assets.model.map.AbstractMap;
 import assets.model.mapelement.Animal;
 import assets.model.mapelement.MapElement;
 import assets.model.records.SimulationConfig;
+import assets.model.util.CSVManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 
 
@@ -25,6 +28,9 @@ public class SimulationController implements MapChangeListener {
 
     private final SimulationThread thread;
     private final SimulationConfig config;
+    private final CSVManager CSVManager = new CSVManager();
+    private boolean exportToCsv;
+    private File csvFile;
 
     private MapElementBox selectedAnimalBox = null;
 
@@ -34,25 +40,25 @@ public class SimulationController implements MapChangeListener {
 
     //// Scoreboard labels
 
-    @FXML private Label numOfAnimals;
-    @FXML private Label numOfGrasses;
-    @FXML private Label numOfEmptyPositions;
-    @FXML private Label averageAnimalEnergy;
-    @FXML private Label averageLifeTime;
-    @FXML private Label averageChildren;
-    @FXML private Label dayCounter;
+    @FXML public Label numOfAnimals;
+    @FXML public Label numOfGrasses;
+    @FXML public Label numOfEmptyPositions;
+    @FXML public Label averageAnimalEnergy;
+    @FXML public Label averageLifeTime;
+    @FXML public Label averageChildren;
+    @FXML public Label dayCounter;
 
     //// Animal statistics labels
 
-    @FXML private Label animalGenome;
-    @FXML private Label animalGene;
-    @FXML private Label animalEnergy;
-    @FXML private Label animalGrass;
-    @FXML private Label animalChildren;
-    @FXML private Label animalDescendants;
-    @FXML private Label animalAge;
-    @FXML private Label animalDeathDay;
-    @FXML private Label animalBirthDay;
+    @FXML public Label animalGenome;
+    @FXML public Label animalGene;
+    @FXML public Label animalEnergy;
+    @FXML public Label animalGrass;
+    @FXML public Label animalChildren;
+    @FXML public Label animalDescendants;
+    @FXML public Label animalAge;
+    @FXML public Label animalDeathDay;
+    @FXML public Label animalBirthDay;
 
     //// Other Controls
 
@@ -104,6 +110,14 @@ public class SimulationController implements MapChangeListener {
             renderScoreboard();
             renderSelectedAnimalStats();
             drawMap(map);
+
+            if (exportToCsv) {
+                try {
+                    CSVManager.logChangesToCsvFile(csvFile, this);
+                } catch (IOException e) {
+                    System.out.println("Error occurred when logging changes to a CSV file: " + e.getMessage());
+                }
+            }
         });
 
     }
@@ -237,6 +251,11 @@ public class SimulationController implements MapChangeListener {
         return element.getClass().isAssignableFrom(Animal.class);
     }
 
+    public void setExportToCsv(boolean bool) {
+        this.exportToCsv = bool;
+    }
 
-
+    public void setCsvFile(File csvFile) {
+        this.csvFile = csvFile;
+    }
 }

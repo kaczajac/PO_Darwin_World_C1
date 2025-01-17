@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -44,6 +45,10 @@ public class ConfigController {
     @FXML private Button startSimulationButton;
     @FXML private Button importConfigButton;
     @FXML private Button exportConfigButton;
+
+    @FXML private CheckBox csvFileWriterBox;
+
+    private final CSVManager CSVManager = new CSVManager();
 
     @FXML
     private void initialize() {
@@ -109,7 +114,17 @@ public class ConfigController {
 //// Helper functions
 
     private SimulationController setupController(SimulationConfig config, SimulationThread thread) {
-        return new SimulationController(config, thread);
+        SimulationController controller = new SimulationController(config, thread);
+
+        if (csvFileWriterBox.isSelected()) {
+            controller.setExportToCsv(true);
+            controller.setCsvFile(new File("src/main/resources/logs/" + config.map().getId()));
+        }
+        else {
+            controller.setExportToCsv(false);
+        }
+
+        return controller;
     }
 
     private FXMLLoader setupFXMLLoader(SimulationController controller) {
@@ -127,6 +142,7 @@ public class ConfigController {
         stage.setTitle("Darwin World - Simulation");
         stage.setScene(scene);
         stage.setResizable(false);
+        
         return stage;
     }
 
@@ -168,7 +184,7 @@ public class ConfigController {
         File fileName = fileChooser.showSaveDialog(exportConfigButton.getScene().getWindow());
         if (fileName == null) return;
 
-        new CSVManager().writeConfigFile(fileName, this);
+        CSVManager.writeConfigFile(fileName, this);
         System.out.println("Config file saved successfully");
 
     }
@@ -183,7 +199,7 @@ public class ConfigController {
         File fileName = fileChooser.showOpenDialog(importConfigButton.getScene().getWindow());
         if (fileName == null) return;
 
-        Map<String, String> configParameters = new CSVManager().readConfigFile(fileName);
+        Map<String, String> configParameters = CSVManager.readConfigFile(fileName);
         renderConfigParameters(configParameters);
         System.out.println("Config file imported successfully");
 

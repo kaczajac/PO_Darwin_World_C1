@@ -73,7 +73,6 @@ public class ConfigController {
         exportConfigButton.setOnAction(event -> {
             try {
                 exportConfigToAFile();
-                System.out.println("Config file saved successfully");
             } catch (IOException e) {
                 System.out.println("Error occurred when exporting config to a file:  " + e.getMessage());
             }
@@ -83,7 +82,6 @@ public class ConfigController {
         importConfigButton.setOnAction(event -> {
             try {
                 importConfigFromAFile();
-                System.out.println("Config file imported successfully");
             } catch (IOException | InvalidKeyException e) {
                 System.out.println("Error occurred when importing a config file:  " + e.getMessage());
             }
@@ -171,6 +169,7 @@ public class ConfigController {
         if (fileName == null) return;
 
         new CSVManager().writeConfigFile(fileName, this);
+        System.out.println("Config file saved successfully");
 
     }
 
@@ -186,6 +185,7 @@ public class ConfigController {
 
         Map<String, String> configParameters = new CSVManager().readConfigFile(fileName);
         renderConfigParameters(configParameters);
+        System.out.println("Config file imported successfully");
 
     }
 

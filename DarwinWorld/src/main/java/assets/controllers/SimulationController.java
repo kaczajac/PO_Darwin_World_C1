@@ -90,8 +90,8 @@ public class SimulationController implements MapChangeListener {
 
         unfollowAnimalButton.setOnAction(event -> {
             selectedAnimalBox.restoreDefaultBackground(config.map());
-            selectedAnimalBox = null;
             clearSelectedAnimalStats();
+            selectedAnimalBox = null;
             unfollowAnimalButton.setDisable(true);
         });
 

@@ -7,6 +7,7 @@ import assets.model.exceptions.IllegalMapSettingsException;
 import assets.model.map.AbstractMap;
 import assets.model.records.MapSettings;
 import assets.model.records.SimulationConfig;
+import assets.model.util.CSVManager;
 import assets.model.util.MapBuilder;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,28 +16,34 @@ import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.IOException;
+import java.io.*;
+import java.security.InvalidKeyException;
+import java.util.Map;
 
 public class ConfigController {
 
     // FXML Variables
-    @FXML private TextField mapHeightField;
-    @FXML private TextField mapWidthField;
-    @FXML private TextField mapWaterLevelField;
-    @FXML private TextField mapFlowsDurationField;
-    @FXML private TextField grassDailyField;
-    @FXML private TextField grassEnergyField;
-    @FXML private TextField animalStartNumberField;
-    @FXML private TextField animalStartEnergyField;
-    @FXML private TextField animalGenomeLengthField;
-    @FXML private TextField animalMinFedEnergyField;
-    @FXML private TextField animalBirthCostField;
+    @FXML public TextField mapHeightField;
+    @FXML public TextField mapWidthField;
+    @FXML public TextField mapWaterLevelField;
+    @FXML public TextField mapFlowsDurationField;
+    @FXML public TextField grassDailyField;
+    @FXML public TextField grassEnergyField;
+    @FXML public TextField animalStartNumberField;
+    @FXML public TextField animalStartEnergyField;
+    @FXML public TextField animalGenomeLengthField;
+    @FXML public TextField animalMinFedEnergyField;
+    @FXML public TextField animalBirthCostField;
 
-    @FXML private RadioButton defaultMapButton;
-    @FXML private RadioButton waterMapButton;
+    @FXML public RadioButton defaultMapButton;
+    @FXML public RadioButton waterMapButton;
+
     @FXML private Button startSimulationButton;
+    @FXML private Button importConfigButton;
+    @FXML private Button exportConfigButton;
 
     @FXML
     private void initialize() {
@@ -63,6 +70,26 @@ public class ConfigController {
             mapFlowsDurationField.setDisable(false);
         });
 
+        exportConfigButton.setOnAction(event -> {
+            try {
+                exportConfigToAFile();
+                System.out.println("Config file saved successfully");
+            } catch (IOException e) {
+                System.out.println("Error occurred when exporting config to a file:  " + e.getMessage());
+            }
+
+        });
+
+        importConfigButton.setOnAction(event -> {
+            try {
+                importConfigFromAFile();
+                System.out.println("Config file imported successfully");
+            } catch (IOException | InvalidKeyException e) {
+                System.out.println("Error occurred when importing a config file:  " + e.getMessage());
+            }
+        });
+
+
     }
 
     private void startSimulation(SimulationConfig config) throws IOException {
@@ -78,6 +105,7 @@ public class ConfigController {
         thread.start();
         stage.setOnCloseRequest(event -> thread.terminate());
         stage.show();
+
     }
 
 //// Helper functions
@@ -129,6 +157,67 @@ public class ConfigController {
         return new SimulationConfig(map, mapFlowDuration, grassDailyGrow,
                 grassEnergy, animalsOnStartup, animalStartEnergy, animalGenomeLength,
                 animalMinFedEnergy, animalBirthCost);
+
+    }
+
+    private void exportConfigToAFile() throws IOException{
+
+        FileChooser fileChooser = new FileChooser();
+
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+        fileChooser.setInitialDirectory(new File("src/main/resources/configs/"));
+
+        File fileName = fileChooser.showSaveDialog(exportConfigButton.getScene().getWindow());
+        if (fileName == null) return;
+
+        new CSVManager().writeConfigFile(fileName, this);
+
+    }
+
+    private void importConfigFromAFile() throws IOException, InvalidKeyException{
+
+        FileChooser fileChooser = new FileChooser();
+
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+        fileChooser.setInitialDirectory(new File("src/main/resources/configs/"));
+
+        File fileName = fileChooser.showOpenDialog(importConfigButton.getScene().getWindow());
+        if (fileName == null) return;
+
+        Map<String, String> configParameters = new CSVManager().readConfigFile(fileName);
+        renderConfigParameters(configParameters);
+
+    }
+
+    private void renderConfigParameters(Map<String, String> params) throws InvalidKeyException{
+
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+
+            switch (entry.getKey()) {
+                case "Parameter" -> {}
+                case "MapHeight" -> mapHeightField.setText(entry.getValue());
+                case "MapWidth" -> mapWidthField.setText(entry.getValue());
+                case "MapWaterLevel" -> mapWaterLevelField.setText(entry.getValue());
+                case "MapFlowsDuration" -> mapFlowsDurationField.setText(entry.getValue());
+                case "AnimalStartNumber" -> animalStartNumberField.setText(entry.getValue());
+                case "AnimalStartEnergy" -> animalStartEnergyField.setText(entry.getValue());
+                case "AnimalGenomeLength" -> animalGenomeLengthField.setText(entry.getValue());
+                case "AnimalMinFedEnergy" -> animalMinFedEnergyField.setText(entry.getValue());
+                case "AnimalBirthCost" -> animalBirthCostField.setText(entry.getValue());
+                case "GrassDaily" -> grassDailyField.setText(entry.getValue());
+                case "GrassEnergy" -> grassEnergyField.setText(entry.getValue());
+                case "MapType" -> {
+                    if (entry.getValue().equals("WATER")) {
+                        waterMapButton.setSelected(true);
+                    } else {
+                        defaultMapButton.setSelected(true);
+                    }
+                }
+                default -> throw new InvalidKeyException();
+            }
+
+        }
+
 
     }
 }

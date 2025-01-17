@@ -62,7 +62,7 @@ public class MapBuilder {
 
 //// Helper functions
 
-    private boolean incorrectSettings(){
+    private boolean incorrectSettings() {
         return height < 0 || height > 100
                 || width < 0 || width > 100
                 || type == null

@@ -181,9 +181,7 @@ public abstract class AbstractMap {
             // check for suitable and sort them in order of dominance
             List<Animal> breedList = animalList.stream()
                     .filter(a -> a.isFed(config.animalMinFedEnergy()))
-                    .sorted(Comparator.comparingInt(Animal::getEnergy)
-                            .thenComparingInt(Animal::getAge)
-                            .thenComparingInt(Animal::getNumberOfChildren))
+                    .sorted(sortByDominance())
                     .collect(Collectors.toCollection(ArrayList::new));
 
             // breed possible
@@ -320,6 +318,12 @@ public abstract class AbstractMap {
     }
 
 //// Helper/abstract functions
+
+    private Comparator<Animal> sortByDominance() {
+        return Comparator.comparingInt(Animal::getEnergy)
+                .thenComparingInt(Animal::getAge)
+                .thenComparingInt(Animal::getNumberOfChildren);
+    }
 
     private Animal selectDominantAnimal(List<Animal> animalList) {
 

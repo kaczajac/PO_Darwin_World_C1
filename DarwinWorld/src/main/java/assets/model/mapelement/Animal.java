@@ -24,6 +24,7 @@ public class Animal extends MapElement {
     private final int[] genome;
     private final int imageNumber;
 
+
     public Animal(Vector2d position, int startEnergy , int geneCount) {
         this.id = UUID.randomUUID();
         this.position = position;
@@ -177,7 +178,7 @@ public class Animal extends MapElement {
         return null;
     }
 
-    //// Setters
+//// Setters
 
     public void addNewChild(Animal child) {
         children.add(child);

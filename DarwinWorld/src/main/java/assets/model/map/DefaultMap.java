@@ -1,7 +1,7 @@
 package assets.model.map;
 
 import assets.model.mapelement.Animal;
-import assets.model.Vector2d;
+import assets.model.records.Vector2d;
 import assets.model.records.MapSettings;
 
 public class DefaultMap extends AbstractMap {

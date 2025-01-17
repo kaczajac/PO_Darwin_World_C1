@@ -1,6 +1,6 @@
 package assets.model.mapelement;
 
-import assets.model.Vector2d;
+import assets.model.records.Vector2d;
 import javafx.scene.image.ImageView;
 
 import java.util.Objects;

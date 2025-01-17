@@ -2,7 +2,7 @@ package assets.model.map;
 
 import assets.model.mapelement.Animal;
 import assets.model.Tile;
-import assets.model.Vector2d;
+import assets.model.records.Vector2d;
 import assets.model.enums.TileState;
 import assets.model.records.MapSettings;
 
@@ -62,7 +62,7 @@ public class WaterMap extends AbstractMap {
         int[][] neighbors = { {1, 0}, {-1, 0}, {0, -1}, {0, 1} };
 
         for (int[] n : neighbors) {
-            Vector2d neighbor = new Vector2d(position.getX() + n[0], position.getY() + n[1]);
+            Vector2d neighbor = new Vector2d(position.x() + n[0], position.y() + n[1]);
             if (inBounds(neighbor) && isWater(getTileAt(neighbor))) {
                 return true;
             }

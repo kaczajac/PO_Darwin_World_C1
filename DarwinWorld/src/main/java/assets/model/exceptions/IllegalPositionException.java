@@ -1,6 +1,6 @@
 package assets.model.exceptions;
 
-import assets.model.Vector2d;
+import assets.model.records.Vector2d;
 
 public class IllegalPositionException extends Exception{
 

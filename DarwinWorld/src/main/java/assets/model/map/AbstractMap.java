@@ -3,7 +3,7 @@ package assets.model.map;
 import assets.model.mapelement.Animal;
 import assets.model.mapelement.Grass;
 import assets.model.Tile;
-import assets.model.Vector2d;
+import assets.model.records.Vector2d;
 import assets.model.contract.MapChangeListener;
 import assets.model.mapelement.MapElement;
 import assets.model.exceptions.IllegalPositionException;
@@ -314,7 +314,7 @@ public abstract class AbstractMap {
     }
 
     public Tile getTileAt(Vector2d position) {
-        return tiles[position.getY()][position.getX()];
+        return tiles[position.y()][position.x()];
     }
 
 //// Helper/abstract functions

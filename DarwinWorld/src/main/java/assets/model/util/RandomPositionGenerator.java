@@ -1,6 +1,6 @@
 package assets.model.util;
 
-import assets.model.Vector2d;
+import assets.model.records.Vector2d;
 import assets.model.mapelement.MapElement;
 import assets.model.map.AbstractMap;
 

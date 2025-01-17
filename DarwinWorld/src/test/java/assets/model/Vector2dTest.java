@@ -1,5 +1,6 @@
 package assets.model;
 
+import assets.model.records.Vector2d;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

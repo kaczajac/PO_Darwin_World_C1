@@ -43,8 +43,8 @@ public class CSVManager {
         while ((line = reader.readLine()) != null) {
             String[] args = line.split(",");
             if (args.length == 2) {
-                String parameter = args[0].replaceAll("\\s+", "");;
-                String value = args[1].replaceAll("\\s+", "");;
+                String parameter = args[0].replaceAll("\\s+", "");
+                String value = args[1].replaceAll("\\s+", "");
                 configParameters.put(parameter, value);
             }
         }

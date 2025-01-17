@@ -3,6 +3,7 @@ package assets.model;
 import assets.model.enums.TileState;
 import assets.model.map.AbstractMap;
 import assets.model.mapelement.MapElement;
+import assets.model.records.Vector2d;
 import javafx.scene.Group;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;

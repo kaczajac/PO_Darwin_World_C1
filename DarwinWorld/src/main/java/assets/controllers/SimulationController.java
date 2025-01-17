@@ -3,7 +3,7 @@ package assets.controllers;
 import assets.SimulationThread;
 import assets.model.MapElementBox;
 import assets.model.Scoreboard;
-import assets.model.Vector2d;
+import assets.model.records.Vector2d;
 import assets.model.contract.MapChangeListener;
 import assets.model.map.AbstractMap;
 import assets.model.mapelement.Animal;

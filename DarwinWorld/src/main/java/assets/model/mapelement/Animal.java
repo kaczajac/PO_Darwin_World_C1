@@ -1,6 +1,6 @@
 package assets.model.mapelement;
 
-import assets.model.Vector2d;
+import assets.model.records.Vector2d;
 import assets.model.enums.TileState;
 import assets.model.map.AbstractMap;
 import javafx.scene.image.ImageView;
@@ -49,13 +49,13 @@ public class Animal extends MapElement {
 
         if (!map.inBounds(newPosition)) {
 
-            if (newPosition.getY() <= -1 || newPosition.getY() >= map.getHeight()) return;
+            if (newPosition.y() <= -1 || newPosition.y() >= map.getHeight()) return;
 
-            if (newPosition.getX() <= -1) {
-                newPosition = new Vector2d(map.getWidth() - 1, newPosition.getY());
+            if (newPosition.x() <= -1) {
+                newPosition = new Vector2d(map.getWidth() - 1, newPosition.y());
             }
-            else if (newPosition.getX() >= map.getWidth()) {
-                newPosition = new Vector2d(0, newPosition.getY());
+            else if (newPosition.x() >= map.getWidth()) {
+                newPosition = new Vector2d(0, newPosition.y());
             }
 
         }

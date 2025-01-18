@@ -79,8 +79,8 @@
                </font>
            </Label>
 
-           <Label layoutX="51.0" layoutY="578.0" text="Write world statistics to a CSV file?" />
-           <CheckBox fx:id="csvFileWriterBox" layoutX="254.0" layoutY="578.0" mnemonicParsing="false" />
+           <Label layoutX="51.0" layoutY="578.0" text="Log daily world statistics to a CSV file?" />
+           <CheckBox fx:id="csvFileWriterBox" layoutX="272.0" layoutY="578.0" mnemonicParsing="false" />
 
            <Button fx:id="startSimulationButton" layoutX="262.0" layoutY="619.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="115.0" text="Create New World" />
            <Button fx:id="exportConfigButton" layoutX="149.0" layoutY="619.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="92.0" text="Save Config" />

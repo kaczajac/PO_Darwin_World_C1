@@ -8,8 +8,6 @@ import assets.model.mapelement.MapElement;
 import assets.model.records.Vector2d;
 import javafx.scene.Group;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
@@ -88,18 +86,22 @@ public class MapElementBox {
 
     }
 
-    public void markAsSelected() {
-        this.background.setFill(Color.FIREBRICK);
-    }
-
     public void restoreDefaultBackground(AbstractMap map) {
         changeBackgroundColorBasedOnTileState(this.background, map.getTileAt(this.position).getState());
     }
 
-    public void markAsPopularGrassPosition() {
+    public void markAsSelectedAnimalBox() {
+        this.background.setFill(Color.FIREBRICK);
+    }
+
+    public void markAsPopularGrassPositionBox() {
         this.background.setStrokeType(StrokeType.INSIDE);
         this.background.setStroke(Color.ORANGE);
         this.background.setStrokeWidth(1.5);
+    }
+
+    public void markAsPopularGenomeAnimalBox() {
+        this.background.setFill(Color.MEDIUMPURPLE);
     }
 
     public boolean containsSelectedAnimal(MapElementBox selectedBox) {

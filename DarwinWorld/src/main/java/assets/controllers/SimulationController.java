@@ -34,9 +34,11 @@ public class SimulationController implements MapChangeListener {
 
     private MapElementBox selectedAnimalBox = null;
     private Set<Vector2d> popularGrassPositions = new HashSet<>();
+    private Set<Animal> popularGenomeAnimals = new HashSet<>();
 
     private boolean exportToCsv;
     private boolean showPopularGrassPositions = false;
+    private boolean showPopularGenomeAnimals = false;
 
     @FXML private GridPane mapGrid;
 
@@ -69,6 +71,7 @@ public class SimulationController implements MapChangeListener {
     @FXML private Button pauseButton;
     @FXML private Button unfollowAnimalButton;
     @FXML private Button popularGrassPositionsButton;
+    @FXML private Button popularGenomeAnimalsButton;
 
     ////
 
@@ -115,6 +118,15 @@ public class SimulationController implements MapChangeListener {
             drawMap(config.map());
         });
 
+        popularGenomeAnimalsButton.setOnAction(event -> {
+            showPopularGenomeAnimals = !showPopularGenomeAnimals;
+            popularGenomeAnimalsButton.setText(showPopularGenomeAnimals
+                    ? "Hide Popular Genome Animals"
+                    : "Show Popular Genome Animals");
+            popularGenomeAnimals = config.map().getPopularGenomeAnimals();
+            drawMap(config.map());
+        });
+
     }
 
     @Override
@@ -122,6 +134,10 @@ public class SimulationController implements MapChangeListener {
 
         if (showPopularGrassPositions) {
             popularGrassPositions = map.getPopularGrassPositions();
+        }
+
+        if (showPopularGenomeAnimals) {
+            popularGenomeAnimals = map.getPopularGenomeAnimals();
         }
 
         Platform.runLater(() -> {
@@ -248,14 +264,18 @@ public class SimulationController implements MapChangeListener {
                     selectedAnimalBox.restoreDefaultBackground(config.map());
                 }
                 selectedAnimalBox = box;
-                box.markAsSelected();
+                box.markAsSelectedAnimalBox();
                 renderSelectedAnimalStats();
                 unfollowAnimalButton.setDisable(false);
             });
 
+            if (popularGenomeAnimals.contains((Animal) box.getMapElement())) {
+                box.markAsPopularGenomeAnimalBox();
+            }
+
             if (box.containsSelectedAnimal(selectedAnimalBox)) {
                 selectedAnimalBox = box;
-                box.markAsSelected();
+                box.markAsSelectedAnimalBox();
             }
 
         }
@@ -267,7 +287,7 @@ public class SimulationController implements MapChangeListener {
         if (showPopularGrassPositions) {
 
             if (popularGrassPositions.contains(box.getPosition())) {
-                box.markAsPopularGrassPosition();
+                box.markAsPopularGrassPositionBox();
             }
         }
 

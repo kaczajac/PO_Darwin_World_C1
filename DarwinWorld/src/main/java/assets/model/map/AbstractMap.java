@@ -295,7 +295,7 @@ public abstract class AbstractMap {
     }
 
     public void sendMapChanges(){
-        for(MapChangeListener observer : observers){
+        for (MapChangeListener observer : observers){
             observer.mapChanged(this);
         }
     }
@@ -357,6 +357,20 @@ public abstract class AbstractMap {
                 .limit(10)
                 .collect(Collectors.toSet());
 
+    }
+
+    public Set<Animal> getPopularGenomeAnimals() {
+
+        Set<Animal> allAnimals = new HashSet<>();
+
+        for (List<Animal> animalList : animals.values()) {
+            allAnimals.addAll(animalList);
+        }
+
+        return allAnimals.stream()
+                .sorted((a1, a2) -> Integer.compare(a2.getNumberOfDescendants(), a1.getNumberOfDescendants()))
+                .limit(5)
+                .collect(Collectors.toSet());
     }
 
     public boolean isOccupied(Vector2d position) {

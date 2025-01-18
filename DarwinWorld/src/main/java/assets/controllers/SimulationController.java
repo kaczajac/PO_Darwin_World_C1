@@ -269,7 +269,7 @@ public class SimulationController implements MapChangeListener {
                 unfollowAnimalButton.setDisable(false);
             });
 
-            if (popularGenomeAnimals.contains((Animal) box.getMapElement())) {
+            if (showPopularGenomeAnimals && popularGenomeAnimals.contains((Animal) box.getMapElement())) {
                 box.markAsPopularGenomeAnimalBox();
             }
 

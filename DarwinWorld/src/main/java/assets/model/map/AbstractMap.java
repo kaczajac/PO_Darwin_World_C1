@@ -95,6 +95,7 @@ public abstract class AbstractMap {
         Vector2d position = grass.getPosition();
         if (isValidGrassPosition(position)) {
             grasses.put(position, grass);
+            getTileAt(position).updateGrassCount();
         }
         else throw new IllegalPositionException(position);
 
@@ -186,8 +187,8 @@ public abstract class AbstractMap {
 
             // breed possible
             while(breedList.size() > 1){
-                Animal a1 = breedList.removeFirst();
-                Animal a2 = breedList.removeFirst();
+                Animal a1 = breedList.removeLast();
+                Animal a2 = breedList.removeLast();
                 Animal baby = new Animal(a1.getPosition() , 2 * config.animalBirthCost(), config.animalGenomeLength());
                 baby.setBirthValues(a1, a2, day);
                 a1.useEnergy(config.animalBirthCost());
@@ -338,6 +339,24 @@ public abstract class AbstractMap {
     private Animal selectRandomAnimal(List<Animal> animalList) {
         int randomIndex = (int) (Math.random() * animalList.size());
         return animalList.get(randomIndex);
+    }
+
+    public Set<Vector2d> getPopularGrassPositions() {
+
+        Set<Vector2d> allPositions = new HashSet<>();
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                Vector2d position = new Vector2d(x, y);
+                allPositions.add(position);
+            }
+        }
+
+        return allPositions.stream()
+                .sorted((pos1, pos2) -> Integer.compare(getTileAt(pos2).getGrassCount(), getTileAt(pos1).getGrassCount()))
+                .limit(10)
+                .collect(Collectors.toSet());
+
     }
 
     public boolean isOccupied(Vector2d position) {

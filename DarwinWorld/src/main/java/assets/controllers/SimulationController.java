@@ -7,7 +7,6 @@ import assets.model.records.Vector2d;
 import assets.model.contract.MapChangeListener;
 import assets.model.map.AbstractMap;
 import assets.model.mapelement.Animal;
-import assets.model.mapelement.MapElement;
 import assets.model.records.SimulationConfig;
 import assets.model.util.CSVManager;
 import javafx.application.Platform;
@@ -19,6 +18,8 @@ import javafx.scene.layout.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class SimulationController implements MapChangeListener {
@@ -29,10 +30,13 @@ public class SimulationController implements MapChangeListener {
     private final SimulationThread thread;
     private final SimulationConfig config;
     private final CSVManager CSVManager = new CSVManager();
-    private boolean exportToCsv;
     private File csvFile;
 
     private MapElementBox selectedAnimalBox = null;
+    private Set<Vector2d> popularGrassPositions = new HashSet<>();
+
+    private boolean exportToCsv;
+    private boolean showPopularGrassPositions = false;
 
     @FXML private GridPane mapGrid;
 
@@ -64,6 +68,7 @@ public class SimulationController implements MapChangeListener {
 
     @FXML private Button pauseButton;
     @FXML private Button unfollowAnimalButton;
+    @FXML private Button popularGrassPositionsButton;
 
     ////
 
@@ -101,10 +106,23 @@ public class SimulationController implements MapChangeListener {
             unfollowAnimalButton.setDisable(true);
         });
 
+        popularGrassPositionsButton.setOnAction(event -> {
+            showPopularGrassPositions = !showPopularGrassPositions;
+            popularGrassPositionsButton.setText(showPopularGrassPositions
+                    ? "Hide Popular Grass Positions"
+                    : "Show Popular Grass Positions");
+            popularGrassPositions = config.map().getPopularGrassPositions();
+            drawMap(config.map());
+        });
+
     }
 
     @Override
     public void mapChanged(AbstractMap map) {
+
+        if (showPopularGrassPositions) {
+            popularGrassPositions = map.getPopularGrassPositions();
+        }
 
         Platform.runLater(() -> {
             renderScoreboard();
@@ -134,7 +152,8 @@ public class SimulationController implements MapChangeListener {
 
                 Vector2d position = new Vector2d(col, row);
                 MapElementBox box = new MapElementBox(map, position, CELL_SIZE);
-                configureBox(box);
+                handleAnimalEvents(box);
+                handleGrassEvents(box);
                 mapGrid.add(box.display(), col, (rows - 1 - row));
 
             }
@@ -220,35 +239,38 @@ public class SimulationController implements MapChangeListener {
 
     }
 
-    private void configureBox(MapElementBox box) {
+    private void handleAnimalEvents(MapElementBox box) {
 
-        if (box.getMapElement() == null) return;
-
-        if (box.equals(selectedAnimalBox)) {
-            selectedAnimalBox = box;
-            box.markAsSelected();
-        }
-
-        if (isAnimal(box.getMapElement())) {
+        if (box.containsAnimal()) {
 
             box.display().setOnMouseClicked(event -> {
-
                 if (selectedAnimalBox != null) {
                     selectedAnimalBox.restoreDefaultBackground(config.map());
                 }
-
                 selectedAnimalBox = box;
-                selectedAnimalBox.markAsSelected();
+                box.markAsSelected();
                 renderSelectedAnimalStats();
                 unfollowAnimalButton.setDisable(false);
             });
+
+            if (box.containsSelectedAnimal(selectedAnimalBox)) {
+                selectedAnimalBox = box;
+                box.markAsSelected();
+            }
 
         }
 
     }
 
-    private boolean isAnimal(MapElement element) {
-        return element.getClass().isAssignableFrom(Animal.class);
+    private void handleGrassEvents(MapElementBox box) {
+
+        if (showPopularGrassPositions) {
+
+            if (popularGrassPositions.contains(box.getPosition())) {
+                box.markAsPopularGrassPosition();
+            }
+        }
+
     }
 
     public void setExportToCsv(boolean bool) {

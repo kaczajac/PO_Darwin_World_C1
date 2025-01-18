@@ -175,7 +175,7 @@ public class Animal extends MapElement {
 
     @Override
     public UUID getID() {
-        return null;
+        return id;
     }
 
 //// Setters

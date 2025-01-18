@@ -145,8 +145,9 @@
             </font>
          </Label>
 
-         <Button fx:id="pauseButton" alignment="CENTER" layoutX="524.0" layoutY="653.0" prefWidth="100" text="Pause" />
+         <Button fx:id="pauseButton" alignment="CENTER" layoutX="514.0" layoutY="637.0" prefHeight="40.0" prefWidth="120.0" text="Pause" />
          <Button fx:id="unfollowAnimalButton" disable="true" layoutX="65.0" layoutY="639.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="130.0" text="Unfollow Animal" />
+         <Button fx:id="popularGrassPositionsButton" layoutX="302.0" layoutY="637.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="175.0" text="Show Popular Grass Positions" />
 
 
       </AnchorPane>

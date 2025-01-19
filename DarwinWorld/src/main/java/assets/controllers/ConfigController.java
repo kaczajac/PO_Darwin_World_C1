@@ -38,6 +38,9 @@ public class ConfigController {
     @FXML public TextField animalGenomeLengthField;
     @FXML public TextField animalMinFedEnergyField;
     @FXML public TextField animalBirthCostField;
+    @FXML public TextField minAnimalMutationField;
+    @FXML public TextField maxAnimalMutationField;
+    @FXML public TextField animalMutationChanceField;
 
     @FXML public RadioButton defaultMapButton;
     @FXML public RadioButton waterMapButton;
@@ -160,9 +163,9 @@ public class ConfigController {
         int animalGenomeLength = Integer.parseInt(animalGenomeLengthField.getText());
         int animalMinFedEnergy = Integer.parseInt(animalMinFedEnergyField.getText());
         int animalBirthCost = Integer.parseInt(animalBirthCostField.getText());
-        int animalMinMutations = 2;
-        int animalMaxMutations = 5;
-        float animalMutationChance = 0.4f;
+        int animalMinMutations = Integer.parseInt(minAnimalMutationField.getText());
+        int animalMaxMutations = Integer.parseInt(maxAnimalMutationField.getText());
+        float animalMutationChance = Float.parseFloat(animalMutationChanceField.getText());
 
         int grassDailyGrow = Integer.parseInt(grassDailyField.getText());
         int grassEnergy = Integer.parseInt(grassEnergyField.getText());

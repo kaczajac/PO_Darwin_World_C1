@@ -6,8 +6,8 @@ import assets.model.mapelement.Animal;
 import assets.model.mapelement.Grass;
 import assets.model.mapelement.MapElement;
 import assets.model.records.Vector2d;
-import javafx.scene.Group;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
@@ -17,39 +17,26 @@ import java.util.Optional;
 
 public class MapElementBox {
 
-    private final Group box = new Group();
+    private final StackPane box = new StackPane();
 
     private final Rectangle background;
     private final MapElement element;
-    private final double size;
     private final Vector2d position;
+    private final double BOX_SIZE;
 
-    public MapElementBox(AbstractMap map, Vector2d position, double size) {
 
-        this.size = size;
+    public MapElementBox(AbstractMap map, Vector2d position, double BOX_SIZE) {
+
+        this.BOX_SIZE = BOX_SIZE;
         this.position = position;
-        this.background = getBackground(map);
-        box.getChildren().add(this.background);
-
-        Optional<MapElement> elementOptional = map.objectAt(position);
-
-        if (elementOptional.isPresent()) {
-
-            this.element = elementOptional.get();
-
-            ImageView elementImage = element.getImageRepresentation();
-            box.getChildren().add(elementImage);
-            elementImage.setFitWidth(Math.floor(size / 2) * 2);
-            elementImage.setFitHeight(Math.floor(size / 2) * 2);
-
-        }
-        else {
-            this.element = null;
-        }
+        this.background = addBackground(map);
+        this.element = addMapElement(map);
 
     }
 
-    public Group display() {
+//// Getters
+
+    public StackPane display() {
         return this.box;
     }
 
@@ -63,11 +50,13 @@ public class MapElementBox {
 
 //// Helpers
 
-    private Rectangle getBackground(AbstractMap map) {
+    private Rectangle addBackground(AbstractMap map) {
 
-        Rectangle background = new Rectangle(size, size);
-        TileState positionTileState = map.getTileAt(position).getState();
+        Rectangle background = new Rectangle(BOX_SIZE, BOX_SIZE);
+        TileState positionTileState = map.getTileAt(this.position).getState();
         changeBackgroundColorBasedOnTileState(background, positionTileState);
+        box.getChildren().add(background);
+
         return background;
 
     }
@@ -86,12 +75,32 @@ public class MapElementBox {
 
     }
 
+    private MapElement addMapElement(AbstractMap map) {
+
+        Optional<MapElement> elementOptional = map.objectAt(this.position);
+
+        if (elementOptional.isPresent()) {
+
+            MapElement element = elementOptional.get();
+            ImageView elementImage = element.getImageRepresentation();
+            elementImage.setFitWidth(Math.floor(BOX_SIZE / 2) * 2);
+            elementImage.setFitHeight(Math.floor(BOX_SIZE / 2) * 2);
+            box.getChildren().add(elementImage);
+
+            return element;
+
+        }
+        return null;
+
+    }
+
+
     public void restoreDefaultBackground(AbstractMap map) {
         changeBackgroundColorBasedOnTileState(this.background, map.getTileAt(this.position).getState());
     }
 
     public void markAsSelectedAnimalBox() {
-        this.background.setFill(Color.FIREBRICK);
+        this.background.setFill(Color.CORAL);
     }
 
     public void markAsPopularGrassPositionBox() {

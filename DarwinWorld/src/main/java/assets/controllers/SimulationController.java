@@ -3,6 +3,7 @@ package assets.controllers;
 import assets.SimulationThread;
 import assets.model.MapElementBox;
 import assets.model.Scoreboard;
+import assets.model.mapelement.MapElement;
 import assets.model.records.Vector2d;
 import assets.model.contract.MapChangeListener;
 import assets.model.map.AbstractMap;
@@ -11,9 +12,12 @@ import assets.model.records.SimulationConfig;
 import assets.model.util.CSVManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 
 import java.io.File;
 import java.io.IOException;
@@ -261,6 +265,8 @@ public class SimulationController implements MapChangeListener {
 
         if (box.containsAnimal()) {
 
+            addHealthBar(box);
+
             box.display().setOnMouseClicked(event -> {
                 if (selectedAnimalBox != null) {
                     selectedAnimalBox.restoreDefaultBackground(config.map());
@@ -284,6 +290,26 @@ public class SimulationController implements MapChangeListener {
 
     }
 
+    private void addHealthBar(MapElementBox box) {
+
+        Line hp = new Line();
+        hp.setStartX(CELL_SIZE * 0.4);
+        hp.setStroke(getHealthColorBasedOnEnergyLevel(box.getMapElement()));
+        hp.setStrokeWidth(2.5);
+        box.display().getChildren().add(hp);
+        StackPane.setAlignment(hp, Pos.BOTTOM_CENTER);
+
+    }
+
+    private Color getHealthColorBasedOnEnergyLevel(MapElement element) {
+
+        Animal animal = (Animal) element;
+        if (animal.getEnergy() >= config.animalStartEnergy() * 0.7) return Color.LIGHTGREEN;
+        if (animal.getEnergy() >= config.animalStartEnergy() * 0.3) return Color.GOLD;
+        else return Color.CRIMSON;
+
+    }
+
     private void handleGrassEvents(MapElementBox box) {
 
         if (showPopularGrassPositions) {
@@ -295,6 +321,7 @@ public class SimulationController implements MapChangeListener {
 
     }
 
+
     public void setExportToCsv(boolean bool) {
         this.exportToCsv = bool;
     }
@@ -302,4 +329,6 @@ public class SimulationController implements MapChangeListener {
     public void setCsvFile(File csvFile) {
         this.csvFile = csvFile;
     }
+
+
 }

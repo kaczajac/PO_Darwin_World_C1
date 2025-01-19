@@ -295,6 +295,7 @@ public abstract class AbstractMap {
         for (List<Animal> animalList : animals.values()) {
             allAnimals.addAll(animalList);
         }
+        if (allAnimals.isEmpty()) return new int[0];
 
         allAnimals.sort(Comparator.comparingInt(Animal::getNumberOfDescendants));
         return allAnimals.getLast().getGenome();

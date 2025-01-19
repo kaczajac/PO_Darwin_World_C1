@@ -190,7 +190,7 @@ public abstract class AbstractMap {
                 Animal a1 = breedList.removeLast();
                 Animal a2 = breedList.removeLast();
                 Animal baby = new Animal(a1.getPosition() , 2 * config.animalBirthCost(), config.animalGenomeLength());
-                baby.setBirthValues(a1, a2, day);
+                baby.setBirthValues(a1, a2, day, config);
                 a1.useEnergy(config.animalBirthCost());
                 a2.useEnergy(config.animalBirthCost());
                 a1.addNewChild(baby);

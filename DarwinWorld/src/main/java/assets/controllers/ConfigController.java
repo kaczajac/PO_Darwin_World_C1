@@ -160,6 +160,9 @@ public class ConfigController {
         int animalGenomeLength = Integer.parseInt(animalGenomeLengthField.getText());
         int animalMinFedEnergy = Integer.parseInt(animalMinFedEnergyField.getText());
         int animalBirthCost = Integer.parseInt(animalBirthCostField.getText());
+        int animalMinMutations = 2;
+        int animalMaxMutations = 5;
+        float animalMutationChance = 0.4f;
 
         int grassDailyGrow = Integer.parseInt(grassDailyField.getText());
         int grassEnergy = Integer.parseInt(grassEnergyField.getText());
@@ -170,7 +173,7 @@ public class ConfigController {
 
         return new SimulationConfig(map, mapFlowDuration, grassDailyGrow,
                 grassEnergy, animalsOnStartup, animalStartEnergy, animalGenomeLength,
-                animalMinFedEnergy, animalBirthCost);
+                animalMinFedEnergy, animalBirthCost, animalMinMutations, animalMaxMutations, animalMutationChance);
 
     }
 

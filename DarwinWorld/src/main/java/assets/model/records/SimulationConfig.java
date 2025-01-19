@@ -10,5 +10,8 @@ public record SimulationConfig(AbstractMap map,
                                int animalStartEnergy,
                                int animalGenomeLength,
                                int animalMinFedEnergy,
-                               int animalBirthCost) {
+                               int animalBirthCost,
+                               int animalMinMutations,
+                               int animalMaxMutations,
+                               float animalMutationChance) {
 }

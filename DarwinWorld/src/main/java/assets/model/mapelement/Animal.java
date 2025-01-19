@@ -1,5 +1,6 @@
 package assets.model.mapelement;
 
+import assets.model.records.SimulationConfig;
 import assets.model.records.Vector2d;
 import assets.model.enums.TileState;
 import assets.model.map.AbstractMap;
@@ -99,8 +100,9 @@ public class Animal extends MapElement {
 
 //// Genes and inheritance mechanism
 
-    public void setBirthValues(Animal parent1 , Animal parent2, int day) {
+    public void setBirthValues(Animal parent1 , Animal parent2, int day, SimulationConfig config) {
         inheritGenes(parent1.getGenome(), parent1.getEnergy(), parent2.getGenome(), parent2.getEnergy());
+        mutateGenes(config);
         this.activeGene = (int) (Math.random() * this.genome.length);
         this.birthDay = day;
     }
@@ -124,6 +126,30 @@ public class Animal extends MapElement {
         // Update the current genome
         System.arraycopy(newGenome, 0, genome, 0, length);
 
+    }
+
+    private void mutateGenes(SimulationConfig config){
+        if(Math.random() < config.animalMutationChance()) return;
+
+        int mutations = config.animalMinMutations() + (int)(Math.random() * (config.animalMaxMutations() - config.animalMinMutations()));
+        while(mutations > 0){
+            if((int)(Math.random() * 2) == 1)
+                geneShuffleMutation();
+            else geneShiftMutation();
+            mutations--;
+        }
+    }
+
+    private void geneShiftMutation(){
+        int shift = 1;
+        if((int)(Math.random()*2) == 1) shift *= -1;
+        int geneID = (int)(Math.random() * this.genome.length);
+        this.genome[geneID] = (genome[geneID] + shift) % genome.length;
+    }
+
+    private void geneShuffleMutation(){
+        int geneID = (int)(Math.random() * this.genome.length);
+        this.genome[geneID] = (int)(Math.random() * 8);
     }
 
 //// Getters for simulation and statistics

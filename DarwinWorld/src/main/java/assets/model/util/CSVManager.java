@@ -28,6 +28,9 @@ public class CSVManager {
         writer.write(String.format("\nAnimal Birth Cost, %s", c.animalBirthCostField.getText()));
         writer.write(String.format("\nGrass Daily, %s", c.grassDailyField.getText()));
         writer.write(String.format("\nGrass Energy, %s", c.grassEnergyField.getText()));
+        writer.write(String.format("\nMin Animal Mutations, %s", c.minAnimalMutationField.getText()));
+        writer.write(String.format("\nMax Animal Mutations, %s", c.maxAnimalMutationField.getText()));
+        writer.write(String.format("\nAnimal Mutation Chance, %s", c.animalMutationChanceField.getText()));
 
         writer.close();
 

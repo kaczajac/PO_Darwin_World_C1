@@ -235,6 +235,9 @@ public class ConfigController {
                         defaultMapButton.setSelected(true);
                     }
                 }
+                case "MinAnimalMutations" -> minAnimalMutationField.setText(entry.getValue());
+                case "MaxAnimalMutations" -> maxAnimalMutationField.setText(entry.getValue());
+                case "AnimalMutationChance" -> animalMutationChanceField.setText(entry.getValue());
                 default -> throw new InvalidKeyException();
             }
 

@@ -38,6 +38,9 @@ public class ConfigController {
     @FXML public TextField animalGenomeLengthField;
     @FXML public TextField animalMinFedEnergyField;
     @FXML public TextField animalBirthCostField;
+    @FXML public TextField minAnimalMutationField;
+    @FXML public TextField maxAnimalMutationField;
+    @FXML public TextField animalMutationChanceField;
 
     @FXML public RadioButton defaultMapButton;
     @FXML public RadioButton waterMapButton;
@@ -160,6 +163,9 @@ public class ConfigController {
         int animalGenomeLength = Integer.parseInt(animalGenomeLengthField.getText());
         int animalMinFedEnergy = Integer.parseInt(animalMinFedEnergyField.getText());
         int animalBirthCost = Integer.parseInt(animalBirthCostField.getText());
+        int animalMinMutations = Integer.parseInt(minAnimalMutationField.getText());
+        int animalMaxMutations = Integer.parseInt(maxAnimalMutationField.getText());
+        float animalMutationChance = Float.parseFloat(animalMutationChanceField.getText());
 
         int grassDailyGrow = Integer.parseInt(grassDailyField.getText());
         int grassEnergy = Integer.parseInt(grassEnergyField.getText());
@@ -170,7 +176,7 @@ public class ConfigController {
 
         return new SimulationConfig(map, mapFlowDuration, grassDailyGrow,
                 grassEnergy, animalsOnStartup, animalStartEnergy, animalGenomeLength,
-                animalMinFedEnergy, animalBirthCost);
+                animalMinFedEnergy, animalBirthCost, animalMinMutations, animalMaxMutations, animalMutationChance);
 
     }
 
@@ -229,6 +235,9 @@ public class ConfigController {
                         defaultMapButton.setSelected(true);
                     }
                 }
+                case "MinAnimalMutations" -> minAnimalMutationField.setText(entry.getValue());
+                case "MaxAnimalMutations" -> maxAnimalMutationField.setText(entry.getValue());
+                case "AnimalMutationChance" -> animalMutationChanceField.setText(entry.getValue());
                 default -> throw new InvalidKeyException();
             }
 

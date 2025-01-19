@@ -102,7 +102,7 @@ public class Animal extends MapElement {
 
     public void setBirthValues(Animal parent1 , Animal parent2, int day, SimulationConfig config) {
         inheritGenes(parent1.getGenome(), parent1.getEnergy(), parent2.getGenome(), parent2.getEnergy());
-        mutateGenes(config);
+        if(config != null) mutateGenes(config);
         this.activeGene = (int) (Math.random() * this.genome.length);
         this.birthDay = day;
     }
@@ -128,8 +128,8 @@ public class Animal extends MapElement {
 
     }
 
-    private void mutateGenes(SimulationConfig config){
-        if(Math.random() < config.animalMutationChance()) return;
+    public void mutateGenes(SimulationConfig config){
+        if(Math.random() > config.animalMutationChance()) return;
 
         int mutations = config.animalMinMutations() + (int)(Math.random() * (config.animalMaxMutations() - config.animalMinMutations()));
         while(mutations > 0){
@@ -140,16 +140,24 @@ public class Animal extends MapElement {
         }
     }
 
-    private void geneShiftMutation(){
+    public void geneShiftMutation(){
         int shift = 1;
         if((int)(Math.random()*2) == 1) shift *= -1;
-        int geneID = (int)(Math.random() * this.genome.length);
-        this.genome[geneID] = (genome[geneID] + shift) % genome.length;
+        int geneID = (int)(Math.random() * genome.length);
+        genome[geneID] = (genome[geneID] + shift) % 8;
+        if(genome[geneID] == -1) genome[geneID] = 7;
     }
 
-    private void geneShuffleMutation(){
+    public void geneShuffleMutation() {
         int geneID = (int)(Math.random() * this.genome.length);
-        this.genome[geneID] = (int)(Math.random() * 8);
+        int[] possibleGenes = {0, 1, 2, 3, 4, 5, 6, 7};
+        ArrayList<Integer> genePool = new ArrayList<>();
+        for (int gene : possibleGenes) {
+            if (gene != this.genome[geneID]) {
+                genePool.add(gene);
+            }
+        }
+        this.genome[geneID] = genePool.get((int)(Math.random() * genePool.size()));
     }
 
 //// Getters for simulation and statistics
@@ -176,6 +184,11 @@ public class Animal extends MapElement {
 
     public int[] getGenome(){
         return genome;
+    }
+
+    public void setGenome(int[] genes){
+        int length = genome.length;
+        System.arraycopy(genes, 0, genome, 0, length);
     }
 
     public int getGene() {

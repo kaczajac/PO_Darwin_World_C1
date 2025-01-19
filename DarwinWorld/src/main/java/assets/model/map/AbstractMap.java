@@ -332,6 +332,10 @@ public abstract class AbstractMap {
         return tiles[position.y()][position.x()];
     }
 
+    public void setTile(Tile newTile, Vector2d position){
+        tiles[position.y()][position.x()] = newTile;
+    }
+
 //// Helper/abstract functions
 
     private Comparator<Animal> sortByDominance() {

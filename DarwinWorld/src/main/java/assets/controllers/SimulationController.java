@@ -52,6 +52,7 @@ public class SimulationController implements MapChangeListener {
     @FXML public Label averageAnimalEnergy;
     @FXML public Label averageLifeTime;
     @FXML public Label averageChildren;
+    @FXML public Label mostPopularGenome;
     @FXML public Label dayCounter;
 
     //// Animal statistics labels
@@ -219,6 +220,7 @@ public class SimulationController implements MapChangeListener {
         averageAnimalEnergy.setText(String.valueOf(board.getAverageAnimalEnergy()));
         averageLifeTime.setText(String.valueOf(board.getAverageLifeTime()));
         averageChildren.setText(String.valueOf(board.getAverageNumOfChildren()));
+        mostPopularGenome.setText(Arrays.toString(board.getMostPopularGenome()));
         dayCounter.setText(String.valueOf(board.getDay()));
 
     }

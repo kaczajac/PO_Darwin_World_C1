@@ -9,6 +9,7 @@ public class Scoreboard {
     private int averageAnimalEnergy;
     private int averageLifeTime;
     private int averageNumOfChildren;
+    private int[] mostPopularGenome;
 
 
     public void updateStatistics(int numOfAnimals,
@@ -17,6 +18,7 @@ public class Scoreboard {
                                 int averageAnimalEnergy,
                                 int averageLifeTime,
                                 int averageNumOfChildren,
+                                int[] mostPopularGenome,
                                 int day)
     {
         this.numOfAnimals = numOfAnimals;
@@ -25,6 +27,7 @@ public class Scoreboard {
         this.averageAnimalEnergy = averageAnimalEnergy;
         this.averageLifeTime = averageLifeTime;
         this.averageNumOfChildren = averageNumOfChildren;
+        this.mostPopularGenome = mostPopularGenome;
         this.day = day;
     }
 
@@ -54,6 +57,10 @@ public class Scoreboard {
 
     public int getDay() {
         return day;
+    }
+
+    public int[] getMostPopularGenome() {
+        return mostPopularGenome;
     }
 
 }

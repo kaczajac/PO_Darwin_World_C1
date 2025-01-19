@@ -89,6 +89,7 @@ public class Simulation implements Runnable{
                                     map.calculateAverageEnergy(),
                                     map.calculateAverageLifeTime(),
                                     map.calculateAverageNumOfChildren(),
+                                    map.findMostPopularGenome(),
                                     this.day);
     }
 

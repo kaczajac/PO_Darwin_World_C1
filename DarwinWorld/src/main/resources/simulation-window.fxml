@@ -5,17 +5,17 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="950.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
    <center>
       <AnchorPane prefHeight="615.0" prefWidth="820.0">
 
-         <StackPane layoutX="274.0" layoutY="39.0" prefHeight="600.0" prefWidth="600.0">
+         <StackPane layoutX="301.0" layoutY="38.0" prefHeight="600.0" prefWidth="600.0">
 
             <GridPane fx:id="mapGrid" alignment="CENTER" gridLinesVisible="true" prefHeight="500" prefWidth="500" />
 
          </StackPane>
 
-         <Label fx:id="simulationLabel" alignment="CENTER" layoutX="274.0" layoutY="30.0" prefHeight="18.0" prefWidth="600.0">
+         <Label fx:id="simulationLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="271.0" layoutY="29.0" prefHeight="18.0" prefWidth="660.0">
             <font>
                <Font name="Verdana Bold" size="14.0" />
             </font>
@@ -30,125 +30,132 @@
          </Label>
 
          <Label layoutX="19.0" layoutY="70" text="Day" />
-         <Label fx:id="dayCounter" alignment="CENTER" layoutX="180.0" layoutY="70.0" prefHeight="17.0" prefWidth="76.0" text="0">
+         <Label fx:id="dayCounter" alignment="CENTER" layoutX="178.0" layoutY="70.0" prefHeight="17.0" prefWidth="78.0" text="0">
             <font>
                <Font name="Verdana Bold" size="12.0" />
             </font></Label>
 
          <Label layoutX="19.0" layoutY="100" prefHeight="17.0" prefWidth="109.0" text="Number Of Animals" />
-         <Label fx:id="numOfAnimals" alignment="CENTER" layoutX="180.0" layoutY="96.0" prefHeight="25.0" prefWidth="76.0" text="0">
+         <Label fx:id="numOfAnimals" alignment="CENTER" layoutX="178.0" layoutY="96.0" prefHeight="25.0" prefWidth="78.0" text="0">
             <font>
                <Font name="Verdana Bold" size="12.0" />
             </font></Label>
 
          <Label layoutX="19.0" layoutY="130.0" text="Number Of Grasses" />
-         <Label fx:id="numOfGrasses" alignment="CENTER" layoutX="180.0" layoutY="126.0" prefHeight="25.0" prefWidth="76.0" text="0">
+         <Label fx:id="numOfGrasses" alignment="CENTER" layoutX="178.0" layoutY="126.0" prefHeight="25.0" prefWidth="78.0" text="0">
             <font>
                <Font name="Verdana Bold" size="12.0" />
             </font></Label>
 
          <Label layoutX="19.0" layoutY="160.0" text="Number Of Empty Positions" />
-         <Label fx:id="numOfEmptyPositions" alignment="CENTER" layoutX="180.0" layoutY="156.0" prefHeight="25.0" prefWidth="76.0" text="0">
+         <Label fx:id="numOfEmptyPositions" alignment="CENTER" layoutX="178.0" layoutY="156.0" prefHeight="25.0" prefWidth="78.0" text="0">
             <font>
                <Font name="Verdana Bold" size="12.0" />
             </font></Label>
 
          <Label layoutX="19.0" layoutY="190.0" text="Average Animal Energy" />
-         <Label fx:id="averageAnimalEnergy" alignment="CENTER" layoutX="180.0" layoutY="186.0" prefHeight="25.0" prefWidth="76.0" text="0">
+         <Label fx:id="averageAnimalEnergy" alignment="CENTER" layoutX="178.0" layoutY="186.0" prefHeight="25.0" prefWidth="78.0" text="0">
             <font>
                <Font name="Verdana Bold" size="12.0" />
             </font></Label>
 
          <Label layoutX="19.0" layoutY="220.0" text="Average Animal Life Time" />
-         <Label fx:id="averageLifeTime" alignment="CENTER" layoutX="180.0" layoutY="216.0" prefHeight="25.0" prefWidth="76.0" text="0">
+         <Label fx:id="averageLifeTime" alignment="CENTER" layoutX="178.0" layoutY="216.0" prefHeight="25.0" prefWidth="78.0" text="0">
             <font>
                <Font name="Verdana Bold" size="12.0" />
             </font></Label>
 
          <Label layoutX="19.0" layoutY="250.0" text="Average Number Of Children" />
-         <Label fx:id="averageChildren" alignment="CENTER" layoutX="180.0" layoutY="246.0" prefHeight="25.0" prefWidth="76.0" text="0">
+         <Label fx:id="averageChildren" alignment="CENTER" layoutX="178.0" layoutY="246.0" prefHeight="25.0" prefWidth="78.0" text="0">
             <font>
                <Font name="Verdana Bold" size="12.0" />
             </font></Label>
 
-         <Label alignment="CENTER" layoutX="-1.0" layoutY="300" prefHeight="18.0" prefWidth="262.0" text="Animal Statistics">
+         <Label layoutX="19.0" layoutY="280.0" text="Most Popular Genome" />
+         <Label fx:id="mostPopularGenome" alignment="CENTER_RIGHT" layoutX="142.0" layoutY="280.0" prefHeight="17.0" prefWidth="82.0">
+            <font>
+               <Font name="Verdana Bold" size="12.0" />
+            </font>
+         </Label>
+
+         <Label alignment="CENTER" layoutX="-1.0" layoutY="320" prefHeight="18.0" prefWidth="262.0" text="Animal Statistics">
             <font>
                <Font name="Verdana Bold" size="14.0" />
             </font>
          </Label>
-         <Label alignment="CENTER" layoutX="-15.0" layoutY="598.0" prefHeight="25.0" prefWidth="290.0" text="Click on an animal to show its statistics!">
+         <Label alignment="CENTER" layoutX="-15.0" layoutY="611.0" prefHeight="25.0" prefWidth="290.0" text="Click on an animal to show its statistics!">
             <font>
                <Font name="Verdana" size="12.0" />
             </font>
          </Label>
 
-         <Label layoutX="19.0" layoutY="330" text="Genome" />
-         <Label fx:id="animalGenome" alignment="CENTER_RIGHT" layoutX="95.0" layoutY="326.0" prefHeight="25.0" prefWidth="126.0" text="-">
+         <Label layoutX="19.0" layoutY="350" text="Genome" />
+         <Label fx:id="animalGenome" alignment="CENTER_RIGHT" layoutX="96.0" layoutY="346.0" prefHeight="25.0" prefWidth="125.0" text="-">
             <font>
                <Font name="Verdana Bold" size="12.0" />
             </font>
          </Label>
 
-         <Label layoutX="19.0" layoutY="360" text="Active Gene" />
-         <Label fx:id="animalGene" alignment="CENTER" layoutX="180.0" layoutY="356.0" prefHeight="25.0" prefWidth="76.0" text="-">
+         <Label layoutX="19.0" layoutY="380" text="Active Gene" />
+         <Label fx:id="animalGene" alignment="CENTER" layoutX="180.0" layoutY="376.0" prefHeight="25.0" prefWidth="76.0" text="-">
             <font>
                <Font name="Verdana Bold" size="12.0" />
             </font>
          </Label>
 
-         <Label layoutX="19.0" layoutY="390" text="Energy" />
-         <Label fx:id="animalEnergy" alignment="CENTER" layoutX="180.0" layoutY="386.0" prefHeight="25.0" prefWidth="76.0" text="-">
+         <Label layoutX="19.0" layoutY="410" text="Energy" />
+         <Label fx:id="animalEnergy" alignment="CENTER" layoutX="180.0" layoutY="406.0" prefHeight="25.0" prefWidth="76.0" text="-">
             <font>
                <Font name="Verdana Bold" size="12.0" />
             </font>
          </Label>
 
-         <Label layoutX="19.0" layoutY="420" text="Grass Eaten" />
-         <Label fx:id="animalGrass" alignment="CENTER" layoutX="180.0" layoutY="416.0" prefHeight="25.0" prefWidth="76.0" text="-">
+         <Label layoutX="19.0" layoutY="440" text="Grass Eaten" />
+         <Label fx:id="animalGrass" alignment="CENTER" layoutX="180.0" layoutY="436.0" prefHeight="25.0" prefWidth="76.0" text="-">
             <font>
                <Font name="Verdana Bold" size="12.0" />
             </font>
          </Label>
 
-         <Label layoutX="19.0" layoutY="450" text="Children" />
-         <Label fx:id="animalChildren" alignment="CENTER" layoutX="180.0" layoutY="446.0" prefHeight="25.0" prefWidth="76.0" text="-">
+         <Label layoutX="19.0" layoutY="470" text="Children" />
+         <Label fx:id="animalChildren" alignment="CENTER" layoutX="180.0" layoutY="466.0" prefHeight="25.0" prefWidth="76.0" text="-">
             <font>
                <Font name="Verdana Bold" size="12.0" />
             </font>
          </Label>
 
-         <Label layoutX="19.0" layoutY="480" text="Descendants" />
-         <Label fx:id="animalDescendants" alignment="CENTER" layoutX="180.0" layoutY="476.0" prefHeight="25.0" prefWidth="76.0" text="-">
+         <Label layoutX="19.0" layoutY="500" text="Descendants" />
+         <Label fx:id="animalDescendants" alignment="CENTER" layoutX="180.0" layoutY="496.0" prefHeight="25.0" prefWidth="76.0" text="-">
             <font>
                <Font name="Verdana Bold" size="12.0" />
             </font>
          </Label>
 
-         <Label layoutX="19.0" layoutY="510" text="Age" />
-         <Label fx:id="animalAge" alignment="CENTER" layoutX="180.0" layoutY="506.0" prefHeight="25.0" prefWidth="76.0" text="-">
+         <Label layoutX="19.0" layoutY="530" text="Age" />
+         <Label fx:id="animalAge" alignment="CENTER" layoutX="180.0" layoutY="526.0" prefHeight="25.0" prefWidth="76.0" text="-">
             <font>
                <Font name="Verdana Bold" size="12.0" />
             </font>
          </Label>
 
-         <Label layoutX="19.0" layoutY="540" text="Death Day" />
-         <Label fx:id="animalDeathDay" alignment="CENTER" layoutX="180.0" layoutY="536.0" prefHeight="25.0" prefWidth="76.0" text="-">
+         <Label layoutX="19.0" layoutY="560" text="Death Day" />
+         <Label fx:id="animalDeathDay" alignment="CENTER" layoutX="180.0" layoutY="556.0" prefHeight="25.0" prefWidth="76.0" text="-">
             <font>
                <Font name="Verdana Bold" size="12.0" />
             </font>
          </Label>
 
-         <Label layoutX="19.0" layoutY="570" text="Birth Day" />
-         <Label fx:id="animalBirthDay" alignment="CENTER" layoutX="180.0" layoutY="566.0" prefHeight="25.0" prefWidth="76.0" text="-">
+         <Label layoutX="19.0" layoutY="590" text="Birth Day" />
+         <Label fx:id="animalBirthDay" alignment="CENTER" layoutX="180.0" layoutY="586.0" prefHeight="25.0" prefWidth="76.0" text="-">
             <font>
                <Font name="Verdana Bold" size="12.0" />
             </font>
          </Label>
 
-         <Button fx:id="pauseButton" alignment="CENTER" layoutX="514.0" layoutY="637.0" prefHeight="40.0" prefWidth="120.0" text="Pause" />
-         <Button fx:id="unfollowAnimalButton" disable="true" layoutX="65.0" layoutY="639.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="130.0" text="Unfollow Animal" />
-         <Button fx:id="popularGrassPositionsButton" layoutX="302.0" layoutY="637.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="175.0" text="Show Popular Grass Positions" />
-         <Button fx:id="popularGenomeAnimalsButton" layoutX="672.0" layoutY="637.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="195.0" text="Show Popular Genome Animals" />
+         <Button fx:id="pauseButton" alignment="CENTER" layoutX="541.0" layoutY="637.0" prefHeight="40.0" prefWidth="120.0" text="Pause" />
+         <Button fx:id="unfollowAnimalButton" disable="true" layoutX="65.0" layoutY="641.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="130.0" text="Unfollow Animal" />
+         <Button fx:id="popularGrassPositionsButton" layoutX="301.0" layoutY="637.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" text="Show Popular Grass Positions" />
+         <Button fx:id="popularGenomeAnimalsButton" layoutX="700.0" layoutY="637.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" text="Show Popular Genome Animals" />
 
       </AnchorPane>
    </center>

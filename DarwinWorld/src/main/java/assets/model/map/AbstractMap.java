@@ -288,6 +288,19 @@ public abstract class AbstractMap {
         return (numOfNewBornAnimals / numOfLivingAnimals);
     }
 
+    public int[] findMostPopularGenome() {
+
+        List<Animal> allAnimals = new ArrayList<>();
+
+        for (List<Animal> animalList : animals.values()) {
+            allAnimals.addAll(animalList);
+        }
+
+        allAnimals.sort(Comparator.comparingInt(Animal::getNumberOfDescendants));
+        return allAnimals.getLast().getGenome();
+
+    }
+
 //// Listeners
 
     public void addObserver(MapChangeListener observer) {
@@ -367,10 +380,12 @@ public abstract class AbstractMap {
             allAnimals.addAll(animalList);
         }
 
-        return allAnimals.stream()
-                .sorted((a1, a2) -> Integer.compare(a2.getNumberOfDescendants(), a1.getNumberOfDescendants()))
-                .limit(5)
-                .collect(Collectors.toSet());
+        OptionalInt max = allAnimals.stream().mapToInt(Animal::getNumberOfDescendants).max();
+
+        return max.isPresent() ? allAnimals.stream()
+                                    .filter(a -> a.getNumberOfDescendants() == max.getAsInt())
+                                    .collect(Collectors.toSet())
+                                : new HashSet<>();
     }
 
     public boolean isOccupied(Vector2d position) {

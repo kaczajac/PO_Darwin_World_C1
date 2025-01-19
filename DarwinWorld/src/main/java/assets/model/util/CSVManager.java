@@ -63,6 +63,7 @@ public class CSVManager {
         writer.append(String.format("\nNumber Of Empty Positions, %s", c.numOfEmptyPositions.getText()));
         writer.append(String.format("\nAverage Animal Energy, %s", c.averageAnimalEnergy.getText()));
         writer.append(String.format("\nAverage Number Of Children, %s", c.averageChildren.getText()));
+        writer.append(String.format("\nMost Popular Genome Among Animals, %s", c.mostPopularGenome.getText()));
         writer.append(String.format("\nSelected Animal's Genome, %s", c.animalGenome.getText()));
         writer.append(String.format("\nSelected Animal's Gene, %s", c.animalGene.getText()));
         writer.append(String.format("\nSelected Animal's Energy, %s", c.animalEnergy.getText()));

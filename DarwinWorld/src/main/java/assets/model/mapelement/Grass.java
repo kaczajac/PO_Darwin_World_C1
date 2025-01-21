@@ -6,7 +6,7 @@ import javafx.scene.image.ImageView;
 import java.util.Objects;
 import java.util.UUID;
 
-public class Grass extends MapElement {
+public class Grass extends WorldElement {
 
     private final UUID id;
     private final Vector2d position;

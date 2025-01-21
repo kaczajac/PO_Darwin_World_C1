@@ -1,10 +1,10 @@
 package assets.model.contract;
 
-import assets.model.map.AbstractMap;
+import assets.model.map.AbstractWorldMap;
 
 @FunctionalInterface
 public interface MapChangeListener {
 
-    void mapChanged(AbstractMap map);
+    void mapChanged(AbstractWorldMap map);
 
 }

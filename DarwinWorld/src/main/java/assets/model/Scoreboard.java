@@ -9,7 +9,7 @@ public class Scoreboard {
     private int averageAnimalEnergy;
     private int averageLifeTime;
     private int averageNumOfChildren;
-    private int[] mostPopularGenome;
+    private String mostPopularGenome;
 
 
     public void updateStatistics(int numOfAnimals,
@@ -18,7 +18,7 @@ public class Scoreboard {
                                 int averageAnimalEnergy,
                                 int averageLifeTime,
                                 int averageNumOfChildren,
-                                int[] mostPopularGenome,
+                                String mostPopularGenome,
                                 int day)
     {
         this.numOfAnimals = numOfAnimals;
@@ -59,7 +59,7 @@ public class Scoreboard {
         return day;
     }
 
-    public int[] getMostPopularGenome() {
+    public String getMostPopularGenome() {
         return mostPopularGenome;
     }
 

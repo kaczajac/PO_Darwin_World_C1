@@ -1,6 +1,6 @@
 package assets.model.enums;
 
-public enum MapType {
+public enum WorldMapType {
     DEFAULT,
     WATER
 }

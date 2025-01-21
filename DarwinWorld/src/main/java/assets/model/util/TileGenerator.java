@@ -1,6 +1,6 @@
 package assets.model.util;
 
-import assets.model.records.MapSettings;
+import assets.model.records.WorldMapSettings;
 import assets.model.Tile;
 import assets.model.enums.TileState;
 
@@ -16,7 +16,8 @@ public class TileGenerator {
     // final result
     private Tile[][] tiles;
 
-    public TileGenerator(MapSettings settings) {
+    public TileGenerator(WorldMapSettings settings) {
+
         this.rows = settings.mapHeight();
         this.columns = settings.mapWidth();
         this.waterLevel = settings.mapWaterLevel() != null ? settings.mapWaterLevel() : 0.0;
@@ -27,6 +28,7 @@ public class TileGenerator {
             case WATER -> waterMapGeneration();
             default -> throw new IllegalStateException("Unexpected value: " + settings.mapType());
         }
+
     }
 
     public Tile[][] getTiles() {
@@ -36,11 +38,8 @@ public class TileGenerator {
 //// Water map generation ('cellular automata rule 45' algorithm for procedural generation)
 
     private void waterMapGeneration() {
-
         setup();
         iterateTiles();
-        fillEquator();
-
     }
 
     private void setup() {

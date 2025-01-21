@@ -4,16 +4,16 @@ import assets.model.mapelement.Animal;
 import assets.model.Tile;
 import assets.model.records.Vector2d;
 import assets.model.enums.TileState;
-import assets.model.records.MapSettings;
+import assets.model.records.WorldMapSettings;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WaterMap extends AbstractMap {
+public class WaterWorldMap extends AbstractWorldMap {
 
     private final List<Vector2d> flowTilesPositions = new ArrayList<>();
 
-    public WaterMap(MapSettings settings) {
+    public WaterWorldMap(WorldMapSettings settings) {
         super(settings);
         findFlowTiles();
     }

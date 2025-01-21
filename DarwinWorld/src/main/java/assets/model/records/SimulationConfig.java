@@ -1,8 +1,8 @@
 package assets.model.records;
 
-import assets.model.map.AbstractMap;
+import assets.model.map.AbstractWorldMap;
 
-public record SimulationConfig(AbstractMap map,
+public record SimulationConfig(AbstractWorldMap map,
                                int mapFlowsDuration,
                                int grassDaily,
                                int grassEnergy,

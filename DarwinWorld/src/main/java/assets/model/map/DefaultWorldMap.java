@@ -2,11 +2,11 @@ package assets.model.map;
 
 import assets.model.mapelement.Animal;
 import assets.model.records.Vector2d;
-import assets.model.records.MapSettings;
+import assets.model.records.WorldMapSettings;
 
-public class DefaultMap extends AbstractMap {
+public class DefaultWorldMap extends AbstractWorldMap {
 
-    public DefaultMap(MapSettings settings) {
+    public DefaultWorldMap(WorldMapSettings settings) {
         super(settings);
     }
 

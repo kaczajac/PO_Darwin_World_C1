@@ -1,23 +1,23 @@
 package assets.model.util;
 
-import assets.model.enums.MapType;
+import assets.model.enums.WorldMapType;
 import assets.model.exceptions.IllegalMapSettingsException;
-import assets.model.map.DefaultMap;
-import assets.model.map.WaterMap;
-import assets.model.map.AbstractMap;
-import assets.model.records.MapSettings;
+import assets.model.map.DefaultWorldMap;
+import assets.model.map.WaterWorldMap;
+import assets.model.map.AbstractWorldMap;
+import assets.model.records.WorldMapSettings;
 
-public class MapBuilder {
+public class WorldMapBuilder {
 
     // Mandatory map parameters
     private int height = 15;
     private int width = 15;
-    private MapType type = MapType.DEFAULT;
+    private WorldMapType type = WorldMapType.DEFAULT;
 
     // Optional parameters for map generation
     private Double waterLevel = 0.0;
 
-    public MapBuilder changeSettings(MapSettings settings) {
+    public WorldMapBuilder changeSettings(WorldMapSettings settings) {
         this.height = settings.mapHeight();
         this.width = settings.mapWidth();
         this.type = settings.mapType();
@@ -25,37 +25,37 @@ public class MapBuilder {
         return this;
     }
 
-    public MapBuilder setHeight(int height) {
+    public WorldMapBuilder setHeight(int height) {
         this.height = height;
         return this;
     }
 
-    public MapBuilder setWidth(int width) {
+    public WorldMapBuilder setWidth(int width) {
         this.width = width;
         return this;
     }
 
-    public MapBuilder setType(MapType type) {
+    public WorldMapBuilder setType(WorldMapType type) {
         this.type = type;
         return this;
     }
 
-    public MapBuilder setWaterLevel(Double waterLevel) {
+    public WorldMapBuilder setWaterLevel(Double waterLevel) {
         this.waterLevel = waterLevel;
         return this;
     }
 
-    public AbstractMap build() throws IllegalMapSettingsException {
+    public AbstractWorldMap build() throws IllegalMapSettingsException {
 
         if (incorrectSettings()) {
             throw new IllegalMapSettingsException();
         }
 
-        MapSettings settings = new MapSettings(height, width, type, waterLevel);
+        WorldMapSettings settings = new WorldMapSettings(height, width, type, waterLevel);
 
         return switch (type) {
-            case DEFAULT -> new DefaultMap(settings);
-            case WATER -> new WaterMap(settings);
+            case DEFAULT -> new DefaultWorldMap(settings);
+            case WATER -> new WaterWorldMap(settings);
         };
 
     }

@@ -1,8 +1,8 @@
 package assets;
 
 import assets.model.*;
-import assets.model.map.WaterMap;
-import assets.model.map.AbstractMap;
+import assets.model.map.WaterWorldMap;
+import assets.model.map.AbstractWorldMap;
 import assets.model.records.SimulationConfig;
 
 import java.time.LocalDateTime;
@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Simulation implements Runnable{
 
-    private final AbstractMap map;
+    private final AbstractWorldMap map;
     private final SimulationConfig config;
     private final Scoreboard scoreboard = new Scoreboard();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss.SS");
@@ -19,13 +19,16 @@ public class Simulation implements Runnable{
     private boolean simulationIsRunning = true;
     private boolean suspendedThread = false;
 
+
     public Simulation(SimulationConfig config) {
+
         this.map = config.map();
         this.config = config;
 
         map.placeAnimals(config);
         map.placeGrasses(config.grassDaily());
         updateScoreboard();
+
     }
 
 ////
@@ -52,7 +55,7 @@ public class Simulation implements Runnable{
 
             // Inflows and outflows handling if the map is 'WaterMap'
             if (flowCycleHasPassed()) {
-                ( (WaterMap) map ).triggerFlow();
+                ( (WaterWorldMap) map ).triggerFlow();
             }
 
             // Simulation procedure
@@ -94,7 +97,7 @@ public class Simulation implements Runnable{
     }
 
     private boolean isNotWaterMap() {
-        return !map.getClass().isAssignableFrom(WaterMap.class);
+        return !map.getClass().isAssignableFrom(WaterWorldMap.class);
     }
 
 //// Thread management

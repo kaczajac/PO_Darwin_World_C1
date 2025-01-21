@@ -1,12 +1,13 @@
 package assets.controllers;
 
 import assets.SimulationThread;
-import assets.model.MapElementBox;
+import assets.model.WorldElementBox;
 import assets.model.Scoreboard;
-import assets.model.mapelement.MapElement;
+import assets.model.contract.Controller;
+import assets.model.mapelement.WorldElement;
 import assets.model.records.Vector2d;
 import assets.model.contract.MapChangeListener;
-import assets.model.map.AbstractMap;
+import assets.model.map.AbstractWorldMap;
 import assets.model.mapelement.Animal;
 import assets.model.records.SimulationConfig;
 import assets.model.util.CSVManager;
@@ -26,17 +27,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public class SimulationController implements MapChangeListener {
+public class SimulationController implements MapChangeListener, Controller {
 
     private static final double GRID_SIZE = 500;
     private final double CELL_SIZE;
 
     private final SimulationThread thread;
     private final SimulationConfig config;
-    private final CSVManager CSVManager = new CSVManager();
     private File csvFile;
 
-    private MapElementBox selectedAnimalBox = null;
+    private WorldElementBox selectedAnimalBox = null;
     private Set<Vector2d> popularGrassPositions = new HashSet<>();
     private Set<Animal> popularGenomeAnimals = new HashSet<>();
 
@@ -87,12 +87,13 @@ public class SimulationController implements MapChangeListener {
         this.thread = thread;
 
         config.map().addObserver(this);
+
     }
 
 ////
 
     @FXML
-    private void initialize() {
+    public void initialize() {
 
         adjustGridPane();
         renderSimulationNumber();
@@ -112,6 +113,7 @@ public class SimulationController implements MapChangeListener {
             clearSelectedAnimalStats();
             selectedAnimalBox = null;
             unfollowAnimalButton.setDisable(true);
+            drawMap(config.map());
         });
 
         popularGrassPositionsButton.setOnAction(event -> {
@@ -135,7 +137,7 @@ public class SimulationController implements MapChangeListener {
     }
 
     @Override
-    public void mapChanged(AbstractMap map) {
+    public void mapChanged(AbstractWorldMap map) {
 
         if (showPopularGrassPositions) {
             popularGrassPositions = map.getPopularGrassPositions();
@@ -161,7 +163,7 @@ public class SimulationController implements MapChangeListener {
 
     }
 
-    private void drawMap(AbstractMap map) {
+    private void drawMap(AbstractWorldMap map) {
 
         mapGrid.getChildren().clear();
 
@@ -172,7 +174,7 @@ public class SimulationController implements MapChangeListener {
             for (int col = 0; col < cols; col++) {
 
                 Vector2d position = new Vector2d(col, row);
-                MapElementBox box = new MapElementBox(map, position, CELL_SIZE);
+                WorldElementBox box = new WorldElementBox(map, position, CELL_SIZE);
                 handleAnimalEvents(box);
                 handleGrassEvents(box);
                 mapGrid.add(box.display(), col, (rows - 1 - row));
@@ -224,7 +226,7 @@ public class SimulationController implements MapChangeListener {
         averageAnimalEnergy.setText(String.valueOf(board.getAverageAnimalEnergy()));
         averageLifeTime.setText(String.valueOf(board.getAverageLifeTime()));
         averageChildren.setText(String.valueOf(board.getAverageNumOfChildren()));
-        mostPopularGenome.setText(Arrays.toString(board.getMostPopularGenome()));
+        mostPopularGenome.setText(board.getMostPopularGenome());
         dayCounter.setText(String.valueOf(board.getDay()));
 
     }
@@ -261,7 +263,7 @@ public class SimulationController implements MapChangeListener {
 
     }
 
-    private void handleAnimalEvents(MapElementBox box) {
+    private void handleAnimalEvents(WorldElementBox box) {
 
         if (box.containsAnimal()) {
 
@@ -275,6 +277,7 @@ public class SimulationController implements MapChangeListener {
                 box.markAsSelectedAnimalBox();
                 renderSelectedAnimalStats();
                 unfollowAnimalButton.setDisable(false);
+                drawMap(config.map());
             });
 
             if (showPopularGenomeAnimals && popularGenomeAnimals.contains((Animal) box.getMapElement())) {
@@ -290,7 +293,7 @@ public class SimulationController implements MapChangeListener {
 
     }
 
-    private void addHealthBar(MapElementBox box) {
+    private void addHealthBar(WorldElementBox box) {
 
         Line hp = new Line();
         hp.setStartX(CELL_SIZE * 0.4);
@@ -301,7 +304,7 @@ public class SimulationController implements MapChangeListener {
 
     }
 
-    private Color getHealthColorBasedOnEnergyLevel(MapElement element) {
+    private Color getHealthColorBasedOnEnergyLevel(WorldElement element) {
 
         Animal animal = (Animal) element;
         if (animal.getEnergy() >= config.animalStartEnergy() * 0.7) return Color.LIGHTGREEN;
@@ -310,7 +313,7 @@ public class SimulationController implements MapChangeListener {
 
     }
 
-    private void handleGrassEvents(MapElementBox box) {
+    private void handleGrassEvents(WorldElementBox box) {
 
         if (showPopularGrassPositions) {
 

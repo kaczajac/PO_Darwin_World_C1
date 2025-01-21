@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class CSVManager {
 
-    public void writeConfigFile(File filePath, ConfigController c) throws IOException {
+    public static void writeConfigFile(File filePath, ConfigController c) throws IOException {
 
         BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
 
@@ -36,7 +36,7 @@ public class CSVManager {
 
     }
 
-    public Map<String, String> readConfigFile(File filePath) throws IOException{
+    public static Map<String, String> readConfigFile(File filePath) throws IOException{
 
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
         String line;
@@ -56,7 +56,7 @@ public class CSVManager {
         return configParameters;
     }
 
-    public void logChangesToCsvFile(File filePath, SimulationController c) throws IOException {
+    public static void logChangesToCsvFile(File filePath, SimulationController c) throws IOException {
 
         BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true));
 

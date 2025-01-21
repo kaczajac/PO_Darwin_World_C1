@@ -1,13 +1,13 @@
 package assets.model;
 
-import assets.model.enums.MapType;
+import assets.model.enums.WorldMapType;
 import assets.model.enums.TileState;
 import assets.model.exceptions.IllegalPositionException;
-import assets.model.map.DefaultMap;
-import assets.model.map.WaterMap;
+import assets.model.map.DefaultWorldMap;
+import assets.model.map.WaterWorldMap;
 import assets.model.mapelement.Animal;
 import assets.model.mapelement.Grass;
-import assets.model.records.MapSettings;
+import assets.model.records.WorldMapSettings;
 import assets.model.records.SimulationConfig;
 import assets.model.records.Vector2d;
 import org.junit.jupiter.api.Test;
@@ -18,19 +18,19 @@ public class MapTest {
 
     @Test
     void testMapCreationWithSettings() {
-        MapSettings settings = new MapSettings(10, 10, MapType.DEFAULT, 0.0);
-        DefaultMap map = new DefaultMap(settings);
+        WorldMapSettings settings = new WorldMapSettings(10, 10, WorldMapType.DEFAULT, 0.0);
+        DefaultWorldMap map = new DefaultWorldMap(settings);
 
         assertEquals(10, map.getWidth(), "Map width should be 10.");
         assertEquals(10, map.getHeight(), "Map height should be 10.");
 
-        assertEquals(MapType.DEFAULT, settings.mapType(), "Map type should be DEFAULT.");
+        assertEquals(WorldMapType.DEFAULT, settings.mapType(), "Map type should be DEFAULT.");
     }
 
     @Test
     void testAnimalPlacementOnInvalidTile() {
-        MapSettings settings = new MapSettings(10, 10, MapType.WATER, 0.3);
-        WaterMap map = new WaterMap(settings);
+        WorldMapSettings settings = new WorldMapSettings(10, 10, WorldMapType.WATER, 0.3);
+        WaterWorldMap map = new WaterWorldMap(settings);
         int x = (int) (Math.random() * 10);
         int y = (int) (Math.random() * 10);
         Vector2d position = new Vector2d(x, y);
@@ -55,8 +55,8 @@ public class MapTest {
 
     @Test
     void testAnimalBlockedByTile() {
-        MapSettings settings = new MapSettings(10, 10, MapType.WATER, 0.3);
-        WaterMap map = new WaterMap(settings);
+        WorldMapSettings settings = new WorldMapSettings(10, 10, WorldMapType.WATER, 0.3);
+        WaterWorldMap map = new WaterWorldMap(settings);
 
         Vector2d startPosition = new Vector2d(4,4);
         Animal animal = new Animal(startPosition, 100, 4);
@@ -85,8 +85,8 @@ public class MapTest {
 
     @Test
     void testAnimalCannotBePlacedOnWater() {
-        MapSettings settings = new MapSettings(10, 10, MapType.WATER, 0.3);
-        WaterMap map = new WaterMap(settings);
+        WorldMapSettings settings = new WorldMapSettings(10, 10, WorldMapType.WATER, 0.3);
+        WaterWorldMap map = new WaterWorldMap(settings);
 
         Vector2d position = new Vector2d(5, 5);
 
@@ -103,8 +103,8 @@ public class MapTest {
 
     @Test
     void testAnimalCanBePlacedOnEmptyTile() {
-        MapSettings settings = new MapSettings(10, 10, MapType.DEFAULT, 0.0);
-        DefaultMap map = new DefaultMap(settings);
+        WorldMapSettings settings = new WorldMapSettings(10, 10, WorldMapType.DEFAULT, 0.0);
+        DefaultWorldMap map = new DefaultWorldMap(settings);
 
         Vector2d position = new Vector2d(3, 3);
         Animal animal = new Animal(position, 100, 8);
@@ -120,8 +120,8 @@ public class MapTest {
 
     @Test
     void testAnimalEatGrass() {
-        MapSettings settings = new MapSettings(10, 10, MapType.DEFAULT, 0.0);
-        DefaultMap map = new DefaultMap(settings);
+        WorldMapSettings settings = new WorldMapSettings(10, 10, WorldMapType.DEFAULT, 0.0);
+        DefaultWorldMap map = new DefaultWorldMap(settings);
 
         Vector2d grassPosition = new Vector2d(4, 4);
         Grass grass = new Grass(grassPosition);
@@ -150,8 +150,8 @@ public class MapTest {
 
     @Test
     void testAnimalDeathFromLackOfEnergy() {
-        MapSettings settings = new MapSettings(10, 10, MapType.DEFAULT, 0.0);
-        DefaultMap map = new DefaultMap(settings);
+        WorldMapSettings settings = new WorldMapSettings(10, 10, WorldMapType.DEFAULT, 0.0);
+        DefaultWorldMap map = new DefaultWorldMap(settings);
 
         Vector2d p1 = new Vector2d(6, 6);
         Vector2d p2 = new Vector2d(5, 6);
@@ -174,8 +174,8 @@ public class MapTest {
 
     @Test
     void placeTwoAnimalsInTheSameSpot(){
-        MapSettings settings = new MapSettings(10, 10, MapType.DEFAULT, 0.0);
-        DefaultMap map = new DefaultMap(settings);
+        WorldMapSettings settings = new WorldMapSettings(10, 10, WorldMapType.DEFAULT, 0.0);
+        DefaultWorldMap map = new DefaultWorldMap(settings);
         Vector2d position = new Vector2d(4, 4);
         Animal a1 = new Animal(position, 20, 8);
         Animal a2 = new Animal(position, 20, 8);

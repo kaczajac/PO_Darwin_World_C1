@@ -1,13 +1,14 @@
 package assets.model;
 
 import assets.Simulation;
-import assets.model.enums.MapType;
-import assets.model.map.AbstractMap;
-import assets.model.map.DefaultMap;
+import assets.model.enums.WorldMapType;
+import assets.model.map.AbstractWorldMap;
+import assets.model.map.DefaultWorldMap;
 import assets.model.mapelement.Animal;
-import assets.model.records.MapSettings;
+import assets.model.records.WorldMapSettings;
 import assets.model.records.SimulationConfig;
 import assets.model.records.Vector2d;
+import assets.model.util.GenomeGenerator;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,7 +24,7 @@ public class AnimalTest {
         a2.setGenome(genes2);
         assertEquals(6 , a1.getGenome().length);
         Animal a3 = new Animal(new Vector2d(0,0), 50, 6);
-        a3.setBirthValues(a1,a2,3, null);
+        a3.setGenome(GenomeGenerator.getInheritedGenes(a1, a2));
         int[] expected = {2,4,1,1,2,3};
         int[] animalGenome = a3.getGenome();
         for(int i = 0; i < animalGenome.length; i++){
@@ -33,8 +34,8 @@ public class AnimalTest {
 
     @Test
     void movementTest() {
-        MapSettings mapSettings = new MapSettings(10, 10, MapType.DEFAULT, 0d);
-        AbstractMap map = new DefaultMap(mapSettings);
+        WorldMapSettings mapSettings = new WorldMapSettings(10, 10, WorldMapType.DEFAULT, 0d);
+        AbstractWorldMap map = new DefaultWorldMap(mapSettings);
         SimulationConfig simulationConfig = new SimulationConfig(
                 map, 8, 8, 0, 0, 400, 6, 10, 20, 0, 0, 0);
         Simulation simulation = new Simulation(simulationConfig);
@@ -75,7 +76,7 @@ public class AnimalTest {
         SimulationConfig config = new SimulationConfig(null, 8, 8, 0,
                 0, 400, 6, 10, 20, 3, 5, 1); // 10% szansa na mutację, 1-3 mutacje.
 
-        animal.mutateGenes(config);
+        GenomeGenerator.mutateGenes(config, animal.getGenome());
         int[] mutatedGenome = animal.getGenome();
         assertEquals(8, mutatedGenome.length, "Genome length should be unchanged.");
 
@@ -94,7 +95,7 @@ public class AnimalTest {
         int[] genes = {1, 2, 3, 4, 5, 6, 7, 0};
         Animal animal = new Animal(new Vector2d(0, 0), 100, genes.length);
         animal.setGenome(genes);
-        animal.geneShiftMutation();
+        GenomeGenerator.geneShiftMutation(animal.getGenome());
         int[] mutatedGenome = animal.getGenome();
 
         assertEquals(genes.length , mutatedGenome.length, "Genome length should be unchanged.");
@@ -111,7 +112,7 @@ public class AnimalTest {
         int[] genes = {1, 2, 3, 4, 5, 6, 7, 0};
         Animal animal = new Animal(new Vector2d(0, 0), 100, genes.length);
         animal.setGenome(genes);
-        animal.geneShuffleMutation();
+        GenomeGenerator.geneShuffleMutation(animal.getGenome());
         int[] mutatedGenome = animal.getGenome();
 
         assertEquals(genes.length, mutatedGenome.length, "Genome length should remain unchanged.");
@@ -129,8 +130,8 @@ public class AnimalTest {
 
     @Test
     void movementBoundaryTest() {
-        MapSettings mapSettings = new MapSettings(5, 5, MapType.DEFAULT, 0d);
-        AbstractMap map = new DefaultMap(mapSettings);
+        WorldMapSettings mapSettings = new WorldMapSettings(5, 5, WorldMapType.DEFAULT, 0d);
+        AbstractWorldMap map = new DefaultWorldMap(mapSettings);
 
         Animal animal = new Animal(new Vector2d(4, 2), 100, 6);
         int[] genes = {2,0,0,0,0,0};

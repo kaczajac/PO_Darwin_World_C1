@@ -2,13 +2,15 @@ package assets.controllers;
 
 import assets.Simulation;
 import assets.SimulationThread;
-import assets.model.enums.MapType;
+import assets.model.contract.Controller;
+import assets.model.enums.WorldMapType;
+import assets.model.exceptions.IllegalMapElementConfig;
 import assets.model.exceptions.IllegalMapSettingsException;
-import assets.model.map.AbstractMap;
-import assets.model.records.MapSettings;
+import assets.model.map.AbstractWorldMap;
+import assets.model.records.WorldMapSettings;
 import assets.model.records.SimulationConfig;
 import assets.model.util.CSVManager;
-import assets.model.util.MapBuilder;
+import assets.model.util.WorldMapBuilder;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -24,7 +26,7 @@ import java.io.*;
 import java.security.InvalidKeyException;
 import java.util.Map;
 
-public class ConfigController {
+public class ConfigController implements Controller {
 
     // FXML Variables
     @FXML public TextField mapHeightField;
@@ -51,16 +53,15 @@ public class ConfigController {
 
     @FXML private CheckBox csvFileWriterBox;
 
-    private final CSVManager CSVManager = new CSVManager();
-
     @FXML
-    private void initialize() {
+    public void initialize() {
 
         startSimulationButton.setOnAction(event -> {
             try {
                 SimulationConfig config = configParser();
+                validateConfig(config);
                 startSimulation(config);
-            } catch (IOException | IllegalMapSettingsException e) {
+            } catch (IOException | IllegalMapSettingsException | IllegalMapElementConfig e) {
                 System.out.println("Problems with initializing a new simulation: " + e.getMessage());
             }
 
@@ -154,7 +155,7 @@ public class ConfigController {
 
         int mapHeight = Integer.parseInt(mapHeightField.getText());
         int mapWidth = Integer.parseInt(mapWidthField.getText());
-        MapType mapType = waterMapButton.isSelected() ? MapType.WATER : MapType.DEFAULT;
+        WorldMapType mapType = waterMapButton.isSelected() ? WorldMapType.WATER : WorldMapType.DEFAULT;
         double waterLevel = Double.parseDouble(mapWaterLevelField.getText());
         int mapFlowDuration = Integer.parseInt(mapFlowsDurationField.getText());
 
@@ -171,12 +172,24 @@ public class ConfigController {
         int grassEnergy = Integer.parseInt(grassEnergyField.getText());
 
 
-        MapSettings mapSettings = new MapSettings(mapHeight, mapWidth, mapType, waterLevel);
-        AbstractMap map = new MapBuilder().changeSettings(mapSettings).build();
+        WorldMapSettings mapSettings = new WorldMapSettings(mapHeight, mapWidth, mapType, waterLevel);
+        AbstractWorldMap map = new WorldMapBuilder().changeSettings(mapSettings).build();
 
         return new SimulationConfig(map, mapFlowDuration, grassDailyGrow,
                 grassEnergy, animalsOnStartup, animalStartEnergy, animalGenomeLength,
                 animalMinFedEnergy, animalBirthCost, animalMinMutations, animalMaxMutations, animalMutationChance);
+
+    }
+
+    private void validateConfig(SimulationConfig config) throws IllegalMapElementConfig {
+
+        if ((config.grassDaily() < 0)
+                || (config.grassEnergy() < 0)
+                || (config.animalStartEnergy() < 0)
+                || (config.animalGenomeLength() < 0)
+                || (config.animalBirthCost() < 0)
+                || (config.animalMinMutations() < 0)
+                || (config.animalMaxMutations() < 0)) throw new IllegalMapElementConfig();
 
     }
 

@@ -1,13 +1,14 @@
 package assets.model.map;
 
+import assets.model.contract.WorldMap;
 import assets.model.mapelement.Animal;
 import assets.model.mapelement.Grass;
 import assets.model.Tile;
 import assets.model.records.Vector2d;
 import assets.model.contract.MapChangeListener;
-import assets.model.mapelement.MapElement;
+import assets.model.mapelement.WorldElement;
 import assets.model.exceptions.IllegalPositionException;
-import assets.model.records.MapSettings;
+import assets.model.records.WorldMapSettings;
 import assets.model.records.SimulationConfig;
 import assets.model.util.RandomPositionGenerator;
 import assets.model.util.TileGenerator;
@@ -16,7 +17,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public abstract class AbstractMap {
+public abstract class AbstractWorldMap implements WorldMap {
 
     private final UUID id;
     private final int width;
@@ -32,11 +33,13 @@ public abstract class AbstractMap {
     private int sumOfDeadAnimalsLifeTime = 0;
 
 
-    public AbstractMap(MapSettings settings) {
+    public AbstractWorldMap(WorldMapSettings settings) {
+
         this.id = UUID.randomUUID();
         this.width = settings.mapWidth();
         this.height = settings.mapHeight();
         this.tiles = new TileGenerator(settings).getTiles();
+
     }
 
 //// Simulation functions
@@ -288,17 +291,24 @@ public abstract class AbstractMap {
         return (numOfNewBornAnimals / numOfLivingAnimals);
     }
 
-    public int[] findMostPopularGenome() {
+    public String findMostPopularGenome() {
 
         List<Animal> allAnimals = new ArrayList<>();
-
         for (List<Animal> animalList : animals.values()) {
             allAnimals.addAll(animalList);
         }
-        if (allAnimals.isEmpty()) return new int[0];
+        if (allAnimals.isEmpty()) return "[]";
 
-        allAnimals.sort(Comparator.comparingInt(Animal::getNumberOfDescendants));
-        return allAnimals.getLast().getGenome();
+        Map<String, Integer> genomeCount = new HashMap<>();
+        for (Animal animal : allAnimals) {
+            String genomeString = Arrays.toString(animal.getGenome());
+            genomeCount.put(genomeString, genomeCount.getOrDefault(genomeString, 0) + 1);
+        }
+
+        return genomeCount.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse("[]");
 
     }
 
@@ -385,10 +395,10 @@ public abstract class AbstractMap {
             allAnimals.addAll(animalList);
         }
 
-        OptionalInt max = allAnimals.stream().mapToInt(Animal::getNumberOfDescendants).max();
+        String mostPopularGenome = findMostPopularGenome();
 
-        return max.isPresent() ? allAnimals.stream()
-                                    .filter(a -> a.getNumberOfDescendants() == max.getAsInt())
+        return !mostPopularGenome.isEmpty() ? allAnimals.stream()
+                                    .filter(a -> Arrays.toString(a.getGenome()).equals(mostPopularGenome))
                                     .collect(Collectors.toSet())
                                 : new HashSet<>();
     }
@@ -401,7 +411,7 @@ public abstract class AbstractMap {
         return grasses.containsKey(position);
     }
 
-    public Optional<MapElement> objectAt(Vector2d position) {
+    public Optional<WorldElement> objectAt(Vector2d position) {
         if (animals.containsKey(position)) return Optional.ofNullable(selectDominantAnimal(animals.get(position)));
         else return Optional.ofNullable(grasses.get(position));
     }

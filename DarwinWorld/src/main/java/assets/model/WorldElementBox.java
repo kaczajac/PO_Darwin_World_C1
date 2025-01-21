@@ -1,10 +1,10 @@
 package assets.model;
 
 import assets.model.enums.TileState;
-import assets.model.map.AbstractMap;
+import assets.model.map.AbstractWorldMap;
 import assets.model.mapelement.Animal;
 import assets.model.mapelement.Grass;
-import assets.model.mapelement.MapElement;
+import assets.model.mapelement.WorldElement;
 import assets.model.records.Vector2d;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
@@ -15,17 +15,17 @@ import javafx.scene.shape.StrokeType;
 import java.util.Optional;
 
 
-public class MapElementBox {
+public class WorldElementBox {
 
     private final StackPane box = new StackPane();
 
     private final Rectangle background;
-    private final MapElement element;
+    private final WorldElement element;
     private final Vector2d position;
     private final double BOX_SIZE;
 
 
-    public MapElementBox(AbstractMap map, Vector2d position, double BOX_SIZE) {
+    public WorldElementBox(AbstractWorldMap map, Vector2d position, double BOX_SIZE) {
 
         this.BOX_SIZE = BOX_SIZE;
         this.position = position;
@@ -40,7 +40,7 @@ public class MapElementBox {
         return this.box;
     }
 
-    public MapElement getMapElement() {
+    public WorldElement getMapElement() {
         return this.element;
     }
 
@@ -50,7 +50,7 @@ public class MapElementBox {
 
 //// Helpers
 
-    private Rectangle addBackground(AbstractMap map) {
+    private Rectangle addBackground(AbstractWorldMap map) {
 
         Rectangle background = new Rectangle(BOX_SIZE, BOX_SIZE);
         TileState positionTileState = map.getTileAt(this.position).getState();
@@ -75,13 +75,13 @@ public class MapElementBox {
 
     }
 
-    private MapElement addMapElement(AbstractMap map) {
+    private WorldElement addMapElement(AbstractWorldMap map) {
 
-        Optional<MapElement> elementOptional = map.objectAt(this.position);
+        Optional<WorldElement> elementOptional = map.objectAt(this.position);
 
         if (elementOptional.isPresent()) {
 
-            MapElement element = elementOptional.get();
+            WorldElement element = elementOptional.get();
             ImageView elementImage = element.getImageRepresentation();
             elementImage.setFitWidth(Math.floor(BOX_SIZE / 2) * 2);
             elementImage.setFitHeight(Math.floor(BOX_SIZE / 2) * 2);
@@ -95,7 +95,7 @@ public class MapElementBox {
     }
 
 
-    public void restoreDefaultBackground(AbstractMap map) {
+    public void restoreDefaultBackground(AbstractWorldMap map) {
         changeBackgroundColorBasedOnTileState(this.background, map.getTileAt(this.position).getState());
     }
 
@@ -113,7 +113,7 @@ public class MapElementBox {
         this.background.setFill(Color.MEDIUMPURPLE);
     }
 
-    public boolean containsSelectedAnimal(MapElementBox selectedBox) {
+    public boolean containsSelectedAnimal(WorldElementBox selectedBox) {
         if (selectedBox == null) return false;
         if (this.containsAnimal() && selectedBox.containsAnimal()) {
             Animal selectedAnimal = (Animal) selectedBox.getMapElement();

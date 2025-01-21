@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-public abstract class MapElement {
+public abstract class WorldElement {
 
     // Images
     protected final Map<Integer, Image> ANIMAL_IMAGES = new HashMap<>();
@@ -28,8 +28,6 @@ public abstract class MapElement {
     static ImageView createImageView(Image image) {
         ImageView imageView = new ImageView(image);
         imageView.setPreserveRatio(true);
-
-        // disabling art filters
         imageView.setSmooth(false);
         imageView.setEffect(null);
         return imageView;

@@ -3,12 +3,13 @@ package assets.model.mapelement;
 import assets.model.records.SimulationConfig;
 import assets.model.records.Vector2d;
 import assets.model.enums.TileState;
-import assets.model.map.AbstractMap;
+import assets.model.map.AbstractWorldMap;
+import assets.model.util.GenomeGenerator;
 import javafx.scene.image.ImageView;
 
 import java.util.*;
 
-public class Animal extends MapElement {
+public class Animal extends WorldElement {
 
     private final UUID id;
     private Vector2d position;
@@ -27,6 +28,7 @@ public class Animal extends MapElement {
 
 
     public Animal(Vector2d position, int startEnergy , int geneCount) {
+
         this.id = UUID.randomUUID();
         this.position = position;
         this.energy = startEnergy;
@@ -36,13 +38,14 @@ public class Animal extends MapElement {
         this.deathDay = -1;
 
         this.facingVector = getMoveVector((int) (Math.random() * 8));
-        this.genome = randomGenes(geneCount);
+        this.genome = GenomeGenerator.getRandomGenes(geneCount);
         this.imageNumber = (int) (Math.random() * 3) + 1;
+
     }
 
 //// Move mechanism
 
-    public void move(AbstractMap map){
+    public void move(AbstractWorldMap map){
         Vector2d moveVector = getMoveVector(genome[activeGene]);
         updateGene(activeGene);
 
@@ -101,63 +104,16 @@ public class Animal extends MapElement {
 //// Genes and inheritance mechanism
 
     public void setBirthValues(Animal parent1 , Animal parent2, int day, SimulationConfig config) {
-        inheritGenes(parent1.getGenome(), parent1.getEnergy(), parent2.getGenome(), parent2.getEnergy());
-        if(config != null) mutateGenes(config);
-        this.activeGene = (int) (Math.random() * this.genome.length);
+
         this.birthDay = day;
-    }
+        this.activeGene = (int) (Math.random() * config.animalGenomeLength());
 
-    private void inheritGenes(int[] genes1 , int energy1, int[] genes2 , int energy2){
-        int length = genome.length;
-        int maxEnergy = energy1 + energy2;
-
-        // Determine the mid-point based on the energy levels
-        int midPoint = (int) Math.floor(length * (Math.max(energy1, energy2) / (double) maxEnergy));
-
-        // Choose which gene set to use for the first and second part of the genome
-        int[] firstSet = (energy1 > energy2) ? genes1 : genes2;
-        int[] secondSet = (energy1 > energy2) ? genes2 : genes1;
-
-        // Create the new genome by combining both gene sets
-        int[] newGenome = new int[length];
-        System.arraycopy(firstSet, 0, newGenome, 0, midPoint);
-        System.arraycopy(secondSet, midPoint, newGenome, midPoint, length - midPoint);
-
-        // Update the current genome
-        System.arraycopy(newGenome, 0, genome, 0, length);
-
-    }
-
-    public void mutateGenes(SimulationConfig config){
-        if(Math.random() > config.animalMutationChance()) return;
-
-        int mutations = config.animalMinMutations() + (int)(Math.random() * (config.animalMaxMutations() - config.animalMinMutations()));
-        while(mutations > 0){
-            if((int)(Math.random() * 2) == 1)
-                geneShuffleMutation();
-            else geneShiftMutation();
-            mutations--;
+        int[] newGenome = GenomeGenerator.getInheritedGenes(parent1, parent2);
+        if (Math.random() < config.animalMutationChance()) {
+            GenomeGenerator.mutateGenes(config, newGenome);
         }
-    }
+        this.setGenome(newGenome);
 
-    public void geneShiftMutation(){
-        int shift = 1;
-        if((int)(Math.random()*2) == 1) shift *= -1;
-        int geneID = (int)(Math.random() * genome.length);
-        genome[geneID] = (genome[geneID] + shift) % 8;
-        if(genome[geneID] == -1) genome[geneID] = 7;
-    }
-
-    public void geneShuffleMutation() {
-        int geneID = (int)(Math.random() * this.genome.length);
-        int[] possibleGenes = {0, 1, 2, 3, 4, 5, 6, 7};
-        ArrayList<Integer> genePool = new ArrayList<>();
-        for (int gene : possibleGenes) {
-            if (gene != this.genome[geneID]) {
-                genePool.add(gene);
-            }
-        }
-        this.genome[geneID] = genePool.get((int)(Math.random() * genePool.size()));
     }
 
 //// Getters for simulation and statistics
@@ -236,18 +192,6 @@ public class Animal extends MapElement {
     }
 
 //// Helper functions
-
-    private int[] randomGenes(int geneCount){
-        if (geneCount == 0) {
-            return new int[0];
-        }
-
-        int[] newGenome = new int[geneCount];
-        for(int i = 0; i < geneCount; i++){
-            newGenome[i] = (int) (Math.random() * 8);
-        }
-        return newGenome;
-    }
 
     public void updateDescendants() {
 

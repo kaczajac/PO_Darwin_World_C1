@@ -1,0 +1,16 @@
+Parameter, Value
+Map Height, 30
+Map Width, 30
+Map Type, WATER
+Map Water Level, 0.5
+Map Flows Duration, 20
+Animal Start Number, 20
+Animal Start Energy, 20
+Animal Genome Length, 10
+Animal Min Fed Energy, 15
+Animal Birth Cost, 8
+Grass Daily, 10
+Grass Energy, 8
+Min Animal Mutations, 3
+Max Animal Mutations, 5
+Animal Mutation Chance, 0.4

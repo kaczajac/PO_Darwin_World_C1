@@ -1,8 +1,13 @@
 # PO Project - DARWIN WORLD
 
+* [Authors](#authors)
 * [General info](#general-info)
 * [Features](#features)
 * [How It Works](#how-it-works)
+
+## Authors
+- **Kacper Zając**
+- **Mateusz Pawliczek**
 
 ## General info
 This project simulates an ecosystem where animals live and interact with the environment on a dynamic map. The animals roam the map, eating grass to survive while being exposed to environmental challenges, such as the rising water levels from a tidal system. The simulation also introduces a genetic mutation mechanism that influences the reproduction of animals, creating random genetic variations. 

@@ -235,7 +235,7 @@ public class SimulationController implements MapChangeListener, Controller {
 
         if (selectedAnimalBox == null) return;
 
-        Animal selectedAnimal = (Animal) selectedAnimalBox.getMapElement();
+        Animal selectedAnimal = (Animal) selectedAnimalBox.getWorldElement();
 
         animalGenome.setText(Arrays.toString(selectedAnimal.getGenome()));
         animalGene.setText(String.valueOf(selectedAnimal.getGene()));
@@ -280,7 +280,7 @@ public class SimulationController implements MapChangeListener, Controller {
                 drawMap(config.map());
             });
 
-            if (showPopularGenomeAnimals && popularGenomeAnimals.contains((Animal) box.getMapElement())) {
+            if (showPopularGenomeAnimals && popularGenomeAnimals.contains((Animal) box.getWorldElement())) {
                 box.markAsPopularGenomeAnimalBox();
             }
 
@@ -297,7 +297,7 @@ public class SimulationController implements MapChangeListener, Controller {
 
         Line hp = new Line();
         hp.setStartX(CELL_SIZE * 0.4);
-        hp.setStroke(getHealthColorBasedOnEnergyLevel(box.getMapElement()));
+        hp.setStroke(getHealthColorBasedOnEnergyLevel(box.getWorldElement()));
         hp.setStrokeWidth(2.5);
         box.display().getChildren().add(hp);
         StackPane.setAlignment(hp, Pos.BOTTOM_CENTER);

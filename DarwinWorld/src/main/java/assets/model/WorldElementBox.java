@@ -40,7 +40,7 @@ public class WorldElementBox {
         return this.box;
     }
 
-    public WorldElement getMapElement() {
+    public WorldElement getWorldElement() {
         return this.element;
     }
 
@@ -116,7 +116,7 @@ public class WorldElementBox {
     public boolean containsSelectedAnimal(WorldElementBox selectedBox) {
         if (selectedBox == null) return false;
         if (this.containsAnimal() && selectedBox.containsAnimal()) {
-            Animal selectedAnimal = (Animal) selectedBox.getMapElement();
+            Animal selectedAnimal = (Animal) selectedBox.getWorldElement();
             return this.element.equals(selectedAnimal);
         }
         return false;
